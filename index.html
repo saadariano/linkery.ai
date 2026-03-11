@@ -73,13 +73,13 @@
         /* SEARCH ROW */
         .search-row { display:flex; gap:6px; padding:0 12px 14px; align-items:center; }
         @media (max-width:767px) {
-            .search-row { gap:5px; padding:0 10px 12px; }
+            .search-row { gap:5px; padding:0 10px 10px; }
             #vb-headlines, #vb-imagetitle { display:none; }
         }
-        .sw { flex:1; position:relative; }
-        .sw input { width:100%; background:var(--card); border:1px solid var(--border); padding:11px 14px; border-radius:12px; color:var(--text); font-size:14px; outline:none; }
-        #desktopSearchIcon { display:none; }
-        @media (min-width:768px) { #desktopSearchIcon { display:block; } .sw input { padding-left:36px; } }
+        .sw { flex:1; position:relative; min-width:0; }
+        .sw input { width:100%; background:var(--card); border:1px solid var(--border); padding:12px 14px 12px 38px; border-radius:12px; color:var(--text); font-size:15px; outline:none; }
+        @media (max-width:767px) { .sw input { font-size:15px; padding:13px 14px 13px 38px; border-radius:14px; } }
+        #desktopSearchIcon { display:block; }
         .sw input::placeholder { color:var(--text-dim); }
         .sq-btn { width:40px; height:40px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; position:relative; flex-shrink:0; }
 
@@ -93,6 +93,7 @@
         /* LINK ITEMS */
         #linkList { }
         .link-container { position:relative; overflow:hidden; margin:0 15px 10px; border-radius:16px; touch-action:pan-y; }
+        .link-list-edit-mode .link-container { touch-action:none; }
 
         /* Swipe BG buttons */
         .sa-left { position:absolute; left:0; top:0; bottom:0; display:flex; width:130px; z-index:1; border-radius:16px 0 0 16px; overflow:hidden; pointer-events:none; }
@@ -150,6 +151,7 @@
 
         /* BOTTOM NAV */
         .bnav { position:fixed; bottom:0; left:0; right:0; background:#111113; border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; padding:7px 0 env(safe-area-inset-bottom,18px); z-index:99; padding-bottom:max(18px,env(safe-area-inset-bottom)); }
+        @media (max-width:767px) { .bnav { display:none !important; } }
         .nitem { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-size:10px; color:var(--text-dim); padding:3px 14px; }
         .nitem i { font-size:22px; }
         .nitem.active { color:var(--primary); }
@@ -407,7 +409,19 @@
             padding-bottom:2px;
             overflow:visible;
         }
-        @media (max-width:767px) { #stickyBar { top:0; } }
+        @media (max-width:767px) { 
+            #stickyBar { 
+                position:fixed; 
+                top:0; 
+                left:0; right:0; 
+                z-index:150;
+                background:var(--bg);
+                border-bottom:1px solid var(--border);
+                overflow:visible;
+            }
+            /* Push content below fixed stickyBar — will be set dynamically */
+            #linkListWrap { padding-top:var(--sticky-height,120px); }
+        }
         #linkListWrap { flex:1; overflow:visible; }
 
         /* ── BOOKMARK EDIT MODE ── */
@@ -498,17 +512,33 @@
 
 <!-- HEADER -->
 <div class="header">
-    <div class="header-left">
-        <div class="greeting">
-            <h2 id="greetingText">Hello!</h2>
-            <p id="todayDate"></p>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="header-left">
+            <div class="greeting">
+                <h2 id="greetingText">Hello!</h2>
+                <p id="todayDate"></p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="hbtn" onclick="openShareOptions()" title="Export"><i class="fa-solid fa-share-nodes"></i></div>
+            <div class="hbtn" onclick="openSettings()" title="Settings"><i class="fa-solid fa-gear"></i></div>
+            <input type="file" id="impFile" hidden accept=".json" onchange="importData(event)">
         </div>
     </div>
-    <div class="header-right">
-        <div class="hbtn" onclick="openManageFolders()" title="Folders"><i class="fa-solid fa-folder-open"></i></div>
-        <div class="hbtn" onclick="openShareOptions()" title="Export"><i class="fa-solid fa-share-nodes"></i></div>
-        <div class="hbtn" onclick="openSettings()" title="Settings"><i class="fa-solid fa-gear"></i></div>
-        <input type="file" id="impFile" hidden accept=".json" onchange="importData(event)">
+    <!-- Fav / Archive / Folders row under app name -->
+    <div style="display:flex;gap:8px;margin-top:10px;padding-bottom:2px;">
+        <div onclick="navTo('all','nav-home')" id="mob-nav-home" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border-radius:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:var(--primary);">
+            <i class="fa-solid fa-house" style="font-size:14px;"></i><span>Home</span>
+        </div>
+        <div onclick="navTo('fav','nav-fav')" id="mob-nav-fav" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border-radius:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:#ef4444;">
+            <i class="fa-regular fa-heart" style="font-size:14px;"></i><span>Favorite</span>
+        </div>
+        <div onclick="navTo('archive','nav-arc')" id="mob-nav-arc" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border-radius:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:#3b82f6;">
+            <i class="fa-regular fa-file" style="font-size:14px;"></i><span>Archive</span>
+        </div>
+        <div onclick="openManageFolders()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border-radius:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:#ca8a04;">
+            <i class="fa-solid fa-folder-open" style="font-size:14px;"></i><span>Folders</span>
+        </div>
     </div>
 </div>
 
@@ -523,7 +553,7 @@
     <button id="editModeToggle" onclick="toggleBookmarkEditMode()" title="Edit / Reorder bookmarks" style="background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:0 13px;height:40px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-pencil"></i> <span id="editModeLabel">Edit</span></button>
     <div class="sw" style="position:relative;">
         <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;" id="desktopSearchIcon"></i>
-        <input type="text" id="search" placeholder="Search" oninput="renderLinks()" style="padding-left:36px;" id="searchInput">
+        <input type="text" id="search" placeholder="Search bookmarks…" oninput="renderLinks()" style="padding-left:36px;">
     </div>
     <div class="sq-btn" id="sortDateBtn" onclick="toggleSortDate()" title="Sort by date" style="position:relative;">
         <i class="fa-solid fa-arrow-down-wide-short" id="sortDateIcon"></i>
@@ -1098,7 +1128,20 @@ function init() {
     if(lb) lb.innerHTML=getFlagImg(S.lang);
     // Schedule any saved reminders
     initReminders();
+    // Fix mobile sticky bar offset
+    setTimeout(fixStickyOffset, 80);
 }
+
+function fixStickyOffset(){
+    if(window.innerWidth > 767) return;
+    const bar = document.getElementById('stickyBar');
+    const wrap = document.getElementById('linkListWrap');
+    if(!bar || !wrap) return;
+    const h = bar.offsetHeight;
+    document.documentElement.style.setProperty('--sticky-height', h+'px');
+    wrap.style.paddingTop = h+'px';
+}
+window.addEventListener('resize', fixStickyOffset);
 
 function setDate() {
     const d = new Date();
@@ -1216,7 +1259,16 @@ function quickDeleteFolderFromTab(id){
 
 function navTo(tab, navId) {
     document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
-    document.getElementById(navId).classList.add('active');
+    const ni = document.getElementById(navId); if(ni) ni.classList.add('active');
+    // Highlight header nav buttons
+    ['mob-nav-home','mob-nav-fav','mob-nav-arc'].forEach(id=>{
+        const el=document.getElementById(id); if(!el) return;
+        el.style.background = 'var(--card)';
+        el.style.borderColor = 'var(--border)';
+    });
+    const activeMap = {'nav-home':'mob-nav-home','nav-fav':'mob-nav-fav','nav-arc':'mob-nav-arc'};
+    const activeId = activeMap[navId];
+    if(activeId){ const el=document.getElementById(activeId); if(el){ el.style.background='rgba(255,255,255,.06)'; el.style.borderColor='rgba(255,255,255,.2)'; }}
     switchTab(tab);
 }
 
@@ -2575,7 +2627,7 @@ S._bmEditMode = false;
 let _dragSrcId = null;
 
 // Touch drag support for bookmark reordering
-let _touchDragEl = null, _touchDragId = null, _touchDragClone = null, _touchDragOffY = 0;
+let _touchDragEl = null, _touchDragId = null, _touchDragClone = null, _touchDragOffY = 0, _touchDragOffX = 0;
 
 function _bmTouchStart(e, id) {
     if(!S._bmEditMode) return;
@@ -2584,9 +2636,10 @@ function _bmTouchStart(e, id) {
     const touch = e.touches[0];
     const rect = _touchDragEl.getBoundingClientRect();
     _touchDragOffY = touch.clientY - rect.top;
+    _touchDragOffX = touch.clientX - rect.left;
     // Create a visual clone
     _touchDragClone = _touchDragEl.cloneNode(true);
-    _touchDragClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;opacity:0.7;pointer-events:none;transition:none;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
+    _touchDragClone.style.cssText = 'position:fixed;left:'+rect.left+'px;top:'+rect.top+'px;width:'+rect.width+'px;z-index:9999;opacity:0.75;pointer-events:none;transition:none;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.6);';
     document.body.appendChild(_touchDragClone);
     _touchDragEl.style.opacity = '0.3';
     e.preventDefault();
@@ -2594,7 +2647,16 @@ function _bmTouchStart(e, id) {
 function _bmTouchMove(e) {
     if(!_touchDragClone) return;
     const touch = e.touches[0];
-    _touchDragClone.style.top = (touch.clientY - _touchDragOffY) + 'px';
+    // Track BOTH x and y so grid drag works
+    _touchDragClone.style.top  = (touch.clientY - _touchDragOffY) + 'px';
+    _touchDragClone.style.left = (touch.clientX - _touchDragOffX) + 'px';
+    // Highlight target cell
+    _touchDragClone.style.display='none';
+    const under = document.elementFromPoint(touch.clientX, touch.clientY);
+    _touchDragClone.style.display='';
+    document.querySelectorAll('.link-container.drag-over').forEach(el=>el.classList.remove('drag-over'));
+    const tc = under && under.closest('.link-container');
+    if(tc && tc.id !== 'lc-'+_touchDragId) tc.classList.add('drag-over');
     e.preventDefault();
 }
 function _bmTouchEnd(e) {
