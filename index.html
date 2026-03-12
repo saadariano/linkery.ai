@@ -49,7 +49,7 @@
         body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding-bottom:calc(90px + env(safe-area-inset-bottom,0px)); overflow-x:hidden; }
 
         /* HEADER */
-        .header { display:none; } /* mobile header replaced by .mob-header */
+        .header { display:flex; justify-content:space-between; align-items:center; padding:max(18px,env(safe-area-inset-top,18px)) 20px 14px; }
         .header-left { display:flex; align-items:center; gap:12px; }
         .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ef4444); overflow:hidden; flex-shrink:0; }
         .avatar img { width:100%; height:100%; object-fit:cover; }
@@ -73,14 +73,14 @@
         /* SEARCH ROW */
         .search-row { display:flex; gap:6px; padding:0 12px 14px; align-items:center; }
         @media (max-width:767px) {
-            .search-row { gap:6px; padding:0 12px 12px; }
+            .search-row { gap:5px; padding:0 10px 12px; }
             #vb-headlines, #vb-imagetitle { display:none; }
         }
-        .sw { flex:1; position:relative; min-width:0; }
-        .sw input { width:100%; background:var(--card); border:1px solid var(--border); padding:12px 14px 12px 38px; border-radius:14px; color:var(--text); font-size:15px; outline:none; height:44px; }
-        .sw input:focus { border-color:var(--primary); box-shadow:0 0 0 2px rgba(34,197,94,.15); }
-        #desktopSearchIcon { display:block; }
-        .sw input::placeholder { color:var(--text-dim); font-size:14px; }
+        .sw { flex:1; position:relative; }
+        .sw input { width:100%; background:var(--card); border:1px solid var(--border); padding:11px 14px; border-radius:12px; color:var(--text); font-size:14px; outline:none; }
+        #desktopSearchIcon { display:none; }
+        @media (min-width:768px) { #desktopSearchIcon { display:block; } .sw input { padding-left:36px; } }
+        .sw input::placeholder { color:var(--text-dim); }
         .sq-btn { width:40px; height:40px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; position:relative; flex-shrink:0; }
 
         /* VIEW DROPDOWN */
@@ -268,8 +268,8 @@
         /* Desktop nav: always visible on all screen sizes */
         @media (min-width: 1px) {
             body { padding-bottom:0; }
-            /* old desktop-nav removed */
-            .desktop-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:var(--text); margin-right:0; cursor:pointer; padding-bottom:8px; }
+            .desktop-nav { display:flex; align-items:center; padding:0 28px; height:60px; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:200; gap:0; }
+            .desktop-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:var(--text); margin-right:36px; cursor:pointer; }
             .desktop-logo-icon { width:34px; height:34px; background:var(--primary); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#000; font-size:17px; font-weight:900; }
             .dnl { display:flex; align-items:center; gap:7px; padding:8px 16px; border-radius:10px; color:var(--text-dim); font-size:14px; font-weight:600; cursor:pointer; border:none; background:none; white-space:nowrap; }
             .dnl:hover { background:rgba(255,255,255,.06); }
@@ -279,7 +279,7 @@
             #dnl-fav, #dnl-fav:hover, #dnl-fav.active { color:#ef4444 !important; }
             #dnl-arc, #dnl-arc:hover, #dnl-arc.active { color:#3b82f6 !important; }
             #dnl-fold, #dnl-fold:hover, #dnl-fold.active { color:#ca8a04 !important; }
-            /* desktop-nav-right now in new CSS block */
+            .desktop-nav-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
             .add-link-btn { background:var(--primary); color:#000; border:none; border-radius:10px; padding:9px 20px; font-weight:700; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:7px; }
             .lang-btn { background:var(--card); border:1px solid var(--border); color:var(--text-dim); border-radius:10px; padding:8px 14px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px; }
             .user-chip { display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:20px; padding:5px 14px 5px 5px; cursor:pointer; }
@@ -360,7 +360,7 @@
         [dir=rtl] .stat-acts { margin-left: 0; margin-right: auto; }
 
         /* ── MOBILE DESKTOP INTERFACE: full desktop layout on all screen sizes ── */
-        .desktop-nav { display:flex !important; }
+        .desktop-nav { display:flex !important; flex-wrap:wrap; }
         .header { display:none !important; }
         .bnav { display:none !important; }
         .fab { display:none !important; }
@@ -369,7 +369,7 @@
             #mainWrap { padding:12px 8px; }
         .tabs-outer { padding:0 0 10px; }
             .search-row { padding:0 0 10px; }
-            /* cleaned */
+            .desktop-nav { height:auto; padding:8px 12px; gap:4px; flex-wrap:wrap; }
             .desktop-logo { margin-right:8px; }
             .desktop-nav-right { gap:5px; flex-wrap:wrap; justify-content:flex-end; }
             .add-link-btn { padding:7px 12px; font-size:12px; }
@@ -401,21 +401,18 @@
 
         /* ── STICKY TABS + SEARCH: only bookmarks scroll ── */
         #stickyBar { 
-            position:sticky; 
-            z-index:150; 
+            position:sticky; top:60px; z-index:150; 
             background:var(--bg); 
             border-bottom:1px solid var(--border);
             padding-bottom:2px;
             overflow:visible;
         }
-        @media (min-width:768px) { #stickyBar { top:0; } }
-        @media (max-width:767px) { #stickyBar { top:var(--mob-header-h, 148px); } }
+        @media (max-width:767px) { #stickyBar { top:0; } }
         #linkListWrap { flex:1; overflow:visible; }
 
         /* ── BOOKMARK EDIT MODE ── */
         .link-list-edit-mode .link-container { user-select:none; }
         .link-list-edit-mode .link-card { border-color:rgba(34,197,94,.3) !important; }
-        .link-container.drag-over .link-card { border-color:var(--primary) !important; background:rgba(34,197,94,.08) !important; transform:scale(0.97); }
         .bm-edit-overlay { display:none; position:absolute; inset:0; z-index:20; border-radius:16px; }
         .link-list-edit-mode .bm-edit-overlay { display:flex; flex-direction:column; justify-content:space-between; padding:8px; background:rgba(0,0,0,.55); }
         .bm-edit-top { display:flex; justify-content:space-between; }
@@ -465,144 +462,53 @@
         .link-card { -webkit-user-select:none; cursor:pointer; }
         /* Ensure modals work on iOS */
         .modal { -webkit-overflow-scrolling:touch; overflow:auto; }
-    
-        /* ══ DESKTOP NAV: single sticky row ══ */
-        .desktop-nav { 
-            display:flex; align-items:center; 
-            padding:0 20px; height:60px; 
-            background:var(--card); border-bottom:1px solid var(--border); 
-            position:sticky; top:0; z-index:200; 
-            gap:8px; flex-wrap:nowrap; overflow:hidden;
-        }
-        .desktop-logo { display:flex; align-items:center; gap:10px; cursor:pointer; margin-right:12px; flex-shrink:0; }
-        .desktop-nav-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-        .desktop-nav .dnl { flex-shrink:0; }
-
-        /* ══ MOBILE HEADER: 3 sticky rows, desktop hidden ══ */
-        .mob-header {
-            display:none; /* shown only on mobile via media query */
-            position:sticky;
-            top:0;
-            z-index:200;
-            background:var(--bg);
-            border-bottom:1px solid var(--border);
-            flex-direction:column;
-        }
-        .mob-row-brand {
-            display:flex; align-items:center; justify-content:space-between;
-            padding:max(14px,env(safe-area-inset-top,14px)) 16px 10px;
-        }
-        .mob-row-tools {
-            display:flex; align-items:center; gap:4px;
-            padding:0 12px 10px;
-            overflow-x:auto; scrollbar-width:none;
-        }
-        .mob-row-tools::-webkit-scrollbar { display:none; }
-        .mob-row-tabs {
-            display:flex; align-items:center; gap:6px;
-            padding:0 12px 10px;
-            overflow-x:auto; scrollbar-width:none;
-        }
-        .mob-row-tabs::-webkit-scrollbar { display:none; }
-        .mob-tab {
-            display:flex; align-items:center; gap:5px;
-            padding:7px 14px; border-radius:20px;
-            border:1.5px solid var(--border); background:var(--card);
-            color:var(--tc, var(--text-dim)); font-size:13px; font-weight:600;
-            white-space:nowrap; cursor:pointer; flex-shrink:0;
-            transition:all .15s;
-        }
-        .mob-tab.active {
-            border-color:var(--tc, var(--primary));
-            background:rgba(34,197,94,.1);
-            color:var(--tc, var(--primary));
-        }
-        .mob-tab[id="mtab-fav"].active { background:rgba(239,68,68,.1); }
-        .mob-tab[id="mtab-arc"].active { background:rgba(59,130,246,.1); }
-        .mob-tab[id="mtab-fold"].active { background:rgba(202,138,4,.1); }
-
-        @media (max-width:767px) {
-            .desktop-nav { display:none !important; }
-            .mob-header { display:flex !important; }
-            /* stickyBar sits below mob-header */
-            #stickyBar { top:var(--mob-header-h, 148px); }
-        }
-        @media (min-width:768px) {
-            .mob-header { display:none !important; }
-            .desktop-nav { display:flex !important; }
-            #stickyBar { top:0; }
-        }
-</style>
+    </style>
 </head>
 <body>
 
-<!-- DESKTOP NAV: single sticky row, hidden on mobile -->
-<nav class="desktop-nav" id="desktopNav">
-    <!-- Logo -->
-    <div class="desktop-logo" onclick="navTo('all','dnl-home')" title="WebMark">
+<!-- DESKTOP NAV -->
+<nav class="desktop-nav">
+        <div class="desktop-logo" onclick="navTo('all','nav-home')">
         <div class="desktop-logo-icon"><i class="fa-solid fa-bookmark"></i></div>
         <div style="display:flex;flex-direction:column;line-height:1.1;">
-            <span style="font-size:17px;font-weight:800;">WebMark</span>
-            <span style="font-size:9px;font-weight:400;color:var(--text-dim);">by saad</span>
+            <span style="font-size:18px;font-weight:800;">WebMark</span>
+            <span style="font-size:10px;font-weight:400;color:var(--text-dim);">by saad</span>
         </div>
     </div>
-    <!-- Nav links: same row as logo -->
     <button class="dnl active" id="dnl-home" onclick="deskNav('all','dnl-home')"><i class="fa-solid fa-house"></i> Home</button>
     <button class="dnl" id="dnl-fav" onclick="deskNav('fav','dnl-fav')" style="color:#ef4444;"><i class="fa-regular fa-heart"></i> Favorite</button>
     <button class="dnl" id="dnl-arc" onclick="deskNav('archive','dnl-arc')" style="color:#3b82f6;"><i class="fa-regular fa-file"></i> Archive</button>
     <button class="dnl" id="dnl-fold" onclick="openManageFolders()" style="color:#ca8a04;"><i class="fa-solid fa-folder-open"></i> Folders</button>
-    <!-- Spacer -->
-    <div style="flex:1;"></div>
-    <!-- Right tools: same row -->
     <div class="desktop-nav-right">
-        <button class="lang-btn" id="langBtnDesktop" onclick="openLangModal()" title="Language"><span id="langLabel">🇬🇧</span> <i class="fa-solid fa-chevron-down" style="font-size:9px;margin-left:2px;"></i></button>
+        <button class="lang-btn" id="langBtnDesktop" onclick="openLangModal()" style="font-size:22px;padding:4px 10px;letter-spacing:0;min-width:44px;"><span id="langLabel"></span> <i class="fa-solid fa-chevron-down" style="font-size:10px;vertical-align:middle;margin-left:2px;"></i></button>
         <button class="theme-toggle dark-mode-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
             <span class="theme-toggle-sun" id="toggleSunIcon"><i class="fa-solid fa-sun"></i></span>
             <span class="theme-toggle-moon" id="toggleMoonIcon"><i class="fa-solid fa-moon"></i></span>
             <span class="theme-toggle-knob" id="themeInner"><i class="fa-solid fa-moon"></i></span>
         </button>
+
         <button onclick="document.getElementById('impFile').click()" class="lang-btn" title="Import"><i class="fa-solid fa-upload"></i></button>
         <button onclick="openShareOptions()" class="lang-btn" title="Export"><i class="fa-solid fa-share-nodes"></i></button>
         <button onclick="openSettings()" class="lang-btn" title="Settings"><i class="fa-solid fa-gear"></i></button>
         <button onclick="openContact()" class="lang-btn" title="Contact"><i class="fa-regular fa-envelope"></i></button>
         <button class="add-link-btn" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> <span>Add Link</span></button>
     </div>
-    <input type="file" id="impFile" hidden accept=".json" onchange="importData(event)">
 </nav>
 <div id="mainWrap">
 
-<!-- MOBILE HEADER: 3 sticky rows, desktop hidden -->
-<div class="mob-header" id="mobHeader">
-    <!-- Row 1: App name + sync avatar -->
-    <div class="mob-row-brand">
-        <div style="display:flex;align-items:center;gap:10px;">
-            <div class="desktop-logo-icon" style="width:34px;height:34px;border-radius:10px;font-size:16px;"><i class="fa-solid fa-bookmark"></i></div>
-            <div style="line-height:1.2;">
-                <div style="font-size:17px;font-weight:800;" id="greetingText">WebMark</div>
-                <div style="font-size:10px;color:var(--text-dim);" id="todayDate">by saad</div>
-            </div>
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <div class="greeting">
+            <h2 id="greetingText">Hello!</h2>
+            <p id="todayDate"></p>
         </div>
     </div>
-    <!-- Row 2: Tools (language, theme, import, export, settings, contact) -->
-    <div class="mob-row-tools">
-        <button class="lang-btn" onclick="openLangModal()" title="Language" style="font-size:20px;padding:4px 8px;"><span id="langLabelMob">🇬🇧</span></button>
-        <button class="theme-toggle dark-mode-btn" id="themeToggleMob" onclick="toggleTheme()" title="Toggle theme" style="transform:scale(0.85);">
-            <span class="theme-toggle-sun"><i class="fa-solid fa-sun"></i></span>
-            <span class="theme-toggle-moon"><i class="fa-solid fa-moon"></i></span>
-            <span class="theme-toggle-knob" id="themeInnerMob"><i class="fa-solid fa-moon"></i></span>
-        </button>
-        <div class="hbtn" onclick="document.getElementById('impFileMob').click()" title="Import"><i class="fa-solid fa-upload"></i></div>
+    <div class="header-right">
+        <div class="hbtn" onclick="openManageFolders()" title="Folders"><i class="fa-solid fa-folder-open"></i></div>
         <div class="hbtn" onclick="openShareOptions()" title="Export"><i class="fa-solid fa-share-nodes"></i></div>
         <div class="hbtn" onclick="openSettings()" title="Settings"><i class="fa-solid fa-gear"></i></div>
-        <div class="hbtn" onclick="openContact()" title="Contact"><i class="fa-regular fa-envelope"></i></div>
-        <input type="file" id="impFileMob" hidden accept=".json" onchange="importData(event)">
-    </div>
-    <!-- Row 3: Home / Fav / Archive / Folders tabs -->
-    <div class="mob-row-tabs">
-        <button class="mob-tab active" id="mtab-home" onclick="deskNav('all','dnl-home');setMobTab('mtab-home')"><i class="fa-solid fa-house"></i> Home</button>
-        <button class="mob-tab" id="mtab-fav" onclick="deskNav('fav','dnl-fav');setMobTab('mtab-fav')" style="--tc:#ef4444;"><i class="fa-regular fa-heart"></i> Favorite</button>
-        <button class="mob-tab" id="mtab-arc" onclick="deskNav('archive','dnl-arc');setMobTab('mtab-arc')" style="--tc:#3b82f6;"><i class="fa-regular fa-file"></i> Archive</button>
-        <button class="mob-tab" id="mtab-fold" onclick="openManageFolders()" style="--tc:#ca8a04;"><i class="fa-solid fa-folder-open"></i> Folders</button>
+        <input type="file" id="impFile" hidden accept=".json" onchange="importData(event)">
     </div>
 </div>
 
@@ -617,7 +523,7 @@
     <button id="editModeToggle" onclick="toggleBookmarkEditMode()" title="Edit / Reorder bookmarks" style="background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:0 13px;height:40px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-pencil"></i> <span id="editModeLabel">Edit</span></button>
     <div class="sw" style="position:relative;">
         <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;" id="desktopSearchIcon"></i>
-        <input type="text" id="search" placeholder="🔍 Search bookmarks..." oninput="renderLinks()" style="padding-left:36px;" >
+        <input type="text" id="search" placeholder="Search" oninput="renderLinks()" style="padding-left:36px;" id="searchInput">
     </div>
     <div class="sq-btn" id="sortDateBtn" onclick="toggleSortDate()" title="Sort by date" style="position:relative;">
         <i class="fa-solid fa-arrow-down-wide-short" id="sortDateIcon"></i>
@@ -2661,7 +2567,6 @@ function toggleTheme(){
             if(inner) inner.innerHTML='<i class="fa-regular fa-sun"></i>';
         },0);
     }
-    setTimeout(syncMobUI, 50);
 })();
 
 
@@ -2670,7 +2575,7 @@ S._bmEditMode = false;
 let _dragSrcId = null;
 
 // Touch drag support for bookmark reordering
-let _touchDragEl = null, _touchDragId = null, _touchDragClone = null, _touchDragOffY = 0, _touchDragOffX = 0;
+let _touchDragEl = null, _touchDragId = null, _touchDragClone = null, _touchDragOffY = 0;
 
 function _bmTouchStart(e, id) {
     if(!S._bmEditMode) return;
@@ -2679,26 +2584,17 @@ function _bmTouchStart(e, id) {
     const touch = e.touches[0];
     const rect = _touchDragEl.getBoundingClientRect();
     _touchDragOffY = touch.clientY - rect.top;
-    _touchDragOffX = touch.clientX - rect.left;
-    // Create a visual clone that follows finger in all directions
+    // Create a visual clone
     _touchDragClone = _touchDragEl.cloneNode(true);
-    _touchDragClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;opacity:0.75;pointer-events:none;transition:none;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,0.6);transform:scale(1.04);`;
+    _touchDragClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;opacity:0.7;pointer-events:none;transition:none;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
     document.body.appendChild(_touchDragClone);
-    _touchDragEl.style.opacity = '0.25';
+    _touchDragEl.style.opacity = '0.3';
     e.preventDefault();
 }
 function _bmTouchMove(e) {
     if(!_touchDragClone) return;
     const touch = e.touches[0];
-    _touchDragClone.style.top  = (touch.clientY - _touchDragOffY) + 'px';
-    _touchDragClone.style.left = (touch.clientX - _touchDragOffX) + 'px';
-    // Highlight the card under the finger
-    _touchDragClone.style.display = 'none';
-    const under = document.elementFromPoint(touch.clientX, touch.clientY);
-    _touchDragClone.style.display = '';
-    document.querySelectorAll('.link-container.drag-over').forEach(el=>el.classList.remove('drag-over'));
-    const overCont = under && under.closest('.link-container');
-    if(overCont && overCont.id !== 'lc-'+_touchDragId) overCont.classList.add('drag-over');
+    _touchDragClone.style.top = (touch.clientY - _touchDragOffY) + 'px';
     e.preventDefault();
 }
 function _bmTouchEnd(e) {
@@ -2721,7 +2617,6 @@ function _bmTouchEnd(e) {
     }
     _touchDragClone.remove();
     _touchDragClone = null;
-    document.querySelectorAll('.link-container.drag-over').forEach(el=>el.classList.remove('drag-over'));
     if(_touchDragEl) { _touchDragEl.style.opacity = ''; _touchDragEl = null; }
     _touchDragId = null;
     const wrap = document.getElementById('linkListWrap');
@@ -2814,7 +2709,6 @@ function setLang(l){
     const lb=document.getElementById('langLabel');
     if(lb) lb.innerHTML=getFlagImg(S.lang);
     if(S.lang!=='en') document.body.setAttribute('dir',S.lang==='ar'?'rtl':'ltr');
-    setTimeout(syncMobUI, 50);
 })();
 
 // ── SETTINGS ──
@@ -3749,34 +3643,6 @@ function openLink(url){
     if(newTab) window.open(url,'_blank');
     else window.location.href=url;
 }
-
-// ── Mobile header height tracking for sticky stickyBar ──
-function updateMobHeaderH(){
-    const mh = document.getElementById('mobHeader');
-    if(mh && window.innerWidth < 768){
-        const h = mh.getBoundingClientRect().height;
-        document.documentElement.style.setProperty('--mob-header-h', h+'px');
-    }
-}
-function setMobTab(id){
-    document.querySelectorAll('.mob-tab').forEach(b=>b.classList.remove('active'));
-    const el = document.getElementById(id);
-    if(el) el.classList.add('active');
-}
-function syncMobUI(){
-    const dl = document.getElementById('langLabel');
-    const ml = document.getElementById('langLabelMob');
-    if(dl&&ml) ml.textContent = dl.textContent;
-    const mob = document.getElementById('themeToggleMob');
-    const desk = document.getElementById('themeToggle');
-    if(mob&&desk){ mob.className = desk.className; }
-    const mi = document.getElementById('themeInnerMob');
-    const di = document.getElementById('themeInner');
-    if(mi&&di) mi.innerHTML = di.innerHTML;
-}
-window.addEventListener('resize', updateMobHeaderH);
-window.addEventListener('load', ()=>{ setTimeout(()=>{ updateMobHeaderH(); syncMobUI(); },100); });
-
 
 init();
 
