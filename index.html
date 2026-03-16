@@ -2281,7 +2281,7 @@ function fmDragOver(e,id){ e.preventDefault(); e.dataTransfer.dropEffect='move';
 function fmDrop(e,targetId){ e.preventDefault(); if(!_fmDragSrcId||_fmDragSrcId===targetId) return; const si=S.folders.findIndex(f=>f.id===_fmDragSrcId); const ti=S.folders.findIndex(f=>f.id===targetId); if(si<0||ti<0) return; const [moved]=S.folders.splice(si,1); S.folders.splice(ti,0,moved); save(); renderManageFolders(); renderTabs(); _fmDragSrcId=null; }
 
 // ── TOUCH DRAG FOR MANAGE FOLDERS ──
-let _fmTouchId=null, _fmTouchClone=null, _fmTouchOffY=0;
+let _fmTouchId=null, _fmTouchClone=null, _fmTouchOffY=0, _fmScrollRaf=null;
 function fmTouchStart(e,id){
     e.stopPropagation();
     _fmDragSrcId=id;
@@ -2296,21 +2296,48 @@ function fmTouchStart(e,id){
     document.body.appendChild(_fmTouchClone);
     row.style.opacity='.3';
 }
+function _fmGetScroller(){
+    // On mobile: inline page body scrolls
+    const inlinePage = document.getElementById('page-folders');
+    if(inlinePage && inlinePage.classList.contains('active')){
+        return document.getElementById('inlineFoldersList') || inlinePage.querySelector('.inline-page-body');
+    }
+    // On desktop/modal: .mc inside manageFoldersModal scrolls
+    return document.querySelector('#manageFoldersModal .mc') || null;
+}
 function fmTouchMove(e){
     if(!_fmTouchClone||!_fmTouchId) return;
     e.preventDefault();
     const ty=e.touches[0].clientY;
+    const tx=e.touches[0].clientX;
     _fmTouchClone.style.top=(ty-_fmTouchOffY)+'px';
     // Highlight target row
     document.querySelectorAll('.fm-row').forEach(r=>{ r.style.borderTop=''; });
-    const el=document.elementFromPoint(e.touches[0].clientX, ty);
+    const el=document.elementFromPoint(tx, ty);
     const targetRow=el && el.closest('.fm-row');
     if(targetRow && targetRow.id!=='fmr-'+_fmTouchId){
         targetRow.style.borderTop='2px solid var(--primary)';
-        _fmTouchId && (targetRow._fmOver=true);
+    }
+    // Auto-scroll when near top or bottom edge
+    if(_fmScrollRaf) cancelAnimationFrame(_fmScrollRaf);
+    const scroller = _fmGetScroller();
+    if(scroller){
+        const sr = scroller.getBoundingClientRect();
+        const ZONE = 80, SPEED = 8;
+        let dir = 0;
+        if(ty < sr.top + ZONE)    dir = -SPEED;
+        else if(ty > sr.bottom - ZONE) dir =  SPEED;
+        if(dir !== 0){
+            const doScroll = () => {
+                scroller.scrollTop += dir;
+                if(_fmTouchClone) _fmScrollRaf = requestAnimationFrame(doScroll);
+            };
+            _fmScrollRaf = requestAnimationFrame(doScroll);
+        }
     }
 }
 function fmTouchEnd(e){
+    if(_fmScrollRaf){ cancelAnimationFrame(_fmScrollRaf); _fmScrollRaf=null; }
     if(!_fmTouchClone) return;
     document.body.removeChild(_fmTouchClone); _fmTouchClone=null;
     document.querySelectorAll('.fm-row').forEach(r=>{ r.style.opacity=''; r.style.borderTop=''; });
@@ -2490,13 +2517,50 @@ const ICON_ALIASES = {
   'mouse': ['computer-mouse'],
   'printer': ['print'],
   'headphones': ['headphones','headset'],
-  'camera': ['camera'],
-  'video': ['video','youtube','film'],
-  'photo': ['image','camera','images'],
-  'music': ['music','spotify','headphones'],
-  'podcast': ['podcast','microphone'],
-  'radio': ['radio'],
-  'tv': ['tv'],
+  'camera': ['camera','camera-retro','camera-rotate','video','photo-film','image'],
+  'video': ['video','video-slash','film','clapperboard','photo-film','youtube','circle-play'],
+  'movie': ['film','clapperboard','circle-play','ticket','photo-film','video','tv'],
+  'film': ['film','clapperboard','circle-play','photo-film'],
+  'cinema': ['film','clapperboard','ticket','circle-play'],
+  'series': ['tv','film','circle-play','list'],
+  'tv': ['tv','display','circle-play','film'],
+  'television': ['tv','display','circle-play'],
+  'stream': ['circle-play','tv','wifi','signal'],
+  'streaming': ['circle-play','tv','film','youtube'],
+  'netflix': ['film','circle-play','tv'],
+  'youtube': ['youtube','circle-play','film','video'],
+  'watch': ['circle-play','tv','film','clock'],
+  'play': ['circle-play','play','forward'],
+  'photo': ['image','camera','images','photo-film'],
+  'picture': ['image','images','camera'],
+  'gallery': ['images','photo-film','image'],
+  'screenshot': ['camera','image','display'],
+  'record': ['circle','microphone','video','camera'],
+  'music': ['music','spotify','headphones','note-sticky'],
+  'podcast': ['podcast','microphone','headphones'],
+  'radio': ['radio','broadcast-tower'],
+  'audio': ['headphones','volume-high','microphone','music'],
+  'headphones': ['headphones','headset'],
+  'microphone': ['microphone','microphone-slash','podcast'],
+  'speaker': ['volume-high','volume-low','volume-xmark'],
+  'sound': ['volume-high','music','headphones'],
+  'server': ['server','database','hard-drive'],
+  'database': ['database','server'],
+  'api': ['code','plug','link'],
+  'cloud': ['cloud','cloud-arrow-up','cloud-arrow-down'],
+  'security': ['shield','shield-halved','lock','key'],
+  'vpn': ['shield','lock','globe'],
+  'robot': ['robot'],
+  'ai': ['robot','brain','microchip'],
+  'cpu': ['microchip','computer'],
+  'computer': ['desktop','laptop','computer'],
+  'laptop': ['laptop','laptop-code'],
+  'mobile': ['mobile','mobile-screen'],
+  'phone': ['phone','mobile','mobile-screen'],
+  'tablet': ['tablet'],
+  'keyboard': ['keyboard'],
+  'mouse': ['computer-mouse'],
+  'printer': ['print'],
   'game': ['gamepad','chess','dice'],
   'gaming': ['gamepad','chess','dice-d20'],
   'steam': ['steam'],
@@ -2632,7 +2696,6 @@ const ICON_ALIASES = {
   'grid': ['border-all','table-cells'],
   'table': ['table','border-all'],
   'image': ['image','images','photo-film'],
-  'gallery': ['images','photo-film'],
   'archive': ['box-archive'],
   'clipboard': ['clipboard','clipboard-check'],
   'pin': ['thumbtack'],
@@ -2642,31 +2705,60 @@ const ICON_ALIASES = {
 
 
 function renderIconGrid(){
-    const q=document.getElementById('iconSearch').value.toLowerCase().trim();
+    const raw=document.getElementById('iconSearch').value.toLowerCase().trim();
     const g=document.getElementById('iconGrid');
-    let filtered;
-    if(!q){
-        filtered=FA_ICONS;
-    } else {
-        // Check aliases — match if query contains keyword OR keyword contains query (partial match)
-        const aliasMatches=new Set();
-        Object.entries(ICON_ALIASES).forEach(([keyword,names])=>{
-            if(keyword.includes(q)||q.includes(keyword)||keyword.startsWith(q)||q.startsWith(keyword)){
-                names.forEach(n=>FA_ICONS.forEach(ic=>{ if(ic.includes(n)) aliasMatches.add(ic); }));
+    if(!raw){ g.innerHTML=FA_ICONS.slice(0,500).map(ic=>{ const nm=ic.replace(/^fa-(solid|regular|brands)\s+fa-/,'').replace(/-/g,' '); return `<div class="ibox ${S.selIcon===ic?'sel':''}" onclick="selIcon('${ic.replace(/'/g,"\\'")}')" title="${nm}"><i class="${ic}"></i></div>`; }).join(''); return; }
+
+    // Split query into words for multi-word support (e.g. "tv movie")
+    const words = raw.split(/\s+/).filter(Boolean);
+
+    const scoreMap = new Map();
+    const addScore = (ic, pts) => scoreMap.set(ic, (scoreMap.get(ic)||0) + pts);
+
+    words.forEach(q => {
+        // 1. Alias matches
+        Object.entries(ICON_ALIASES).forEach(([keyword, names]) => {
+            if(keyword === q || keyword.startsWith(q) || q.startsWith(keyword) || keyword.includes(q)){
+                names.forEach(n => FA_ICONS.forEach(ic => { if(ic.includes(n)) addScore(ic, keyword===q ? 10 : 6); }));
             }
         });
-        // Direct icon name match (after fa-solid fa- prefix)
-        const nameMatches=FA_ICONS.filter(ic=>{
-            const name=ic.replace(/^fa-(solid|regular|brands|light)\s+fa-/,'');
-            return name.includes(q) || name.replace(/-/g,' ').includes(q);
+        // 2. Direct icon name match
+        FA_ICONS.forEach(ic => {
+            const name = ic.replace(/^fa-(solid|regular|brands|light)\s+fa-/,'');
+            const nameSpaced = name.replace(/-/g,' ');
+            if(name === q || nameSpaced === q)           addScore(ic, 12);
+            else if(name.startsWith(q))                  addScore(ic, 8);
+            else if(name.includes(q) || nameSpaced.includes(q)) addScore(ic, 5);
         });
-        // Merge: alias matches first, then name matches
-        const combined=[...aliasMatches];
-        nameMatches.forEach(ic=>{ if(!aliasMatches.has(ic)) combined.push(ic); });
-        filtered=combined;
+    });
+
+    // If multi-word, only keep icons that matched ALL words
+    let filtered;
+    if(words.length > 1){
+        // For each icon, check it got score from every word
+        const perWordSets = words.map(q => {
+            const s = new Set();
+            Object.entries(ICON_ALIASES).forEach(([keyword, names]) => {
+                if(keyword===q||keyword.startsWith(q)||q.startsWith(keyword)||keyword.includes(q)){
+                    names.forEach(n => FA_ICONS.forEach(ic => { if(ic.includes(n)) s.add(ic); }));
+                }
+            });
+            FA_ICONS.forEach(ic => {
+                const name=ic.replace(/^fa-(solid|regular|brands|light)\s+fa-/,'');
+                if(name.includes(q)||name.replace(/-/g,' ').includes(q)) s.add(ic);
+            });
+            return s;
+        });
+        // Union all sets (any word match counts)
+        const union = new Set();
+        perWordSets.forEach(s => s.forEach(ic => union.add(ic)));
+        filtered = [...scoreMap.entries()].filter(([ic])=>union.has(ic)).sort((a,b)=>b[1]-a[1]).map(([ic])=>ic);
+    } else {
+        filtered = [...scoreMap.entries()].sort((a,b)=>b[1]-a[1]).map(([ic])=>ic);
     }
+
     if(!filtered.length){
-        g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-dim);font-size:13px;">No icons found. Try: globe, network, wifi, link, browser…</div>';
+        g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-dim);font-size:13px;">No icons found. Try: globe, film, camera, tv, music, code…</div>';
         return;
     }
     g.innerHTML=filtered.slice(0,500).map(ic=>{
@@ -4572,7 +4664,7 @@ window.setLang = function(l){
                 <div><div style="font-size:15px;font-weight:700;">WebMark</div><div style="font-size:12px;color:var(--text-dim);">by Saad Mounir · v3.0 Premium</div></div>
             </div>
             <div style="display:flex;gap:8px;">
-                <button onclick="openContact()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> Contact</button>
+                <button onclick="openFromSettingsPage('contactModal')" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> Contact</button>
                 <button onclick="showHelp()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-solid fa-circle-info"></i> Help</button>
             </div>
         </div>
@@ -4590,7 +4682,10 @@ function openFromSettingsPage(modalId, customFn) {
     document.getElementById('page-settings').classList.remove('active');
     _returnToSettings = true;
     if (customFn) { customFn(); }
-    else { openModal(modalId); }
+    else {
+        if (modalId === 'manageTagsModal') renderAllTags();
+        openModal(modalId);
+    }
 }
 
 function openPage(name) {
@@ -4641,7 +4736,7 @@ function renderInlineFolders() {
     });
 }
 // Inline folders touch drag state
-let _iflDragId=null, _iflClone=null, _iflOffY=0;
+let _iflDragId=null, _iflClone=null, _iflOffY=0, _iflScrollRaf=null;
 function iflTouchStart(e){
     e.preventDefault();
     const id = parseInt(this.dataset.id);
@@ -4659,15 +4754,31 @@ function iflTouchStart(e){
 function iflTouchMove(e){
     e.preventDefault();
     if(!_iflClone) return;
-    const y = e.touches[0].clientY - _iflOffY;
-    _iflClone.style.top = y + 'px';
+    const ty = e.touches[0].clientY;
+    const tx = e.touches[0].clientX;
+    _iflClone.style.top = (ty - _iflOffY) + 'px';
     // Highlight target row
     document.querySelectorAll('.ifl-row').forEach(r => r.style.borderTop = '');
-    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    const el = document.elementFromPoint(tx, ty);
     const target = el && el.closest('.ifl-row');
     if(target && parseInt(target.dataset.id) !== _iflDragId) target.style.borderTop = '2px solid var(--primary)';
+    // Auto-scroll the inline-page-body container
+    if(_iflScrollRaf){ cancelAnimationFrame(_iflScrollRaf); _iflScrollRaf=null; }
+    const scroller = document.getElementById('inlineFoldersList') || document.querySelector('#page-folders .inline-page-body');
+    if(scroller){
+        const sr = scroller.getBoundingClientRect();
+        const ZONE=90, SPEED=10;
+        let dir=0;
+        if(ty < sr.top + ZONE)      dir = -SPEED;
+        else if(ty > sr.bottom - ZONE) dir =  SPEED;
+        if(dir !== 0){
+            const scroll = () => { scroller.scrollTop += dir; if(_iflClone) _iflScrollRaf=requestAnimationFrame(scroll); };
+            _iflScrollRaf = requestAnimationFrame(scroll);
+        }
+    }
 }
 function iflTouchEnd(e){
+    if(_iflScrollRaf){ cancelAnimationFrame(_iflScrollRaf); _iflScrollRaf=null; }
     document.removeEventListener('touchmove', iflTouchMove);
     document.removeEventListener('touchend', iflTouchEnd);
     if(_iflClone){ document.body.removeChild(_iflClone); _iflClone=null; }
