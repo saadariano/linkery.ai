@@ -46,7 +46,8 @@
         .lang-btn img.emoji { height:1.4em; width:1.4em; vertical-align:-0.25em; }
         .flag-emoji { font-size:inherit; }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding-bottom:calc(90px + env(safe-area-inset-bottom,0px)); overflow-x:hidden; }
+        html, body { height:100%; overflow:hidden; }
+        body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding-bottom:0; overflow:hidden; }
 
         /* HEADER */
         .header { display:flex; justify-content:space-between; align-items:center; padding:max(18px,env(safe-area-inset-top,18px)) 20px 14px; }
@@ -267,9 +268,9 @@
         /* ========= DESKTOP LAYOUT ========= */
         /* Desktop nav: always visible on all screen sizes */
         @media (min-width: 1px) {
-            body { padding-bottom:0; }
-            .desktop-nav { display:flex; align-items:center; padding:0 28px; height:60px; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:200; gap:0; }
-            .desktop-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:var(--text); margin-right:36px; cursor:pointer; }
+            body { padding-bottom:0; overflow:hidden; }
+            .desktop-nav { display:flex; align-items:center; padding:0 28px; height:60px; background:var(--card); border-bottom:1px solid var(--border); position:fixed; top:0; left:0; right:0; z-index:200; gap:0; }
+            .desktop-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:var(--text); margin-right:36px; cursor:pointer; justify-content:flex-start; }
             .desktop-logo-icon { width:34px; height:34px; background:var(--primary); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#000; font-size:17px; font-weight:900; }
             .dnl { display:flex; align-items:center; gap:7px; padding:8px 16px; border-radius:10px; color:var(--text-dim); font-size:14px; font-weight:600; cursor:pointer; border:none; background:none; white-space:nowrap; }
             .dnl:hover { background:rgba(255,255,255,.06); }
@@ -301,7 +302,7 @@
             .bnav { display:none; }
             .fab { display:none; }
             /* Mobile: full desktop interface */
-            #mainWrap { max-width:1400px; margin:0 auto; padding:20px 28px; min-height:calc(100vh - 60px); }
+            #mainWrap { max-width:1400px; margin:0 auto; padding:20px 28px 20px; position:fixed; top:60px; left:0; right:0; bottom:0; display:flex; flex-direction:column; overflow:hidden; box-sizing:border-box; }
             .tabs-outer { padding:0 0 14px; flex-wrap:nowrap; }
             .search-row { padding:0 0 14px; }
             /* 4-col grid for all views */
@@ -327,7 +328,6 @@
         .compact-cards .limg { width:38px; height:38px; border-radius:8px; }
         .compact-cards .linfo h4 { font-size:13px; }
         .compact-cards .linfo p { display:none; }
-        /* ── RTL (Arabic) fixes ── */
         [dir=rtl] { direction: rtl; text-align: right; }
         [dir=rtl] .desktop-nav { flex-direction: row-reverse; }
         [dir=rtl] .desktop-nav-right { margin-left: 0; margin-right: auto; flex-direction: row-reverse; }
@@ -367,19 +367,20 @@
         [dir=rtl] .sw i { left: auto !important; right: 12px !important; }
         [dir=rtl] .sw input { padding-left: 14px !important; padding-right: 36px !important; }
         @media (max-width: 767px) {
-            [dir=rtl] .desktop-logo { margin-left: 0; }
-            [dir=rtl] .desktop-nav-right { border-top: 1px solid var(--border); flex-direction: row-reverse; }
+            [dir=rtl] .desktop-logo { margin-left: 0; flex-direction: row-reverse; }
+            [dir=rtl] .desktop-nav { flex-direction: column; align-items: stretch; }
+            [dir=rtl] .desktop-nav-right { border-top: 1px solid var(--border); flex-direction: row-reverse; margin-right: 0; }
             [dir=rtl] .desktop-nav-btns-wrap { flex-direction: row-reverse; }
             [dir=rtl] .view-switcher-mobile .view-dd { right: auto; left: 0; }
         }
 
         /* ── MOBILE DESKTOP INTERFACE: full desktop layout on all screen sizes ── */
         @media (min-width: 768px) {
-            .desktop-nav { display:flex !important; }
+            .desktop-nav { display:flex !important; position:fixed !important; top:0; left:0; right:0; }
             .header { display:none !important; }
             .bnav { display:none !important; }
             .fab { display:none !important; }
-            body { padding-bottom:0 !important; }
+            body { padding-bottom:0 !important; overflow:hidden !important; }
             .desktop-nav-btns-wrap { display: contents; }
             .desktop-nav-btns-wrap span { display: inline; }
         }
@@ -387,16 +388,16 @@
         @media (max-width: 767px) {
             .view-switcher-desktop { display: none !important; }
             .view-switcher-mobile { display: flex !important; }
-            .desktop-nav { display:flex !important; height:auto; padding:10px 12px; gap:8px; flex-direction:column; align-items:stretch; position: sticky; top: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); }
+            .desktop-nav { display:flex !important; height:auto; padding:10px 12px; gap:8px; flex-direction:column; align-items:stretch; position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); }
             .header { display:none !important; }
             .bnav { display:none !important; }
             .fab { display:none !important; }
             body { padding-bottom:0 !important; }
-            #mainWrap { padding:0 8px 12px; }
-            #stickyBar { position: sticky; top: 135px; z-index: 150; background: var(--bg); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+            #mainWrap { padding:0 8px 0; position:fixed; top:var(--nav-height, 135px); left:0; right:0; bottom:0; display:flex; flex-direction:column; overflow:hidden; }
+            #stickyBar { position: relative; z-index: 150; background: var(--bg); border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
             .tabs-outer { padding:10px 0 10px; }
             .search-row { padding:0 0 10px; }
-            .desktop-logo { margin-right:0; justify-content:center; margin-bottom:4px; }
+            .desktop-logo { margin-right:0; justify-content:flex-start; margin-bottom:4px; }
             .desktop-nav-btns-wrap { display:flex; gap:4px; width:100%; }
             .desktop-nav-right { gap:6px; flex-wrap:wrap; justify-content:center; width:100%; border-top:1px solid var(--border); margin-top:4px; padding-top:8px; }
             .desktop-nav .dnl { flex:1; justify-content:center; padding:8px; font-size:12px; }
@@ -427,15 +428,20 @@
         }
 
         /* ── STICKY TABS + SEARCH: only bookmarks scroll ── */
-        #stickyBar { 
-            position:sticky; top:60px; z-index:150; 
-            background:var(--bg); 
+        #stickyBar {
+            position:relative;
+            z-index:150;
+            background:var(--bg);
             border-bottom:1px solid var(--border);
             padding-bottom:2px;
             overflow:visible;
+            flex-shrink:0;
         }
 
-        #linkListWrap { flex:1; overflow:visible; }
+        #linkListWrap { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; min-height:0; padding-bottom:20px; }
+
+        /* Dynamic nav height via JS for mobile sticky bar */
+        :root { --nav-height: 60px; --stickybar-height: 0px; }
 
         /* ── BOOKMARK EDIT MODE ── */
         .link-list-edit-mode .link-container { user-select:none; }
@@ -469,12 +475,12 @@
         #editModeToggle.active { background:rgba(34,197,94,.12); border-color:var(--primary); color:var(--primary); }
         /* ── iOS SAFARI FIXES ── */
         * { -webkit-box-sizing:border-box; }
-        body { -webkit-overflow-scrolling:touch; }
+        /* body no longer scrolls; only #linkListWrap scrolls */
         .mc { -webkit-overflow-scrolling:touch; }
         /* Fix iOS modal height */
         @supports (-webkit-touch-callout: none) {
             .mc { max-height:85svh; }
-            body { padding-bottom:calc(90px + env(safe-area-inset-bottom)); }
+            body { padding-bottom:0; }
             .bnav { padding-bottom:calc(10px + env(safe-area-inset-bottom)); }
             .fab { bottom:calc(22px + env(safe-area-inset-bottom)); }
         }
@@ -915,6 +921,7 @@ const COLORS = ['#22c55e','#8b5cf6','#3b82f6','#ef4444','#eab308','#ec4899','#06
 let S = {
     folders: JSON.parse(localStorage.getItem('ly_f')||'[]'),
     links:   JSON.parse(localStorage.getItem('ly_l')||'[]'),
+    trash:   JSON.parse(localStorage.getItem('ly_trash')||'[]'),
     activeTab: 'all',
     selIcon:  'fa-solid fa-folder',
     selColor: '#8b5cf6',
@@ -1105,6 +1112,7 @@ function save() {
     localStorage.setItem('ly_f', JSON.stringify(S.folders));
     localStorage.setItem('ly_l', JSON.stringify(S.links));
     localStorage.setItem('ly_view', S.view);
+    localStorage.setItem('ly_trash', JSON.stringify(S.trash||[]));
 }
 
 function init() { 
@@ -2394,9 +2402,84 @@ function toggleArchive(id){ const l=S.links.find(x=>x.id===id); if(l){l.archived
 function toggleArchiveById(id){ toggleArchive(id); showToast(S.links.find(x=>x.id===id)?.archived?'Archived':'Unarchived','#3b82f6'); }
 function togglePin(id){ const l=S.links.find(x=>x.id===id); if(l){l.pinned=!l.pinned;save();renderLinks();} }
 function shareCard(url,title){ if(navigator.share) navigator.share({title,url}); else navigator.clipboard.writeText(url).then(()=>alert('Link copied!')); }
-function deleteLink(id){ requireDeletePassword(()=>{ S.links=S.links.filter(x=>x.id!==id); save(); init(); }); }
+function deleteLink(id){ requireDeletePassword(()=>{ 
+    const link = S.links.find(x=>x.id===id);
+    if(link){ 
+        if(!S.trash) S.trash=[];
+        S.trash.unshift({...link, deletedAt: Date.now()}); 
+    }
+    S.links=S.links.filter(x=>x.id!==id); 
+    save(); init(); 
+    showToast('Moved to trash','#ef4444');
+}); }
 function deleteCurrent(){ requireDeletePassword(()=>{ deleteLink(S.editingLink); closeModal('editDetailModal'); }); }
-// SHARE / EXPORT
+
+// TRASH BIN
+function openTrashModal(){
+    closeModal('settingsModal');
+    renderTrashModal();
+    document.getElementById('trashModal').classList.add('active');
+}
+function renderTrashModal(){
+    const list = document.getElementById('trashList');
+    if(!list) return;
+    const trash = S.trash||[];
+    if(!trash.length){
+        list.innerHTML = '<div style="text-align:center;padding:40px 20px;opacity:.4;"><i class="fa-solid fa-trash-can" style="font-size:48px;display:block;margin-bottom:12px;"></i><div>Trash is empty</div></div>';
+        return;
+    }
+    list.innerHTML = trash.map((l,i) => {
+        const ago = formatTrashDate(l.deletedAt);
+        const thumb = l.logo ? `<img src="${esc(l.logo)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<i class="fa-solid fa-link" style="font-size:18px;color:var(--text-dim);"></i>`;
+        return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="width:44px;height:44px;border-radius:10px;background:#000;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;">${thumb}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(l.title||l.url||'Untitled')}</div>
+                <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Deleted ${ago}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+                <button onclick="restoreFromTrash(${i})" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>
+                <button onclick="permanentDelete(${i})" style="background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;" title="Delete permanently"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>`;
+    }).join('');
+}
+function formatTrashDate(ts){
+    if(!ts) return 'unknown';
+    const diff = Date.now()-ts;
+    const mins = Math.floor(diff/60000);
+    if(mins<1) return 'just now';
+    if(mins<60) return mins+'m ago';
+    const hrs = Math.floor(mins/60);
+    if(hrs<24) return hrs+'h ago';
+    const days = Math.floor(hrs/24);
+    return days+'d ago';
+}
+function restoreFromTrash(i){
+    if(!S.trash||!S.trash[i]) return;
+    const item = S.trash.splice(i,1)[0];
+    delete item.deletedAt;
+    S.links.unshift(item);
+    save(); init();
+    renderTrashModal();
+    showToast('Bookmark restored!','var(--primary)');
+}
+function permanentDelete(i){
+    if(!S.trash||!S.trash[i]) return;
+    if(!confirm('Permanently delete this bookmark? This cannot be undone.')) return;
+    S.trash.splice(i,1);
+    save();
+    renderTrashModal();
+    showToast('Permanently deleted','#ef4444');
+}
+function emptyTrash(){
+    if(!(S.trash&&S.trash.length)) return;
+    if(!confirm('Empty trash? All '+S.trash.length+' items will be permanently deleted.')) return;
+    S.trash=[];
+    save();
+    renderTrashModal();
+    showToast('Trash emptied','#ef4444');
+}
 function openShareOptions(){ document.getElementById('shareModal').classList.add('active'); }
 function openContact(){ document.getElementById('contactModal').classList.add('active'); }
 
@@ -2784,6 +2867,13 @@ function openSettings(){
     if(el('statTotalFolders')) el('statTotalFolders').textContent=S.folders.length;
     if(el('statFavs')) el('statFavs').textContent=favs;
     if(el('statArchived')) el('statArchived').textContent=arch;
+    // Trash badge
+    const trashBadge=el('trashCountBadge');
+    if(trashBadge){
+        const cnt=(S.trash||[]).length;
+        if(cnt>0){ trashBadge.textContent=cnt; trashBadge.style.display='inline'; }
+        else { trashBadge.style.display='none'; }
+    }
     // Delete password status
     const dp=el('delPassStatus');
     if(dp){
@@ -3912,6 +4002,10 @@ window.setLang = function(l){
 
     <!-- ── DANGER ZONE ── -->
     <div class="sett-section-hdr" style="color:#ef4444;">⚠️ DANGER ZONE</div>
+    <div class="erow" onclick="openTrashModal()">
+        <div class="erow-lbl"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> <span>Deleted Bookmarks</span> <span id="trashCountBadge" style="font-size:11px;font-weight:700;background:rgba(239,68,68,.15);color:#ef4444;border-radius:6px;padding:2px 7px;margin-left:4px;display:none;"></span></div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+    </div>
     <div class="erow" onclick="openManageDeletePassword()">
         <div class="erow-lbl"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> <span>Delete Password</span></div>
         <div style="font-size:12px;font-weight:600;color:var(--primary);margin-right:6px;" id="delPassStatus"></div>
@@ -4040,5 +4134,43 @@ window.setLang = function(l){
 </div>
 </div>
 
+<!-- TRASH MODAL -->
+<div class="modal" id="trashModal">
+<div class="mc" style="max-width:520px;">
+    <div class="mhandle"></div>
+    <div class="mhdr">
+        <span class="mtitle"><i class="fa-solid fa-trash-can" style="color:#ef4444;margin-right:8px;"></i>Deleted Bookmarks</span>
+        <button class="mback-btn" onclick="closeModal('trashModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-size:12px;color:var(--text-dim);">Deleted items can be restored or permanently removed.</div>
+        <button onclick="emptyTrash()" style="background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;margin-left:10px;"><i class="fa-solid fa-trash"></i> Empty</button>
+    </div>
+    <div id="trashList"></div>
+    <button class="btn-s" onclick="closeModal('trashModal')" style="margin-top:14px;">Close</button>
+</div>
+</div>
+
+
+<script>
+(function() {
+    function updateNavHeight() {
+        var nav = document.querySelector('.desktop-nav');
+        if (nav) {
+            var h = nav.getBoundingClientRect().height;
+            document.documentElement.style.setProperty('--nav-height', h + 'px');
+        }
+    }
+    // Run on load
+    document.addEventListener('DOMContentLoaded', updateNavHeight);
+    // Run on resize (orientation change on mobile)
+    window.addEventListener('resize', updateNavHeight);
+    // Also run after a short delay in case fonts/layout shift
+    window.addEventListener('load', function() {
+        updateNavHeight();
+        setTimeout(updateNavHeight, 300);
+    });
+})();
+</script>
 </body>
 </html>
