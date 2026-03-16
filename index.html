@@ -93,24 +93,12 @@
 
         /* LINK ITEMS */
         #linkList { }
-        .link-container { position:relative; overflow:hidden; margin:0 15px 10px; border-radius:16px; touch-action:pan-y; }
+        .link-container { position:relative; overflow:hidden; margin:0 15px 10px; border-radius:16px; }
 
-        /* Swipe BG buttons */
-        .sa-left { position:absolute; left:0; top:0; bottom:0; display:flex; width:80px; z-index:1; border-radius:16px 0 0 16px; overflow:hidden; pointer-events:none; }
-        .sa-right { position:absolute; right:0; top:0; bottom:0; display:flex; width:80px; z-index:1; border-radius:0 16px 16px 0; overflow:hidden; pointer-events:none; }
-        .link-card.swiped-left ~ .sa-right,
-        .link-card.swiped-right ~ .sa-left { pointer-events:auto; }
-        .link-card.swiped-left ~ .sa-right .abtn,
-        .link-card.swiped-right ~ .sa-left .abtn { pointer-events:auto; }
-        .abtn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; border:none; cursor:pointer; gap:3px; font-size:10px; font-weight:600; pointer-events:auto; }
-        .abtn i { font-size:18px; }
-        .a-fav { background:#eab308; }
-        .a-pin { background:#3b82f6; }
-        .a-arc { background:#52525b; }
-        .a-del { background:#ef4444; }
+
 
         /* Card */
-        .link-card { background:var(--card); padding:14px 16px; display:flex; gap:13px; align-items:flex-start; border:1px solid var(--border); position:relative; z-index:2; transition:transform .28s cubic-bezier(.25,.46,.45,.94); border-radius:16px; width:100%; cursor:pointer; min-height:100%; }
+        .link-card { background:var(--card); padding:14px 16px; display:flex; gap:13px; align-items:flex-start; border:1px solid var(--border); position:relative; z-index:2; border-radius:16px; width:100%; cursor:pointer; min-height:100%; }
         .limg { width:52px; height:52px; border-radius:12px; background:#000; flex-shrink:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); overflow:hidden; color:var(--text-dim); font-size:20px; }
         .limg img { width:100%; height:100%; object-fit:cover; }
         .linfo { flex:1; min-width:0; }
@@ -141,9 +129,7 @@
         .view-cards .link-card { flex-direction:column; border-radius:14px; padding:12px; gap:8px; overflow:hidden; }
         .view-cards .limg { width:100%; height:90px; border-radius:10px; flex-shrink:0; }
         .view-cards .linfo h4 { font-size:13px; }
-        /* Hide swipe bands in grid/card views */
-        .view-cards .sa-left, .view-cards .sa-right,
-        .view-headlines .sa-left, .view-headlines .sa-right { display:none; }
+
 
         /* View: headlines */
         .view-headlines .limg { display:none; }
@@ -597,8 +583,8 @@
     </div>
     <div class="desktop-nav-btns-wrap">
         <button class="dnl active" id="dnl-home" onclick="deskNav('all','dnl-home')"><i class="fa-solid fa-house"></i> <span>Home</span></button>
-        <button class="dnl" id="dnl-fav" onclick="deskNav('fav','dnl-fav')" style="color:#ef4444;"><i class="fa-regular fa-heart"></i> <span>Favorite</span></button>
-        <button class="dnl" id="dnl-arc" onclick="deskNav('archive','dnl-arc')" style="color:#3b82f6;"><i class="fa-regular fa-file"></i> <span>Archive</span></button>
+        <button class="dnl" id="dnl-fav" onclick="deskNav('fav','dnl-fav')" style="color:#ef4444;position:relative;"><i class="fa-regular fa-heart"></i> <span>Favorite</span><span id="dnl-fav-cnt" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></button>
+        <button class="dnl" id="dnl-arc" onclick="deskNav('archive','dnl-arc')" style="color:#3b82f6;position:relative;"><i class="fa-regular fa-file"></i> <span>Archive</span><span id="dnl-arc-cnt" style="display:none;position:absolute;top:4px;right:4px;background:#3b82f6;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></button>
         <button class="dnl" id="dnl-fold" onclick="openManageFolders()" style="color:#ca8a04;"><i class="fa-solid fa-folder-open"></i> <span>Folders</span></button>
     </div>
     <div class="desktop-nav-right">
@@ -694,9 +680,9 @@
 <!-- BOTTOM NAV -->
 <div class="bnav">
     <div class="nitem active" id="nav-home" onclick="navTo('all','nav-home')"><i class="fa-solid fa-house"></i><span data-t="home">Home</span></div>
-    <div class="nitem" id="nav-fav" onclick="navTo('fav','nav-fav')"><i class="fa-regular fa-heart"></i><span data-t="fav">Favorite</span></div>
+    <div class="nitem" id="nav-fav" onclick="navTo('fav','nav-fav')" style="position:relative;"><i class="fa-regular fa-heart"></i><span data-t="fav">Favorite</span><span id="nav-fav-cnt" style="display:none;position:absolute;top:2px;right:6px;background:#ef4444;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></div>
     <div style="width:56px;"></div>
-    <div class="nitem" id="nav-arc" onclick="navTo('archive','nav-arc')"><i class="fa-regular fa-file"></i><span data-t="archive">Archive</span></div>
+    <div class="nitem" id="nav-arc" onclick="navTo('archive','nav-arc')" style="position:relative;"><i class="fa-regular fa-file"></i><span data-t="archive">Archive</span><span id="nav-arc-cnt" style="display:none;position:absolute;top:2px;right:6px;background:#3b82f6;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></div>
     <div class="nitem" id="nav-fold" onclick="openPage('folders')"><i class="fa-solid fa-folder-open"></i><span data-t="folders">Folders</span></div>
 </div>
 
@@ -1260,9 +1246,7 @@ function renderTabs() {
         <div class="chip" onclick="toggleTabEditMode()" title="Edit folders" style="padding:7px 10px;background:${editMode?'rgba(34,197,94,.12)':'var(--card)'};border-color:${editMode?'var(--primary)':'var(--border)'};color:${editMode?'var(--primary)':'var(--text-dim)'};">
             <i class="fa-solid fa-pen" style="font-size:12px;"></i>
         </div>
-        <div class="chip ${S.activeTab==='all'?'active':''}" onclick="switchTab('all')">${T('all')} <span class="chip-cnt">${allN}</span></div>
-        <div class="chip ${S.activeTab==='fav'?'active':''}" onclick="switchTab('fav')" style="border-color:rgba(239,68,68,.4);color:#ef4444;${S.activeTab==='fav'?'background:rgba(239,68,68,.12);':''}">${T('fav')||'Fav'} <span class="chip-cnt" style="background:rgba(239,68,68,.2);color:#ef4444;">${favN}</span></div>
-        <div class="chip ${S.activeTab==='archive'?'active':''}" onclick="switchTab('archive')" style="border-color:rgba(59,130,246,.4);color:#3b82f6;${S.activeTab==='archive'?'background:rgba(59,130,246,.12);':''}">${T('archive')||'Archive'} <span class="chip-cnt" style="background:rgba(59,130,246,.2);color:#3b82f6;">${arcN}</span></div>`;
+        <div class="chip ${S.activeTab==='all'?'active':''}" onclick="switchTab('all')">${T('all')} <span class="chip-cnt">${allN}</span></div>`;
     let h = '';
     S.folders.forEach(f => {
         const cnt = S.links.filter(l=>l.fId===f.id&&!l.archived).length;
@@ -1296,6 +1280,23 @@ function renderTabs() {
         }
     });
     if(scroll) scroll.innerHTML = h;
+    updateNavCounters();
+}
+
+function updateNavCounters(){
+    const favN = S.links.filter(l=>l.fav&&!l.archived).length;
+    const arcN = S.links.filter(l=>l.archived).length;
+    // Bottom nav badges
+    const bc = (id, n) => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(n > 0){ el.textContent = n > 99 ? '99+' : n; el.style.display = 'block'; }
+        else { el.style.display = 'none'; }
+    };
+    bc('nav-fav-cnt', favN);
+    bc('nav-arc-cnt', arcN);
+    bc('dnl-fav-cnt', favN);
+    bc('dnl-arc-cnt', arcN);
 }
 
 function switchTab(t) {
@@ -1414,7 +1415,7 @@ function renderLinks() {
         }
         return `
         <div class="link-container" id="lc-${l.id}" ondragover="bmDragOver(event,${l.id})" ondrop="bmDrop(event,${l.id})">
-            <div class="link-card" ontouchstart="ts(event,this)" ontouchmove="tm(event,this)" ontouchend="te(event,this)" onclick="openEditDetail(${l.id})">
+            <div class="link-card" onclick="openEditDetail(${l.id})">
                 <i class="fa-solid fa-arrow-up-right-from-square ext-icon" onclick="event.stopPropagation();openLink('${esc(l.url)}')"></i>
                 <i class="${l.archived?'fa-solid fa-box-open':'fa-solid fa-box-archive'} arc-icon" onclick="event.stopPropagation();toggleArchiveById(${l.id})" title="${l.archived?'Unarchive':'Archive'}"></i>
                 <div class="bm-edit-overlay">
@@ -1449,48 +1450,13 @@ function renderLinks() {
                     </div>
                 </div>
             </div>
-            <div class="sa-left">
-                <div class="abtn a-fav" onclick="toggleFav(${l.id})"><i class="fa-solid fa-heart"></i><span>Fav</span></div>
-            </div>
-            <div class="sa-right">
-                <div class="abtn a-del" onclick="deleteLink(${l.id})"><i class="fa-solid fa-trash"></i><span>Delete</span></div>
-            </div>
         </div>`;
     }).join('');
 }
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// SWIPE (stable)
-function ts(e,el){ S.tsX=e.touches[0].clientX; S.tsEl=el; el.style.transition='none'; }
-function tm(e,el){
-    const d = S.tsX-e.touches[0].clientX;
-    if(Math.abs(d)>6) e.stopPropagation();
-    el.style.transform=`translateX(${Math.max(-90,Math.min(90,-d))}px)`;
-}
-function te(e,el){
-    el.style.transition='transform .28s cubic-bezier(.25,.46,.45,.94)';
-    const d = S.tsX-e.changedTouches[0].clientX;
-    if(d>50){
-        el.style.transform='translateX(-80px)';
-        el.classList.add('swiped-left'); el.classList.remove('swiped-right');
-    } else if(d<-50){
-        el.style.transform='translateX(80px)';
-        el.classList.add('swiped-right'); el.classList.remove('swiped-left');
-    } else {
-        el.style.transform='translateX(0)';
-        el.classList.remove('swiped-left','swiped-right');
-    }
-}
-// Close open swipe on tap outside
-document.addEventListener('touchstart',function(e){
-    if(S.tsEl&&!S.tsEl.contains(e.target)){
-        S.tsEl.style.transition='transform .28s cubic-bezier(.25,.46,.45,.94)';
-        S.tsEl.style.transform='translateX(0)';
-        S.tsEl.classList.remove('swiped-left','swiped-right');
-        S.tsEl=null;
-    }
-},{passive:true});
+
 
 function toggleVDD(){ document.getElementById('viewDD')?.classList.toggle('open'); }
 document.addEventListener('click',function(e){
@@ -2751,7 +2717,7 @@ function updateSortDateBtn(){
 }
 
 // LINK ACTIONS
-function toggleFav(id){ const l=S.links.find(x=>x.id===id); if(l){l.fav=!l.fav;save();renderLinks();renderTabs();} }
+function toggleFav(id){ const l=S.links.find(x=>x.id===id); if(l){l.fav=!l.fav;save();renderLinks();renderTabs();updateNavCounters();} }
 function toggleArchive(id){ const l=S.links.find(x=>x.id===id); if(l){l.archived=!l.archived;save();init();} }
 function toggleArchiveById(id){ toggleArchive(id); showToast(S.links.find(x=>x.id===id)?.archived?'Archived':'Unarchived','#3b82f6'); }
 function togglePin(id){ const l=S.links.find(x=>x.id===id); if(l){l.pinned=!l.pinned;save();renderLinks();} }
