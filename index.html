@@ -519,7 +519,7 @@
                 flex-direction: column;
                 overflow-y: auto !important;
                 overflow-x: hidden;
-                padding-top: env(safe-area-inset-top, 18px);
+                padding-top: calc(var(--nav-height, 135px) + 8px) !important;
             }
             .ipm .mc {
                 height: 100vh;
@@ -1514,7 +1514,7 @@ function openAddModal(id=null){
         S._autoFolderIcon=null;
     }
     updSelFolder();
-    document.getElementById('addModal').classList.add('active');
+    openModal('addModal');
     // Scroll modal content to top
     setTimeout(()=>{ const mc=document.querySelector('#addModal .mc'); if(mc) mc.scrollTop=0; },10);
 }
@@ -2011,7 +2011,7 @@ function useAutoFolderIcon(){
     updIPreview(); renderCPick();
     S._createFolderFromAdd=true;
     document.getElementById('autoFolderSuggest').style.display='none';
-    document.getElementById('folderModal').classList.add('active');
+    openModal('folderModal');
 }
 
 function refetchIcon(){
@@ -2066,7 +2066,7 @@ function openEditDetail(id){
     // Reset save button
     const btn=document.querySelector('#editDetailModal button[onclick="saveEditDetail()"]');
     if(btn){ btn.style.background='var(--card)'; btn.style.color='var(--text)'; btn.style.borderColor='var(--border)'; }
-    document.getElementById('editDetailModal').classList.add('active');
+    openModal('editDetailModal');
 }
 
 function saveEditDetail(){ 
@@ -2157,7 +2157,7 @@ function openFolderSelect(src='add'){
     S.folderSelectSrc=src;
     document.getElementById('unsortedCnt').textContent=S.links.filter(l=>!l.fId&&!l.archived).length;
     renderFolderSelectList();
-    document.getElementById('folderSelectModal').classList.add('active');
+    openModal('folderSelectModal');
 }
 
 function renderFolderSelectList(){
@@ -2186,19 +2186,8 @@ function selectFolder(id){
 
 // FOLDER MANAGE
 function openManageFolders(){ 
-    const modal = document.getElementById('manageFoldersModal');
-    const mc = modal.querySelector('.mc');
     renderManageFolders(); 
-    modal.classList.add('active');
-    // Mobile: scroll to top on next frame to ensure proper positioning
-    if(window.innerWidth <= 767) {
-        requestAnimationFrame(() => {
-            if(mc) mc.scrollTop = 0;
-            modal.scrollTop = 0;
-        });
-    } else {
-        if(mc) mc.scrollTop = 0;
-    }
+    openModal('manageFoldersModal');
 }
 
 let _fmDragSrcId = null;
@@ -2283,7 +2272,7 @@ function openCreateFolder(){
     document.getElementById('folderDelBtn').style.display='none';
     updIPreview(); renderCPick();
     closeModal('folderSelectModal'); closeModal('manageFoldersModal');
-    document.getElementById('folderModal').classList.add('active');
+    openModal('folderModal');
     // remember source so saveFolder can return to the right modal
     S._createFolderFromAdd = (S.folderSelectSrc==='add');
 }
@@ -2296,7 +2285,7 @@ function openEditFolder(id){
     document.getElementById('folderDelBtn').style.display='block';
     updIPreview(); renderCPick();
     closeModal('manageFoldersModal');
-    document.getElementById('folderModal').classList.add('active');
+    openModal('folderModal');
 }
 
 function deleteCurFolder(){
@@ -2324,7 +2313,7 @@ function saveFolder(){
         updSelFolder();
         // Auto re-open add modal if folder was created from there
         if(S._createFolderFromAdd !== false){
-            document.getElementById('addModal').classList.add('active');
+            openModal('addModal');
         }
     }
 }
@@ -2341,7 +2330,7 @@ function deleteFolder(id){ quickDeleteFolder(id); }
 function closeFolderModal(){ closeModal('folderModal'); if(S.editingFolder) openManageFolders(); }
 
 // ICON PICKER
-function openIconPicker(){ document.getElementById('iconSearch').value=''; renderIconGrid(); document.getElementById('iconPickerModal').classList.add('active'); }
+function openIconPicker(){ document.getElementById('iconSearch').value=''; renderIconGrid(); openModal('iconPickerModal'); }
 
 // ── ICON KEYWORD ALIASES ──
 // Maps search terms to icon names for better discoverability
@@ -2464,7 +2453,7 @@ function selColor(c){ S.selColor=c; renderCPick(); updIPreview(); }
 function openTagsEdit(){
     const l=S.links.find(x=>x.id===S.editingLink);
     document.getElementById('tagsInput').value=l?(l.tags||[]).join(', '):'';
-    document.getElementById('tagsModal').classList.add('active');
+    openModal('tagsModal');
 }
 function saveTags(){
     const l=S.links.find(x=>x.id===S.editingLink);
@@ -2514,7 +2503,7 @@ function deleteCurrent(){ requireDeletePassword(()=>{ deleteLink(S.editingLink);
 function openTrashModal(){
     closeModal('settingsModal');
     renderTrashModal();
-    document.getElementById('trashModal').classList.add('active');
+    openModal('trashModal');
 }
 function renderTrashModal(){
     const list = document.getElementById('trashList');
@@ -2576,8 +2565,8 @@ function emptyTrash(){
     renderTrashModal();
     showToast('Trash emptied','#ef4444');
 }
-function openShareOptions(){ document.getElementById('shareModal').classList.add('active'); }
-function openContact(){ document.getElementById('contactModal').classList.add('active'); }
+function openShareOptions(){ openModal('shareModal'); }
+function openContact(){ openModal('contactModal'); }
 
 function shareFormat(type){
     let org=S.folders.map(f=>({name:f.name,links:S.links.filter(l=>l.fId===f.id&&!l.archived)}));
@@ -2688,6 +2677,13 @@ function shareFormat(type){
 
 function showHelp(){ alert('Linkery.Ai by Saad Mounir\n\nSwipe left → Archive / Delete\nSwipe right → Favorite / Pin\nTap bookmark to edit details'); }
 function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+function openModal(id){
+    const modal = document.getElementById(id);
+    if(!modal) return;
+    modal.classList.add('active');
+    const mc = modal.querySelector('.mc');
+    if(mc){ mc.scrollTop = 0; requestAnimationFrame(()=>{ mc.scrollTop = 0; }); }
+}
 
 // EXPORT / IMPORT
 function exportData(){
@@ -2919,7 +2915,7 @@ function openLangModal(){
         const el=document.getElementById('lc-'+l);
         if(el) el.style.display=l===S.lang?'inline':'none';
     });
-    document.getElementById('langModal').classList.add('active');
+    openModal('langModal');
 }
 function setLang(l){
     S.lang=l;
@@ -2953,18 +2949,7 @@ if(S.settings.openNewTab===undefined) S.settings.openNewTab=true;
 if(S.settings.showFolders===undefined) S.settings.showFolders=true;
 
 function openSettings(){
-    const modal = document.getElementById('settingsModal');
-    const mc = modal.querySelector('.mc');
     updateSettingToggles();
-    // Mobile: scroll to top on next frame to ensure proper positioning
-    if(window.innerWidth <= 767) {
-        requestAnimationFrame(() => {
-            if(mc) mc.scrollTop = 0;
-            modal.scrollTop = 0;
-        });
-    } else {
-        if(mc) mc.scrollTop = 0;
-    }
     // Populate stats
     const total=S.links.filter(l=>!l.archived).length;
     const favs=S.links.filter(l=>l.fav&&!l.archived).length;
@@ -2997,8 +2982,7 @@ function openSettings(){
             dp.style.letterSpacing='normal';
         }
     }
-    document.getElementById('settingsModal').classList.add('active');
-    setTimeout(()=>{ const mc=document.querySelector('#settingsModal .mc'); if(mc) mc.scrollTop=0; },10);
+    openModal('settingsModal');
     setTimeout(updateBrowserPills,20);
     setTimeout(renderPerBrowserToggles,20);
 }
@@ -3192,7 +3176,7 @@ async function importBrowserBookmarks(e){
 function openTagsMgr(){
     closeModal('settingsModal');
     renderAllTags();
-    document.getElementById('manageTagsModal').classList.add('active');
+    openModal('manageTagsModal');
 }
 
 function renderAllTags(){
@@ -3342,7 +3326,7 @@ function openReminderPicker(){
         _remState.day=now.getDate(); _remState.hour=now.getHours(); _remState.min=now.getMinutes();
     }
     renderRemCalendar(); renderRemTime();
-    document.getElementById('reminderModal').classList.add('active');
+    openModal('reminderModal');
 }
 
 function renderRemCalendar(){
@@ -3465,7 +3449,7 @@ function openSyncModal(){
     document.getElementById('syncUploadResult').style.display='none';
     document.getElementById('syncDownloadResult').style.display='none';
     document.getElementById('syncCodeInput').value='';
-    document.getElementById('syncModal').classList.add('active');
+    openModal('syncModal');
 }
 
 function changeSyncName(){
@@ -3705,7 +3689,7 @@ function openSetDeletePassword(onSuccess){
         <button class="btn-s" onclick="closeModal('deletePassModal')">Cancel</button>
     `;
     window._dpCallback=onSuccess;
-    document.getElementById('deletePassModal').classList.add('active');
+    openModal('deletePassModal');
     setTimeout(()=>document.getElementById('dp-username')?.focus(),200);
 }
 
@@ -3737,7 +3721,7 @@ function openEnterDeletePassword(onSuccess){
         <div style="margin-top:8px;text-align:center;"><span onclick="openForgotPassword()" style="font-size:12px;color:var(--text-dim);cursor:pointer;text-decoration:underline;">Forgot password?</span></div>
     `;
     window._dpCallback=onSuccess;
-    document.getElementById('deletePassModal').classList.add('active');
+    openModal('deletePassModal');
     setTimeout(()=>document.getElementById('dp-enter')?.focus(),200);
 }
 
@@ -3842,7 +3826,7 @@ function openManageDeletePassword(){
             <button class="btn-s" onclick="closeModal('deletePassModal')">Close</button>
         `;
     }
-    document.getElementById('deletePassModal').classList.add('active');
+    openModal('deletePassModal');
 }
 
 function openChangePasswordWithUsername(){
@@ -4041,7 +4025,7 @@ window.setLang = function(l){
             <button onclick="setImportBrowser('Opera')" class="browser-pill" data-b="Opera"><i class="fa-brands fa-opera"></i> Opera</button>
         </div>
     </div>
-    <div class="erow" onclick="document.getElementById('importBMModal').classList.add('active');closeModal('settingsModal')">
+    <div class="erow" onclick="openModal('importBMModal');closeModal('settingsModal')">
         <div class="erow-lbl"><i class="fa-solid fa-file-import"></i> <span id="settImportBM">Import Browser Bookmarks (HTML)</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
@@ -4260,7 +4244,7 @@ window.setLang = function(l){
             <div class="erow-lbl"><i class="fa-solid fa-tag" style="color:#64748b;"></i> <span>Show "Imported" badge on links</span></div>
             <div onclick="toggleSetting('showImportedBadge');renderLinks()" id="sp-tog-showImportedBadge" class="tog-btn"><div id="sp-togInner-showImportedBadge" class="tog-knob"></div></div>
         </div>
-        <div class="erow" onclick="document.getElementById('importBMModal').classList.add('active')">
+        <div class="erow" onclick="openModal('importBMModal')">
             <div class="erow-lbl"><i class="fa-solid fa-file-import"></i> <span>Import Browser Bookmarks (HTML)</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
