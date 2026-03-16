@@ -328,8 +328,9 @@
         .compact-cards .linfo h4 { font-size:13px; }
         .compact-cards .linfo p { display:none; }
         /* ── RTL (Arabic) fixes ── */
+        [dir=rtl] { direction: rtl; text-align: right; }
         [dir=rtl] .desktop-nav { flex-direction: row-reverse; }
-        [dir=rtl] .desktop-nav-right { margin-left: 0; margin-right: auto; }
+        [dir=rtl] .desktop-nav-right { margin-left: 0; margin-right: auto; flex-direction: row-reverse; }
         [dir=rtl] .theme-toggle-knob { left: auto; right: 3px; }
         [dir=rtl] .theme-toggle.dark-mode-btn .theme-toggle-knob { transform: translateX(-32px); right: 3px; }
         [dir=rtl] .theme-toggle.light-mode-btn .theme-toggle-knob { transform: translateX(0); right: auto; left: 3px; }
@@ -340,13 +341,15 @@
         [dir=rtl] .desktop-logo { flex-direction: row-reverse; margin-right: 0; margin-left: 36px; }
         [dir=rtl] .header-left { flex-direction: row-reverse; }
         [dir=rtl] .header-right { flex-direction: row-reverse; }
-        [dir=rtl] .linfo h4 { padding-right: 0; padding-left: 28px; }
+        [dir=rtl] .linfo h4 { padding-right: 0; padding-left: 28px; text-align: right; }
         [dir=rtl] .ext-icon { right: auto; left: 14px; }
         [dir=rtl] .erow-lbl { flex-direction: row-reverse; }
         [dir=rtl] .mhdr { flex-direction: row-reverse; }
         [dir=rtl] .chip { flex-direction: row-reverse; }
         [dir=rtl] .tabs { flex-direction: row; }
-        [dir=rtl] .view-dd { right: auto; left: 0; }
+        [dir=rtl] .view-dd { right: auto; left: 0; text-align: right; }
+        [dir=rtl] .vopt { flex-direction: row-reverse; }
+        [dir=rtl] .vchk { margin-left: 0; margin-right: auto; }
         [dir=rtl] .search-row { flex-direction: row-reverse; }
         [dir=rtl] .greeting { text-align: right; }
         [dir=rtl] .field label { text-align: right; }
@@ -358,34 +361,58 @@
         [dir=rtl] .folders-hdr { flex-direction: row-reverse; }
         [dir=rtl] .erow { flex-direction: row-reverse; }
         [dir=rtl] .stat-acts { margin-left: 0; margin-right: auto; }
+        [dir=rtl] .link-card { flex-direction: row-reverse; text-align: right; }
+        [dir=rtl] .linfo-badges { flex-direction: row-reverse; justify-content: flex-start; }
+        [dir=rtl] .desktop-nav-btns-wrap { flex-direction: row-reverse; }
+        [dir=rtl] .sw i { left: auto !important; right: 12px !important; }
+        [dir=rtl] .sw input { padding-left: 14px !important; padding-right: 36px !important; }
+        @media (max-width: 767px) {
+            [dir=rtl] .desktop-logo { margin-left: 0; }
+            [dir=rtl] .desktop-nav-right { border-top: 1px solid var(--border); flex-direction: row-reverse; }
+            [dir=rtl] .desktop-nav-btns-wrap { flex-direction: row-reverse; }
+            [dir=rtl] .view-switcher-mobile .view-dd { right: auto; left: 0; }
+        }
 
         /* ── MOBILE DESKTOP INTERFACE: full desktop layout on all screen sizes ── */
-        .desktop-nav { display:flex !important; flex-wrap:wrap; }
-        .header { display:none !important; }
-        .bnav { display:none !important; }
-        .fab { display:none !important; }
-        body { padding-bottom:0 !important; }
+        @media (min-width: 768px) {
+            .desktop-nav { display:flex !important; }
+            .header { display:none !important; }
+            .bnav { display:none !important; }
+            .fab { display:none !important; }
+            body { padding-bottom:0 !important; }
+            .desktop-nav-btns-wrap { display: contents; }
+            .desktop-nav-btns-wrap span { display: inline; }
+        }
+
         @media (max-width: 767px) {
-            #mainWrap { padding:12px 8px; }
-        .tabs-outer { padding:0 0 10px; }
+            .view-switcher-desktop { display: none !important; }
+            .view-switcher-mobile { display: flex !important; }
+            .desktop-nav { display:flex !important; height:auto; padding:10px 12px; gap:8px; flex-direction:column; align-items:stretch; position: sticky; top: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); }
+            .header { display:none !important; }
+            .bnav { display:none !important; }
+            .fab { display:none !important; }
+            body { padding-bottom:0 !important; }
+            #mainWrap { padding:0 8px 12px; }
+            #stickyBar { position: sticky; top: 135px; z-index: 150; background: var(--bg); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+            .tabs-outer { padding:10px 0 10px; }
             .search-row { padding:0 0 10px; }
-            .desktop-nav { height:auto; padding:8px 12px; gap:4px; flex-wrap:wrap; }
-            .desktop-logo { margin-right:8px; }
-            .desktop-nav-right { gap:5px; flex-wrap:wrap; justify-content:flex-end; }
+            .desktop-logo { margin-right:0; justify-content:center; margin-bottom:4px; }
+            .desktop-nav-btns-wrap { display:flex; gap:4px; width:100%; }
+            .desktop-nav-right { gap:6px; flex-wrap:wrap; justify-content:center; width:100%; border-top:1px solid var(--border); margin-top:4px; padding-top:8px; }
+            .desktop-nav .dnl { flex:1; justify-content:center; padding:8px; font-size:12px; }
+            .desktop-nav .dnl span { display:inline; font-size:11px; } /* Show labels but smaller */
             .add-link-btn { padding:7px 12px; font-size:12px; }
-            .dnl { padding:6px 10px; font-size:12px; }
-            .dnl span { display:none; }
             .lang-btn { padding:6px 8px; font-size:12px; }
             .user-chip span { display:none; }
             .user-chip { padding:4px 8px 4px 4px; }
-            /* Grid: 2 columns on mobile */
+            /* Grid: 1 column on mobile as requested */
             .view-imagetitle #linkList,
             .view-headlines #linkList,
             .view-list #linkList,
-            .view-cards #linkList { grid-template-columns:repeat(2,1fr) !important; gap:8px !important; }
+            .view-cards #linkList { grid-template-columns:1fr !important; gap:10px !important; }
             .view-cards .limg { height:80px; }
-            .link-container { margin:0 !important; }
-            .link-card { padding:10px 12px; }
+            .link-container { margin:0 !important; width:100%; }
+            .link-card { padding:12px; width:100%; }
             .linfo h4 { font-size:13px; }
             .linfo p { -webkit-line-clamp:1; }
             .mc { border-radius:16px; max-width:100% !important; max-height:92svh; }
@@ -407,7 +434,7 @@
             padding-bottom:2px;
             overflow:visible;
         }
-        @media (max-width:767px) { #stickyBar { top:0; } }
+
         #linkListWrap { flex:1; overflow:visible; }
 
         /* ── BOOKMARK EDIT MODE ── */
@@ -475,10 +502,12 @@
             <span style="font-size:10px;font-weight:400;color:var(--text-dim);">by saad</span>
         </div>
     </div>
-    <button class="dnl active" id="dnl-home" onclick="deskNav('all','dnl-home')"><i class="fa-solid fa-house"></i> Home</button>
-    <button class="dnl" id="dnl-fav" onclick="deskNav('fav','dnl-fav')" style="color:#ef4444;"><i class="fa-regular fa-heart"></i> Favorite</button>
-    <button class="dnl" id="dnl-arc" onclick="deskNav('archive','dnl-arc')" style="color:#3b82f6;"><i class="fa-regular fa-file"></i> Archive</button>
-    <button class="dnl" id="dnl-fold" onclick="openManageFolders()" style="color:#ca8a04;"><i class="fa-solid fa-folder-open"></i> Folders</button>
+    <div class="desktop-nav-btns-wrap">
+        <button class="dnl active" id="dnl-home" onclick="deskNav('all','dnl-home')"><i class="fa-solid fa-house"></i> <span>Home</span></button>
+        <button class="dnl" id="dnl-fav" onclick="deskNav('fav','dnl-fav')" style="color:#ef4444;"><i class="fa-regular fa-heart"></i> <span>Favorite</span></button>
+        <button class="dnl" id="dnl-arc" onclick="deskNav('archive','dnl-arc')" style="color:#3b82f6;"><i class="fa-regular fa-file"></i> <span>Archive</span></button>
+        <button class="dnl" id="dnl-fold" onclick="openManageFolders()" style="color:#ca8a04;"><i class="fa-solid fa-folder-open"></i> <span>Folders</span></button>
+    </div>
     <div class="desktop-nav-right">
         <button class="lang-btn" id="langBtnDesktop" onclick="openLangModal()" style="font-size:22px;padding:4px 10px;letter-spacing:0;min-width:44px;"><span id="langLabel"></span> <i class="fa-solid fa-chevron-down" style="font-size:10px;vertical-align:middle;margin-left:2px;"></i></button>
         <button class="theme-toggle dark-mode-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
@@ -542,12 +571,23 @@
             <div id="tagDDList"></div>
         </div>
     </div>
-    <!-- View switcher: inline icon buttons like pic 6 -->
-    <div style="display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:3px;">
+    <!-- View switcher: Desktop (Horizontal) -->
+    <div class="view-switcher-desktop" style="display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:3px;">
         <button id="vb-list" onclick="setView('list')" title="List" style="width:32px;height:32px;border:none;border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;"><i class="fa-solid fa-list-ul"></i></button>
         <button id="vb-cards" onclick="setView('cards')" title="Cards" style="width:32px;height:32px;border:none;border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;"><i class="fa-solid fa-border-all"></i></button>
         <button id="vb-headlines" onclick="setView('headlines')" title="Headlines" style="width:32px;height:32px;border:none;border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;"><i class="fa-solid fa-align-left"></i></button>
         <button id="vb-imagetitle" onclick="setView('imagetitle')" title="Image & Title" style="width:32px;height:32px;border:none;border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;"><i class="fa-solid fa-table-cells-large"></i></button>
+    </div>
+    <!-- View switcher: Mobile (Dropdown/Curtain) -->
+    <div class="sq-btn view-switcher-mobile" id="viewSwitcherBtn" onclick="toggleViewDD()" title="Change view" style="display:none; position:relative;">
+        <i class="fa-solid fa-table-cells-large" id="currentViewIcon"></i>
+        <div class="view-dd" id="viewDD" style="min-width:160px;" onclick="event.stopPropagation()">
+            <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;">Change View</div>
+            <div class="vopt" onclick="setView('list'); toggleViewDD()"><i class="fa-solid fa-list-ul"></i> List</div>
+            <div class="vopt" onclick="setView('cards'); toggleViewDD()"><i class="fa-solid fa-border-all"></i> Cards</div>
+            <div class="vopt" onclick="setView('headlines'); toggleViewDD()"><i class="fa-solid fa-align-left"></i> Headlines</div>
+            <div class="vopt" onclick="setView('imagetitle'); toggleViewDD()"><i class="fa-solid fa-table-cells-large"></i> Image & Title</div>
+        </div>
     </div>
 </div>
 </div><!-- /stickyBar -->
@@ -1351,6 +1391,17 @@ function updVCheck(){
             btn.style.color=S.view===v?'#000':'var(--text-dim)';
         }
     });
+    // Update mobile icon
+    const iconMap = {
+        'list': 'fa-list-ul',
+        'cards': 'fa-border-all',
+        'headlines': 'fa-align-left',
+        'imagetitle': 'fa-table-cells-large'
+    };
+    const iconEl = document.getElementById('currentViewIcon');
+    if(iconEl) {
+        iconEl.className = 'fa-solid ' + iconMap[S.view];
+    }
 }
 
 // ADD MODAL
@@ -2497,6 +2548,10 @@ function toggleFolderFilterDD(){
     const dd=document.getElementById('folderFilterDD');
     const isOpen=dd.classList.contains('open');
     if(!isOpen) renderFolderFilterDD();
+    dd.classList.toggle('open');
+}
+function toggleViewDD(){
+    const dd=document.getElementById('viewDD');
     dd.classList.toggle('open');
 }
 function renderFolderFilterDD(){
