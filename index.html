@@ -21,6 +21,8 @@
             --text: #fafafa;
             --text-dim: #a1a1aa;
             --border: #27272a;
+            --app-font: 'Inter',system-ui,sans-serif;
+            --app-font-size: 14px;
         }
         body.light-mode {
             --bg: #f4f4f5;
@@ -47,15 +49,15 @@
         .flag-emoji { font-size:inherit; }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         html, body { height:100%; overflow:hidden; }
-        body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding-bottom:0; overflow:hidden; }
+        body { background:var(--bg); color:var(--text); font-family:var(--app-font,'Inter',system-ui,sans-serif); font-size:var(--app-font-size,14px); padding-bottom:0; overflow:hidden; }
 
         /* HEADER */
-        .header { display:flex; justify-content:space-between; align-items:center; padding:max(18px,env(safe-area-inset-top,18px)) 20px 14px; }
+        .header { display:flex; justify-content:space-between; align-items:center; padding:max(18px,env(safe-area-inset-top,18px)) 16px 14px; }
         .header-left { display:flex; align-items:center; gap:12px; }
         .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ef4444); overflow:hidden; flex-shrink:0; }
         .avatar img { width:100%; height:100%; object-fit:cover; }
-        .mob-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ef4444); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:700; cursor:pointer; border:2px solid rgba(255,255,255,.2); }
-        .greeting h2 { font-size:17px; font-weight:700; }
+        .mob-avatar { width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#22c55e,#16a34a); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#000; font-size:20px; font-weight:700; cursor:pointer; border:2px solid rgba(34,197,94,.3); box-shadow:0 2px 12px rgba(34,197,94,.3); }
+        .greeting h2 { font-size:18px; font-weight:800; }
         .greeting p { font-size:12px; color:var(--text-dim); }
         .header-right { display:flex; gap:8px; }
         .hbtn { width:40px; height:40px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; }
@@ -78,9 +80,9 @@
             #vb-headlines, #vb-imagetitle { display:none; }
         }
         .sw { flex:1; position:relative; }
-        .sw input { width:100%; background:var(--card); border:1px solid var(--border); padding:11px 14px; border-radius:12px; color:var(--text); font-size:14px; outline:none; }
+        .sw input { width:100%; background:var(--card); border:1px solid var(--border); padding:10px 14px; border-radius:22px; color:var(--text); font-size:14px; outline:none; transition:border-color .2s; box-sizing:border-box; }
+        .sw input:focus { border-color:var(--primary); }
         #desktopSearchIcon { display:none; }
-        @media (min-width:768px) { #desktopSearchIcon { display:block; } .sw input { padding-left:36px; } }
         .sw input::placeholder { color:var(--text-dim); }
         .sq-btn { width:40px; height:40px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; position:relative; flex-shrink:0; }
 
@@ -137,17 +139,13 @@
         .view-headlines .linfo h4 { font-size:14px; padding-right:28px; }
 
         /* FAB */
-        .fab { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); width:56px; height:56px; border-radius:28px; background:var(--primary); color:#000; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:100; font-size:26px; box-shadow:0 4px 24px rgba(34,197,94,.45); }
+        .fab { position:fixed; bottom:calc(14px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%); width:60px; height:60px; border-radius:50%; background:var(--primary); color:#000; border:3px solid var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:700; font-size:26px; box-shadow:0 4px 24px rgba(34,197,94,.55); }
 
         /* BOTTOM NAV */
-        .bnav { position:fixed; bottom:0; left:0; right:0; background:#111113; border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; padding:7px 0 env(safe-area-inset-bottom,18px); z-index:600; padding-bottom:max(18px,env(safe-area-inset-bottom)); }
-        .nitem { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-size:10px; color:var(--text-dim); padding:3px 14px; }
+        .bnav { position:fixed; bottom:0; left:0; right:0; background:#111113; border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; padding:7px 0; padding-bottom:max(14px,env(safe-area-inset-bottom)); z-index:600; }
+        .nitem { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-size:10px; color:var(--text-dim); padding:3px 14px; flex:1; }
         .nitem i { font-size:22px; }
         .nitem.active { color:var(--primary); }
-        /* Fixed colors for fav/archive/folders — always stay their color */
-        #nav-fav, #nav-fav.active { color:#ef4444 !important; }
-        #nav-arc, #nav-arc.active { color:#3b82f6 !important; }
-        #nav-fold, #nav-fold.active { color:#ca8a04 !important; }
 
         /* MODALS */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:1000; align-items:flex-start; justify-content:center; backdrop-filter:blur(6px); padding-top: env(safe-area-inset-top, 20px); overflow-y: auto; }
@@ -233,9 +231,21 @@
         .empty { text-align:center; padding:60px 20px; opacity:.35; }
         .empty i { font-size:48px; margin-bottom:12px; display:block; }
         /* Settings section headers */
-        .sett-section-hdr { font-size:10px;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:18px 0 10px;padding:6px 10px;background:var(--bg);border-radius:8px;border-left:3px solid var(--primary); }
+        .sett-section-hdr { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin:20px 0 10px;padding:7px 12px;border-radius:8px;border-left:4px solid; }
+        /* Each section header has a fully unique, vivid color */
+        .sett-section-hdr[data-c="violet"]  { color:#c084fc; border-color:#a855f7; background:rgba(168,85,247,.10); }
+        .sett-section-hdr[data-c="golden"]  { color:#fcd34d; border-color:#f59e0b; background:rgba(245,158,11,.10); }
+        .sett-section-hdr[data-c="sky"]     { color:#38bdf8; border-color:#0ea5e9; background:rgba(14,165,233,.10); }
+        .sett-section-hdr[data-c="teal"]    { color:#2dd4bf; border-color:#14b8a6; background:rgba(20,184,166,.10); }
+        .sett-section-hdr[data-c="emerald"] { color:#34d399; border-color:#10b981; background:rgba(16,185,129,.10); }
+        .sett-section-hdr[data-c="pink"]    { color:#f472b6; border-color:#ec4899; background:rgba(236,72,153,.10); }
+        .sett-section-hdr[data-c="red"]     { color:#f87171; border-color:#ef4444; background:rgba(239,68,68,.10); }
+        .sett-section-hdr[data-c="indigo"]  { color:#818cf8; border-color:#6366f1; background:rgba(99,102,241,.10); }
+        .sett-section-hdr[data-c="orange"]  { color:#fb923c; border-color:#f97316; background:rgba(249,115,22,.10); }
         /* Toggle buttons */
         .tog-btn { width:44px;height:24px;border-radius:12px;background:#27272a;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s; }
+        .font-pill { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;transition:all .15s; }
+        .font-pill.active,.font-pill:hover { border-color:var(--primary);background:rgba(34,197,94,.12);color:var(--primary); }
         .tog-knob { position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s,right .2s; }
         /* Browser pills */
         .browser-pill { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s; }
@@ -256,8 +266,8 @@
         .ai-loading.show { display:flex; }
 
         /* ========= DESKTOP LAYOUT ========= */
-        /* Desktop nav: always visible on all screen sizes */
-        @media (min-width: 1px) {
+        /* Desktop nav: only on large screens */
+        @media (min-width: 768px) {
             body { padding-bottom:0; overflow:hidden; }
             .desktop-nav { display:flex; align-items:center; padding:0 28px; height:60px; background:var(--card); border-bottom:1px solid var(--border); position:fixed; top:0; left:0; right:0; z-index:200; gap:0; }
             .desktop-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:var(--text); margin-right:36px; cursor:pointer; justify-content:flex-start; }
@@ -292,6 +302,7 @@
             .bnav { display:none; }
             .fab { display:none; }
             /* Mobile: full desktop interface */
+            #quickStatsBar { display:none !important; }
             #mainWrap { max-width:1400px; margin:0 auto; padding:20px 28px 20px; position:fixed; top:60px; left:0; right:0; bottom:0; display:flex; flex-direction:column; overflow:hidden; box-sizing:border-box; }
             .tabs-outer { padding:0 0 14px; flex-wrap:nowrap; }
             .search-row { padding:0 0 14px; }
@@ -378,25 +389,17 @@
         @media (max-width: 767px) {
             .view-switcher-desktop { display: none !important; }
             .view-switcher-mobile { display: flex !important; }
-            .desktop-nav { display:flex !important; height:auto; padding:10px 12px; gap:8px; flex-direction:column; align-items:stretch; position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); }
-            .header { display:none !important; }
-            .bnav { display:none !important; }
-            .fab { display:none !important; }
+            /* MOBILE: hide desktop nav, show mobile header/bnav/fab */
+            .desktop-nav { display:none !important; }
+            .header { display:flex !important; position:fixed; top:0; left:0; right:0; z-index:500; background:var(--bg); border-bottom:1px solid var(--border); }
+            .bnav { display:flex !important; }
+            .fab { display:flex !important; }
             body { padding-bottom:0 !important; }
-            #mainWrap { padding:0 8px 0; position:fixed; top:var(--nav-height, 135px); left:0; right:0; bottom:0; display:flex; flex-direction:column; overflow:hidden; }
+            #mainWrap { padding:0 8px 0; position:fixed; top:74px; left:0; right:0; bottom:62px; display:flex; flex-direction:column; overflow:hidden; }
             #stickyBar { position: relative; z-index: 150; background: var(--bg); border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
             .tabs-outer { padding:10px 0 10px; }
             .search-row { padding:0 0 10px; }
-            .desktop-logo { margin-right:0; justify-content:flex-start; margin-bottom:4px; }
-            .desktop-nav-btns-wrap { display:flex; gap:4px; width:100%; }
-            .desktop-nav-right { gap:6px; flex-wrap:wrap; justify-content:center; width:100%; border-top:1px solid var(--border); margin-top:4px; padding-top:8px; }
-            .desktop-nav .dnl { flex:1; justify-content:center; padding:8px; font-size:12px; }
-            .desktop-nav .dnl span { display:inline; font-size:11px; } /* Show labels but smaller */
-            .add-link-btn { padding:7px 12px; font-size:12px; }
-            .lang-btn { padding:6px 8px; font-size:12px; }
-            .user-chip span { display:none; }
-            .user-chip { padding:4px 8px 4px 4px; }
-            /* Grid: 1 column on mobile as requested */
+            /* Grid: 1 column on mobile */
             .view-imagetitle #linkList,
             .view-headlines #linkList,
             .view-list #linkList,
@@ -437,11 +440,11 @@
         .link-list-edit-mode .link-container { user-select:none; }
         .link-list-edit-mode .link-card { border-color:rgba(34,197,94,.3) !important; }
         .bm-edit-overlay { display:none; position:absolute; inset:0; z-index:20; border-radius:16px; }
-        .link-list-edit-mode .bm-edit-overlay { display:flex; flex-direction:column; justify-content:space-between; padding:8px; background:rgba(0,0,0,.55); }
+        .link-list-edit-mode .bm-edit-overlay { display:flex; flex-direction:row; align-items:center; justify-content:space-between; padding:0 12px; background:rgba(0,0,0,.6); }
         .bm-edit-top { display:flex; justify-content:space-between; }
         .bm-edit-btn { width:28px; height:28px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
         /* Delete button — red pulse */
-        .bm-del-btn { background:#ef4444; color:#fff; animation:bmDelPulse 1.8s ease-in-out infinite; }
+        .bm-del-btn { background:#ef4444; color:#fff; animation:bmDelPulse 1.8s ease-in-out infinite; border-radius:50%; width:32px !important; height:32px !important; font-size:14px !important; }
         @keyframes bmDelPulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(239,68,68,0);} 50%{transform:scale(1.1);box-shadow:0 0 8px 3px rgba(239,68,68,.5);} }
         /* Drag handle — orange glow */
         .bm-move-btn { background:rgba(249,115,22,.25); color:#f97316; cursor:grab; animation:bmMoveGlow 2s ease-in-out infinite; }
@@ -460,6 +463,7 @@
         /* Drag ghost */
         .link-container.dragging { opacity:.4; }
         .link-container.drag-over { border:2px dashed var(--primary) !important; border-radius:16px; }
+        .link-container.td-over { border:2px solid var(--primary) !important; border-radius:16px; background:rgba(34,197,94,.06); }
         /* Edit mode toggle button */
         #editModeToggle { background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:8px; padding:4px 10px; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:5px; transition:all .15s; white-space:nowrap; }
         #editModeToggle.active { background:rgba(34,197,94,.12); border-color:var(--primary); color:var(--primary); }
@@ -472,7 +476,7 @@
             .mc { max-height: none; }
             body { padding-bottom:0; }
             .bnav { padding-bottom:calc(10px + env(safe-area-inset-bottom)); }
-            .fab { bottom:calc(22px + env(safe-area-inset-bottom)); }
+            .fab { bottom:calc(14px + env(safe-area-inset-bottom)); }
         }
         /* Fix iOS button styling */
         button { -webkit-appearance:none; }
@@ -509,7 +513,7 @@
                 flex-direction: column;
                 overflow-y: auto !important;
                 overflow-x: hidden;
-                padding-top: calc(var(--nav-height, 135px) + 8px) !important;
+                padding-top: 20px !important;
             }
             .ipm .mc {
                 height: 100vh;
@@ -527,7 +531,7 @@
         @media (max-width: 767px) {
             .inline-page {
                 position: fixed;
-                top: var(--nav-height, 135px);
+                top: 88px;
                 left: 0; right: 0; bottom: 0;
                 background: var(--bg);
                 z-index: 500;
@@ -568,9 +572,51 @@
                 padding: 0 16px 80px;
             }
         }
-    </style>
+    
+        /* ══ NEW FEATURES CSS ══ */
+
+        /* Reading Time badge */
+        .read-time-badge { display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600;background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.25); }
+
+        /* Quick Copy URL toast button on card */
+        .copy-url-btn { color:var(--text-dim);font-size:13px;cursor:pointer;transition:color .15s;padding:2px; }
+        .copy-url-btn:hover { color:var(--primary); }
+
+        /* Notes panel inside edit detail */
+        #dtNotes { width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:13px;font-family:inherit;resize:vertical;min-height:70px;outline:none;margin-top:6px; }
+
+        /* Quick Stats bar at top of home */
+        .quick-stats-bar { display:flex;gap:8px;padding:0 0 10px;overflow-x:auto;scrollbar-width:none; }
+        .quick-stats-bar::-webkit-scrollbar { display:none; }
+        .qs-card { flex:0 0 auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:72px; }
+        .qs-num { font-size:20px;font-weight:800; }
+        .qs-lbl { font-size:10px;color:var(--text-dim);white-space:nowrap; }
+
+        /* Focus mode overlay */
+        #focusModeBar { display:none;position:fixed;top:0;left:0;right:0;z-index:800;background:linear-gradient(135deg,#1e1b4b,#312e81);padding:14px 20px;align-items:center;gap:12px;border-bottom:2px solid #8b5cf6; }
+        #focusModeBar.active { display:flex; }
+        #focusModeBar .fm-title { flex:1;font-size:15px;font-weight:700;color:#c4b5fd; }
+        #focusModeBar .fm-close { background:rgba(139,92,246,.3);border:none;color:#c4b5fd;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600; }
+
+        /* Bookmark notes icon */
+        .has-note-dot { width:7px;height:7px;border-radius:50%;background:#fbbf24;display:inline-block;margin-left:3px;vertical-align:middle; }
+
+        /* Random bookmark button pulse */
+        @keyframes pulseFab { 0%,100%{box-shadow:0 4px 24px rgba(34,197,94,.55)} 50%{box-shadow:0 4px 32px rgba(34,197,94,.9)} }
+
+        /* Sync badge on settings nav */
+        .nav-badge { position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border-radius:50%;width:8px;height:8px;font-size:0; }
+        </style>
 </head>
 <body>
+
+
+<!-- FOCUS MODE BAR -->
+<div id="focusModeBar">
+    <i class="fa-solid fa-brain" style="color:#a78bfa;font-size:18px;"></i>
+    <span class="fm-title" id="focusModeTitle">Focus Mode</span>
+    <button class="fm-close" onclick="exitFocusMode()"><i class="fa-solid fa-xmark"></i> Exit</button>
+</div>
 
 <!-- DESKTOP NAV -->
 <nav class="desktop-nav">
@@ -578,7 +624,6 @@
         <div class="desktop-logo-icon"><i class="fa-solid fa-bookmark"></i></div>
         <div style="display:flex;flex-direction:column;line-height:1.1;">
             <span style="font-size:18px;font-weight:800;">WebMark</span>
-            <span style="font-size:10px;font-weight:400;color:var(--text-dim);">by saad</span>
         </div>
     </div>
     <div class="desktop-nav-btns-wrap">
@@ -607,17 +652,28 @@
 <!-- HEADER -->
 <div class="header">
     <div class="header-left">
+        <div class="mob-avatar" onclick="openPage('settings')" title="Settings" id="mobAvatarBtn">
+            <i class="fa-solid fa-bookmark"></i>
+        </div>
         <div class="greeting">
-            <h2 id="greetingText">Hello!</h2>
-            <p id="todayDate"></p>
+            <h2 style="font-size:17px;font-weight:800;">WebMark</h2>
         </div>
     </div>
     <div class="header-right">
-        <div class="hbtn" onclick="openPage('folders')" title="Folders"><i class="fa-solid fa-folder-open"></i></div>
-        <div class="hbtn" onclick="openShareOptions()" title="Export"><i class="fa-solid fa-share-nodes"></i></div>
-        <div class="hbtn" onclick="openPage('settings')" title="Settings"><i class="fa-solid fa-gear"></i></div>
+        <div class="hbtn" onclick="openContact()" title="Contact"><i class="fa-regular fa-envelope"></i></div>
+        <div class="hbtn" onclick="openShareOptions()" title="Share"><i class="fa-solid fa-share-nodes"></i></div>
         <input type="file" id="impFile" hidden accept=".json" onchange="importData(event)">
     </div>
+</div>
+
+
+<!-- QUICK STATS BAR (mobile only) -->
+<div class="quick-stats-bar" id="quickStatsBar" style="padding:0 8px 10px;">
+    <div class="qs-card"><div class="qs-num" id="qs-total" style="color:var(--primary);">0</div><div class="qs-lbl" data-tk="saved">Saved</div></div>
+    <div class="qs-card"><div class="qs-num" id="qs-fav" style="color:#ef4444;">0</div><div class="qs-lbl" data-tk="fav">Favorites</div></div>
+    <div class="qs-card"><div class="qs-num" id="qs-folders" style="color:#f59e0b;">0</div><div class="qs-lbl" data-tk="folders">Folders</div></div>
+    <div class="qs-card"><div class="qs-num" id="qs-tags" style="color:#8b5cf6;">0</div><div class="qs-lbl" data-tk="tags">Tags</div></div>
+
 </div>
 
 <!-- STICKY BAR: tabs + search always visible -->
@@ -628,18 +684,25 @@
 </div>
 <!-- SEARCH ROW -->
 <div class="search-row">
-    <button id="editModeToggle" onclick="toggleBookmarkEditMode()" title="Edit / Reorder bookmarks" style="background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:0 13px;height:40px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;flex-shrink:0;"><i class="fa-solid fa-pencil"></i> <span id="editModeLabel">Edit</span></button>
-    <div class="sw" style="position:relative;">
-        <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;" id="desktopSearchIcon"></i>
-        <input type="text" id="search" placeholder="Search" oninput="renderLinks()" style="padding-left:36px;" id="searchInput">
+    <div class="sw">
+        <input type="text" id="search" placeholder="Search bookmarks..." oninput="renderLinks()">
     </div>
-    <div class="sq-btn" id="sortDateBtn" onclick="toggleSortDate()" title="Sort by date" style="position:relative;">
-        <i class="fa-solid fa-arrow-down-wide-short" id="sortDateIcon"></i>
+    <div class="sq-btn" id="sortBtn" onclick="toggleSortDD()" title="Sort" style="position:relative;">
+        <i class="fa-solid fa-arrow-down-wide-short" id="sortDateIcon" style="color:var(--text-dim);"></i>
+        <div class="view-dd" id="sortDD" style="min-width:210px;" onclick="event.stopPropagation()">
+            <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;"><span data-tk="sortBy">Sort by</span><span id="sortEditNote" style="display:none;font-size:10px;color:#f97316;font-weight:600;text-transform:none;">paused in edit mode</span></div>
+            <div class="vopt" id="sopt-manual" onclick="setSortMode('manual')" style="border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:10px;"><i class="fa-solid fa-arrows-up-down" style="color:#f97316;"></i> <span style="font-weight:700;">Manual Order</span> <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">saved order</span><span class="vchk" id="schk-manual" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div class="vopt" id="sopt-date"    onclick="setSortMode('date')"><i class="fa-solid fa-calendar-days" style="color:#60a5fa;"></i> Date Added <span class="vchk" id="schk-date" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div class="vopt" id="sopt-visits"  onclick="setSortMode('visits')"><i class="fa-solid fa-eye" style="color:#a78bfa;"></i> Most Visited <span class="vchk" id="schk-visits" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div class="vopt" id="sopt-last"    onclick="setSortMode('last')"><i class="fa-solid fa-clock-rotate-left" style="color:#22d3ee;"></i> Last Visited <span class="vchk" id="schk-last" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div class="vopt" id="sopt-folder"  onclick="setSortMode('folder')"><i class="fa-solid fa-folder" style="color:#fbbf24;"></i> By Folder <span class="vchk" id="schk-folder" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div class="vopt" id="sopt-name"    onclick="setSortMode('name')"><i class="fa-solid fa-font" style="color:#4ade80;"></i> Name (A–Z) <span class="vchk" id="schk-name" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+        </div>
     </div>
     <div class="sq-btn" id="folderFilterBtn" onclick="toggleFolderFilterDD()" title="Filter by folder" style="position:relative;">
         <i class="fa-solid fa-folder" id="folderFilterIcon"></i>
         <div class="view-dd" id="folderFilterDD" style="min-width:200px;max-height:280px;overflow-y:auto;" onclick="event.stopPropagation()">
-            <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;">Filter by Folder</div>
+            <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;"><span data-tk="filterFolder">Filter by Folder</span></div>
             <div id="folderFilterDDList"></div>
         </div>
     </div>
@@ -660,8 +723,8 @@
     <!-- View switcher: Mobile (Dropdown/Curtain) -->
     <div class="sq-btn view-switcher-mobile" id="viewSwitcherBtn" onclick="toggleViewDD()" title="Change view" style="display:none; position:relative;">
         <i class="fa-solid fa-table-cells-large" id="currentViewIcon"></i>
-        <div class="view-dd" id="viewDD" style="min-width:160px;" onclick="event.stopPropagation()">
-            <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;">Change View</div>
+        <div class="view-dd" id="viewDD" style="min-width:180px;" onclick="event.stopPropagation()">
+            <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;"><span data-tk="changeView">Change View</span></div>
             <div class="vopt" id="vopt-list" onclick="setView('list'); toggleViewDD()"><i class="fa-solid fa-list-ul"></i> List <i class="fa-solid fa-check vopt-check" id="vcheck-list" style="margin-left:auto;color:var(--primary);display:none;"></i></div>
             <div class="vopt" id="vopt-cards" onclick="setView('cards'); toggleViewDD()"><i class="fa-solid fa-border-all"></i> Cards <i class="fa-solid fa-check vopt-check" id="vcheck-cards" style="margin-left:auto;color:var(--primary);display:none;"></i></div>
             <div class="vopt" id="vopt-headlines" onclick="setView('headlines'); toggleViewDD()"><i class="fa-solid fa-align-left"></i> Headlines <i class="fa-solid fa-check vopt-check" id="vcheck-headlines" style="margin-left:auto;color:var(--primary);display:none;"></i></div>
@@ -672,6 +735,30 @@
 </div><!-- /stickyBar -->
 
 <!-- LINK LIST -->
+<!-- Edit mode banner -->
+<div id="editModeBanner" style="display:none;margin:0 8px 6px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.35);border-radius:12px;padding:9px 14px;font-size:12px;color:#f97316;font-weight:600;align-items:center;gap:8px;">
+    <i class="fa-solid fa-hand-pointer" style="font-size:15px;"></i>
+    <span>Drag the <i class="fa-solid fa-bars" style="font-size:11px;vertical-align:middle;"></i> handles to reorder · Sort paused</span>
+    <button onclick="toggleGlobalEdit()" style="margin-left:auto;background:rgba(249,115,22,.2);border:1px solid rgba(249,115,22,.4);color:#f97316;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;">Done</button>
+</div>
+<!-- Recent visits header — shown only when last 10 visits tab is active -->
+<div id="recentHeader" style="display:none;padding:0 8px 8px;">
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);border-radius:12px;padding:10px 12px;text-align:center;">
+            <div id="rh-count" style="font-size:20px;font-weight:800;color:#22d3ee;">0</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Visited</div>
+        </div>
+        <div style="flex:1;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:12px;padding:10px 12px;text-align:center;">
+            <div id="rh-top" style="font-size:13px;font-weight:700;color:#a78bfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Most visited</div>
+        </div>
+        <div style="flex:1;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:10px 12px;text-align:center;">
+            <div id="rh-last" style="font-size:13px;font-weight:700;color:#fbbf24;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Last opened</div>
+        </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-dim);text-align:center;opacity:.6;">Your 10 most recently visited bookmarks</div>
+</div>
 <div id="linkListWrap"><div id="linkList"></div></div>
 
 <!-- FAB -->
@@ -681,9 +768,9 @@
 <div class="bnav">
     <div class="nitem active" id="nav-home" onclick="navTo('all','nav-home')"><i class="fa-solid fa-house"></i><span data-t="home">Home</span></div>
     <div class="nitem" id="nav-fav" onclick="navTo('fav','nav-fav')" style="position:relative;"><i class="fa-regular fa-heart"></i><span data-t="fav">Favorite</span><span id="nav-fav-cnt" style="display:none;position:absolute;top:2px;right:6px;background:#ef4444;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></div>
-    <div style="width:56px;"></div>
+    <div style="width:64px;flex-shrink:0;"></div>
     <div class="nitem" id="nav-arc" onclick="navTo('archive','nav-arc')" style="position:relative;"><i class="fa-regular fa-file"></i><span data-t="archive">Archive</span><span id="nav-arc-cnt" style="display:none;position:absolute;top:2px;right:6px;background:#3b82f6;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></div>
-    <div class="nitem" id="nav-fold" onclick="openPage('folders')"><i class="fa-solid fa-folder-open"></i><span data-t="folders">Folders</span></div>
+    <div class="nitem" id="nav-settings" onclick="openPage('settings')"><i class="fa-solid fa-gear"></i><span>Settings</span></div>
 </div>
 
 <!-- ======== MODALS ======== -->
@@ -693,7 +780,7 @@
 <div class="mc">
     <div class="mhandle"></div>
     <div class="mhdr">
-        <button class="mback-btn" onclick="closeModal('addModal')"><i class="fa-solid fa-xmark"></i></button>
+        <button class="mback-btn" onclick="confirmCloseAddModal()"><i class="fa-solid fa-xmark"></i></button>
         <span class="mtitle" id="addModalTitle">New Bookmark</span>
         <button class="msave-btn" onclick="saveLink()">Save</button>
     </div>
@@ -733,7 +820,7 @@
         </div>
     </div>
     <button class="btn-p" onclick="saveLink()">Save Bookmark</button>
-    <button class="btn-s" onclick="closeModal('addModal')">Cancel</button>
+    <button class="btn-s" onclick="confirmCloseAddModal()">Cancel</button>
 </div>
 </div>
 
@@ -879,7 +966,7 @@
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <span style="font-size:16px;font-weight:700;" id="mfFoldersLabel">Folders</span>
-        <div class="creat-btn" onclick="openCreateFolder()" style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;">Create Folder <i class="fa-solid fa-plus"></i></div>
+        <div class="creat-btn" onclick="openCreateFolder()" style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;"><span data-tk="createFolder">Create Folder</span> <i class="fa-solid fa-plus"></i></div>
     </div>
     <div id="manageFoldersList"></div>
 </div>
@@ -927,7 +1014,7 @@
 <div class="mc">
     <div class="mhandle"></div>
     <h2 id="shareModalTitle" style="text-align:center;margin-bottom:20px;">Export / Share</h2>
-    <button class="btn-p" onclick="exportData()"><i class="fa-solid fa-download"></i> <span id="lbl-exportJson">Export JSON (Backup)</span></button>
+    <button class="btn-p" onclick="exportData()" style="background:linear-gradient(135deg,#eab308,#ca8a04);color:#000;box-shadow:0 4px 18px rgba(234,179,8,.4);"><i class="fa-solid fa-download"></i> <span id="lbl-exportJson">Export JSON (Backup)</span></button>
     <button class="btn-p" style="background:#1d4ed8;margin-top:8px;" onclick="shareFormat('copy')"><i class="fa-regular fa-copy"></i> <span id="lbl-copyText">Copy as Text</span></button>
     <button class="btn-p" style="background:#ef4444;margin-top:8px;" onclick="shareFormat('pdf')"><i class="fa-regular fa-file-pdf"></i> <span id="lbl-exportPdf">Export as PDF</span></button>
     <button class="btn-p" style="background:#15803d;margin-top:8px;" onclick="shareFormat('excel')"><i class="fa-regular fa-file-excel"></i> <span id="lbl-exportExcel">Export as Excel</span></button>
@@ -992,7 +1079,43 @@ const FA_ICONS = [
     'fa-solid fa-y','fa-solid fa-yen-sign',
     'fa-brands fa-yahoo','fa-brands fa-youtube',
     'fa-solid fa-z',
-];
+
+    // ── EXTRA ICON PACK 2: Nature, Food, Transport, Medical, Science ──
+    'fa-solid fa-tree','fa-solid fa-leaf','fa-solid fa-seedling','fa-solid fa-spa','fa-solid fa-cannabis',
+    'fa-solid fa-carrot','fa-solid fa-apple-whole','fa-solid fa-lemon','fa-solid fa-pepper-hot','fa-solid fa-egg',
+    'fa-solid fa-bread-slice','fa-solid fa-cheese','fa-solid fa-fish','fa-solid fa-shrimp','fa-solid fa-bacon',
+    'fa-solid fa-hotdog','fa-solid fa-hamburger','fa-solid fa-pizza-slice','fa-solid fa-ice-cream','fa-solid fa-cake-candles',
+    'fa-solid fa-cookie','fa-solid fa-candy-cane','fa-solid fa-jar','fa-solid fa-bottle-water','fa-solid fa-wine-glass',
+    'fa-solid fa-beer-mug-empty','fa-solid fa-mug-hot','fa-solid fa-blender','fa-solid fa-kitchen-set','fa-solid fa-utensils',
+    'fa-solid fa-car','fa-solid fa-car-side','fa-solid fa-truck','fa-solid fa-motorcycle','fa-solid fa-bicycle',
+    'fa-solid fa-ship','fa-solid fa-sailboat','fa-solid fa-ferry','fa-solid fa-helicopter','fa-solid fa-rocket',
+    'fa-solid fa-space-shuttle','fa-solid fa-satellite','fa-solid fa-parachute-box','fa-solid fa-anchor',
+    'fa-solid fa-stethoscope','fa-solid fa-syringe','fa-solid fa-pills','fa-solid fa-capsules','fa-solid fa-prescription-bottle',
+    'fa-solid fa-hospital','fa-solid fa-kit-medical','fa-solid fa-heart-pulse','fa-solid fa-brain','fa-solid fa-lungs',
+    'fa-solid fa-tooth','fa-solid fa-eye','fa-solid fa-ear-listen','fa-solid fa-hand','fa-solid fa-bone',
+    'fa-solid fa-dna','fa-solid fa-microscope','fa-solid fa-flask','fa-solid fa-vial','fa-solid fa-atom',
+    'fa-solid fa-magnet','fa-solid fa-compass','fa-solid fa-globe','fa-solid fa-globe-africa','fa-solid fa-globe-americas',
+    'fa-solid fa-mountain','fa-solid fa-volcano','fa-solid fa-tornado','fa-solid fa-hurricane','fa-solid fa-rainbow',
+    'fa-solid fa-snowflake','fa-solid fa-cloud-bolt','fa-solid fa-cloud-rain','fa-solid fa-cloud-sun','fa-solid fa-temperature-high',
+    'fa-solid fa-house','fa-solid fa-building','fa-solid fa-castle','fa-solid fa-church','fa-solid fa-school',
+    'fa-solid fa-hospital-user','fa-solid fa-store','fa-solid fa-warehouse','fa-solid fa-industry','fa-solid fa-city',
+    'fa-solid fa-landmark','fa-solid fa-monument','fa-solid fa-archway','fa-solid fa-bridge','fa-solid fa-tower-observation',
+    'fa-solid fa-chess','fa-solid fa-chess-king','fa-solid fa-chess-queen','fa-solid fa-chess-rook','fa-solid fa-dice',
+    'fa-solid fa-puzzle-piece','fa-solid fa-gamepad','fa-solid fa-headset','fa-solid fa-vr-cardboard','fa-solid fa-ghost',
+    'fa-solid fa-dragon','fa-solid fa-skull','fa-solid fa-robot','fa-solid fa-alien','fa-solid fa-wand-magic-sparkles',
+    'fa-solid fa-hat-wizard','fa-solid fa-mask','fa-solid fa-theater-masks','fa-solid fa-film','fa-solid fa-clapperboard',
+    'fa-solid fa-tv','fa-solid fa-radio','fa-solid fa-tower-broadcast','fa-solid fa-satellite-dish','fa-solid fa-signal',
+    'fa-solid fa-wifi','fa-solid fa-bluetooth','fa-solid fa-battery-full','fa-solid fa-battery-half','fa-solid fa-battery-empty',
+    'fa-solid fa-plug','fa-solid fa-bolt','fa-solid fa-solar-panel','fa-solid fa-wind','fa-solid fa-oil-well',
+    'fa-solid fa-briefcase','fa-solid fa-suitcase','fa-solid fa-id-card','fa-solid fa-passport','fa-solid fa-address-book',
+    'fa-solid fa-receipt','fa-solid fa-file-invoice','fa-solid fa-coins','fa-solid fa-piggy-bank','fa-solid fa-vault',
+    'fa-solid fa-chart-pie','fa-solid fa-chart-bar','fa-solid fa-chart-area','fa-solid fa-arrow-trend-up','fa-solid fa-arrow-trend-down',
+    'fa-solid fa-percent','fa-solid fa-tags','fa-solid fa-barcode','fa-solid fa-qrcode','fa-solid fa-box',
+    'fa-solid fa-boxes-stacked','fa-solid fa-pallet','fa-solid fa-dolly','fa-solid fa-truck-fast','fa-solid fa-map-location-dot',
+    'fa-solid fa-map','fa-solid fa-signs-post','fa-solid fa-route','fa-solid fa-person-walking','fa-solid fa-person-running',
+    'fa-solid fa-dumbbell','fa-solid fa-bicycle','fa-solid fa-futbol','fa-solid fa-basketball','fa-solid fa-football',
+    'fa-solid fa-baseball','fa-solid fa-volleyball','fa-solid fa-table-tennis-paddle-ball','fa-solid fa-golf-ball-tee','fa-solid fa-medal',
+    ];
 
 const COLORS = ['#22c55e','#16a34a','#4ade80','#8b5cf6','#7c3aed','#a78bfa','#3b82f6','#1d4ed8','#60a5fa','#06b6d4','#0891b2','#67e8f9','#ef4444','#dc2626','#fca5a5','#eab308','#ca8a04','#fde047','#ec4899','#db2777','#f9a8d4','#f97316','#ea580c','#fdba74','#14b8a6','#0f766e','#5eead4','#6366f1','#4338ca','#a5b4fc','#d946ef','#c026d3','#e879f9','#fb7185','#f43f5e','#fda4af','#84cc16','#65a30d','#bef264','#f59e0b','#d97706','#fcd34d','#10b981','#059669','#6ee7b7','#0ea5e9','#0284c7','#7dd3fc','#8b5cf6','#ffffff','#a1a1aa','#52525b'];
 
@@ -1039,6 +1162,8 @@ const TRANSLATIONS = {
     urlLabel:'URL', titleLabel:'Title', descLabel:'Description', tagsLabel:'Tags',
     folderLabel:'Folder', chooseFolder:'Choose Folder...',
     hour:'Hour', minute:'Minute', importSuccess:'Import successful!', bookmarksLoaded:'bookmarks loaded.',
+    edit:"Edit", done:"Done", sortBy:"Sort by", dateAdded:"Date Added", mostVisited:"Most Visited", lastVisited:"Last Visited", byFolder:"By Folder", nameAZ:"Name (A–Z)", filterFolder:"Filter by Folder", changeView:"Change View", appearance:"Appearance", sortDisplay:"Sort & Display", browserImport:"Browser Import", dataBackup:"Data & Backup", quickActions:"Quick Actions", statsTools:"Stats & Tools", dangerZone:"Danger Zone", about:"About", darkLight:"Dark / Light Mode", openNewTab:"Open links in new tab", accentColor:"Accent Color", manageFolders:"Manage Folders", manageTags:"Manage Tags", showFolderBadges:"Show folder badges on links", showTagBadges:"Show tag badges on links", sortNewest:"Sort by date (newest first)", pinnedTop:"Pinned bookmarks always on top", compactCards:"Compact cards", showThumbs:"Show thumbnails / favicons", showViews:"Show visit count badge", animEdit:"Animate edit mode (sparkle)", hideImported:"Hide ALL imported bookmarks", showImportedBadge:"Show \"Imported\" badge on links", importBMHtml:"Import Browser Bookmarks (HTML)", importJSON2:"Import JSON Backup", exportJSON3:"Export JSON Backup", recentlyVisited:"Recently Visited (last 10)", findDuplicates:"Find & Remove Duplicates", archiveVisited:"Archive All Visited", clearData:"Clear All Data", deletePass:"Delete Password", deleted:"Deleted Bookmarks", saved:"Saved", favorites:"Favorites", noBookmarksFound:"No bookmarks found",
+    confirmLeave:"Are you sure you want to leave without saving?", confirmLeaveFolder:"Are you sure you want to leave without saving this folder?",
   },
   fr:{
     all:'Tout', home:'Accueil', fav:'Favoris', archive:'Archive', folders:'Dossiers',
@@ -1062,6 +1187,8 @@ const TRANSLATIONS = {
     urlLabel:'URL', titleLabel:'Titre', descLabel:'Description', tagsLabel:'Étiquettes',
     folderLabel:'Dossier', chooseFolder:'Choisir un dossier...',
     hour:'Heure', minute:'Minute', importSuccess:'Importation réussie!', bookmarksLoaded:'favoris chargés.',
+    edit:"Modifier", done:"Terminé", sortBy:"Trier par", dateAdded:"Date ajoutée", mostVisited:"Plus visités", lastVisited:"Dernière visite", byFolder:"Par dossier", nameAZ:"Nom (A–Z)", filterFolder:"Filtrer par dossier", changeView:"Changer la vue", appearance:"Apparence", sortDisplay:"Tri & Affichage", browserImport:"Import navigateur", dataBackup:"Données & Sauvegarde", quickActions:"Actions rapides", statsTools:"Stats & Outils", dangerZone:"Zone dangereuse", about:"À propos", darkLight:"Mode sombre / clair", openNewTab:"Ouvrir dans un nouvel onglet", accentColor:"Couleur d'accentuation", manageFolders:"Gérer les dossiers", manageTags:"Gérer les étiquettes", showFolderBadges:"Afficher dossiers sur les liens", showTagBadges:"Afficher étiquettes sur les liens", sortNewest:"Trier par date (plus récent)", pinnedTop:"Épinglés toujours en haut", compactCards:"Cartes compactes", showThumbs:"Afficher vignettes", showViews:"Afficher le compteur de visites", animEdit:"Animer le mode édition", hideImported:"Masquer tous les imports", showImportedBadge:"Badge \"Importé\"", importBMHtml:"Importer favoris navigateur (HTML)", importJSON2:"Importer JSON", exportJSON3:"Exporter JSON", recentlyVisited:"Récemment visités (10 derniers)", findDuplicates:"Trouver les doublons", archiveVisited:"Archiver tout visité", clearData:"Effacer toutes les données", deletePass:"Mot de passe suppression", deleted:"Signets supprimés", saved:"Sauvegardés", favorites:"Favoris", noBookmarksFound:"Aucun favori trouvé",
+    confirmLeave:"Êtes-vous sûr de vouloir quitter sans sauvegarder?", confirmLeaveFolder:"Êtes-vous sûr de vouloir quitter sans sauvegarder ce dossier?",
   },
   es:{
     all:'Todo', home:'Inicio', fav:'Favoritos', archive:'Archivo', folders:'Carpetas',
@@ -1085,6 +1212,8 @@ const TRANSLATIONS = {
     urlLabel:'URL', titleLabel:'Título', descLabel:'Descripción', tagsLabel:'Etiquetas',
     folderLabel:'Carpeta', chooseFolder:'Elegir carpeta...',
     hour:'Hora', minute:'Minuto', importSuccess:'¡Importación exitosa!', bookmarksLoaded:'marcadores cargados.',
+    edit:"Editar", done:"Hecho", sortBy:"Ordenar por", dateAdded:"Fecha añadida", mostVisited:"Más visitados", lastVisited:"Última visita", byFolder:"Por carpeta", nameAZ:"Nombre (A–Z)", filterFolder:"Filtrar por carpeta", changeView:"Cambiar vista", appearance:"Apariencia", sortDisplay:"Orden & Pantalla", browserImport:"Importar navegador", dataBackup:"Datos & Copia", quickActions:"Acciones rápidas", statsTools:"Stats & Herramientas", dangerZone:"Zona de peligro", about:"Acerca de", darkLight:"Modo oscuro / claro", openNewTab:"Abrir en nueva pestaña", accentColor:"Color de acento", manageFolders:"Gestionar carpetas", manageTags:"Gestionar etiquetas", showFolderBadges:"Mostrar carpetas en enlaces", showTagBadges:"Mostrar etiquetas en enlaces", sortNewest:"Ordenar por fecha (más reciente)", pinnedTop:"Fijados siempre arriba", compactCards:"Tarjetas compactas", showThumbs:"Mostrar miniaturas", showViews:"Mostrar contador de visitas", animEdit:"Animar modo edición", hideImported:"Ocultar todos los importados", showImportedBadge:"Badge \"Importado\"", importBMHtml:"Importar marcadores (HTML)", importJSON2:"Importar JSON", exportJSON3:"Exportar JSON", recentlyVisited:"Visitados recientemente (10 últimos)", findDuplicates:"Encontrar duplicados", archiveVisited:"Archivar todo visitado", clearData:"Borrar todos los datos", deletePass:"Contraseña de eliminación", deleted:"Marcadores eliminados", saved:"Guardados", favorites:"Favoritos", noBookmarksFound:"No se encontraron marcadores",
+    confirmLeave:"¿Estás seguro de que quieres salir sin guardar?", confirmLeaveFolder:"¿Estás seguro de que quieres salir sin guardar esta carpeta?",
   },
   it:{
     all:'Tutti', home:'Home', fav:'Preferiti', archive:'Archivio', folders:'Cartelle',
@@ -1108,6 +1237,8 @@ const TRANSLATIONS = {
     urlLabel:'URL', titleLabel:'Titolo', descLabel:'Descrizione', tagsLabel:'Tag',
     folderLabel:'Cartella', chooseFolder:'Scegli cartella...',
     hour:'Ora', minute:'Minuto', importSuccess:'Importazione riuscita!', bookmarksLoaded:'segnalibri caricati.',
+    edit:"Modifica", done:"Fatto", sortBy:"Ordina per", dateAdded:"Data aggiunta", mostVisited:"Più visitati", lastVisited:"Ultima visita", byFolder:"Per cartella", nameAZ:"Nome (A–Z)", filterFolder:"Filtra per cartella", changeView:"Cambia vista", appearance:"Aspetto", sortDisplay:"Ordine & Visualizzazione", browserImport:"Importa browser", dataBackup:"Dati & Backup", quickActions:"Azioni rapide", statsTools:"Stats & Strumenti", dangerZone:"Zona pericolosa", about:"Informazioni", darkLight:"Modalità scura / chiara", openNewTab:"Apri in nuova scheda", accentColor:"Colore accento", manageFolders:"Gestisci cartelle", manageTags:"Gestisci tag", showFolderBadges:"Mostra cartelle sui link", showTagBadges:"Mostra tag sui link", sortNewest:"Ordina per data (più recente)", pinnedTop:"Fissati sempre in cima", compactCards:"Schede compatte", showThumbs:"Mostra miniature", showViews:"Mostra contatore visite", animEdit:"Anima modalità modifica", hideImported:"Nascondi tutti gli importati", showImportedBadge:"Badge \"Importato\"", importBMHtml:"Importa segnalibri browser (HTML)", importJSON2:"Importa JSON", exportJSON3:"Esporta JSON", recentlyVisited:"Visitati di recente (ultimi 10)", findDuplicates:"Trova duplicati", archiveVisited:"Archivia tutti i visitati", clearData:"Cancella tutti i dati", deletePass:"Password eliminazione", deleted:"Segnalibri eliminati", saved:"Salvati", favorites:"Preferiti", noBookmarksFound:"Nessun segnalibro trovato",
+    confirmLeave:"Sei sicuro di voler uscire senza salvare?", confirmLeaveFolder:"Sei sicuro di voler uscire senza salvare questa cartella?",
   },
   ar:{
     all:'الكل', home:'الرئيسية', fav:'المفضلة', archive:'الأرشيف', folders:'المجلدات',
@@ -1131,6 +1262,8 @@ const TRANSLATIONS = {
     urlLabel:'الرابط', titleLabel:'العنوان', descLabel:'الوصف', tagsLabel:'الوسوم',
     folderLabel:'المجلد', chooseFolder:'اختر مجلداً...',
     hour:'ساعة', minute:'دقيقة', importSuccess:'تم الاستيراد بنجاح!', bookmarksLoaded:'إشارة تم تحميلها.',
+    edit:"تعديل", done:"تم", sortBy:"ترتيب حسب", dateAdded:"تاريخ الإضافة", mostVisited:"الأكثر زيارة", lastVisited:"آخر زيارة", byFolder:"حسب المجلد", nameAZ:"الاسم (أ-ي)", filterFolder:"تصفية حسب المجلد", changeView:"تغيير العرض", appearance:"المظهر", sortDisplay:"الترتيب والعرض", browserImport:"استيراد المتصفح", dataBackup:"البيانات والنسخ الاحتياطي", quickActions:"إجراءات سريعة", statsTools:"الإحصاءات والأدوات", dangerZone:"المنطقة الخطرة", about:"حول", darkLight:"الوضع الداكن / الفاتح", openNewTab:"فتح في تبويب جديد", accentColor:"لون التمييز", manageFolders:"إدارة المجلدات", manageTags:"إدارة الوسوم", showFolderBadges:"إظهار المجلدات على الروابط", showTagBadges:"إظهار الوسوم على الروابط", sortNewest:"الأحدث أولاً", pinnedTop:"المثبتة دائماً في الأعلى", compactCards:"بطاقات مدمجة", showThumbs:"إظهار الصور المصغرة", showViews:"إظهار عداد الزيارات", animEdit:"تحريك وضع التعديل", hideImported:"إخفاء جميع المستوردة", showImportedBadge:"شارة \"مستورد\"", importBMHtml:"استيراد إشارات المتصفح (HTML)", importJSON2:"استيراد JSON", exportJSON3:"تصدير JSON", recentlyVisited:"زُيرت مؤخراً (آخر 10)", findDuplicates:"إيجاد المكررات", archiveVisited:"أرشفة جميع المزورة", clearData:"مسح جميع البيانات", deletePass:"كلمة مرور الحذف", deleted:"الإشارات المحذوفة", saved:"محفوظة", favorites:"المفضلة", noBookmarksFound:"لا توجد إشارات مرجعية",
+    confirmLeave:"هل أنت متأكد أنك تريد المغادرة دون حفظ؟", confirmLeaveFolder:"هل أنت متأكد أنك تريد المغادرة دون حفظ هذا المجلد؟",
   }
 };
 function T(k){ return (TRANSLATIONS[S.lang]&&TRANSLATIONS[S.lang][k])||TRANSLATIONS.en[k]||k; }
@@ -1185,6 +1318,20 @@ function applyTranslations(){
     // Import BM modal
     const _ibt=document.getElementById('importBMTitle'); if(_ibt)_ibt.textContent=T('importBM');
     const _ibb=document.getElementById('importBMBtn'); if(_ibb)_ibb.textContent=T('importBM');
+    // Inline search placeholder
+    const _spSearch=document.getElementById('search'); if(_spSearch) _spSearch.placeholder=T('search');
+    // Translate bottom nav settings label
+    const navSett=document.querySelector('#nav-settings span'); if(navSett) navSett.textContent=T('settings')||'Settings';
+    // Translate inline settings section headers using data-tk attribute
+    document.querySelectorAll('[data-tk]').forEach(el=>{
+        const k=el.getAttribute('data-tk'); if(k) el.textContent=T(k);
+    });
+    // Translate quick stats bar labels
+    document.querySelectorAll('.qs-lbl[data-tk]').forEach(el=>{
+        const k=el.getAttribute('data-tk'); if(k) el.textContent=T(k);
+    });
+    // Translate "No bookmarks found" empty state
+    document.querySelectorAll('[data-t="noBookmarks"]').forEach(el=>{ el.textContent=T('noBookmarks'); });
 }
 
 function save() {
@@ -1206,16 +1353,19 @@ function init() {
     applyCompactCards();
     applyAnimEditMode();
     updateSortDateBtn();
-    // Apply saved theme
+    // Apply saved theme — default is LIGHT
     const savedTheme=localStorage.getItem('ly_theme');
-    if(savedTheme==='light' && !document.body.classList.contains('light-mode')){
+    const useLight = (savedTheme===null) ? true : (savedTheme==='light');
+    if(useLight && !document.body.classList.contains('light-mode')){
         document.body.classList.add('light-mode');
         setTimeout(()=>{
             const inner=document.getElementById('themeInner');
             if(inner) inner.innerHTML='<i class="fa-regular fa-sun"></i>';
             const tog=document.getElementById('themeToggle');
-            if(tog) tog.style.background='#fbbf24';
+            if(tog) tog.className='theme-toggle light-mode-btn';
         },50);
+    } else if(!useLight && document.body.classList.contains('light-mode')){
+        document.body.classList.remove('light-mode');
     }
     // Update search placeholder
     const srch=document.getElementById('search');
@@ -1225,13 +1375,27 @@ function init() {
     if(lb) lb.innerHTML=getFlagImg(S.lang);
     // Schedule any saved reminders
     initReminders();
+    // One-time cleanup: strip tags from imported bookmarks
+    _cleanImportedTags();
+}
+
+function _cleanImportedTags(){
+    let changed = false;
+    S.links.forEach(l => {
+        if(l.imported && l.tags && l.tags.length > 0){
+            l.tags = [];
+            changed = true;
+        }
+    });
+    if(changed) save();
 }
 
 function setDate() {
     const d = new Date();
     const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    document.getElementById('todayDate').textContent = `${days[d.getDay()]} ${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    const el = document.getElementById('todayDate');
+    if(el) el.textContent = `${days[d.getDay()]} ${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 // TABS
@@ -1243,7 +1407,7 @@ function renderTabs() {
     const arcN = S.links.filter(l=>l.archived).length;
     const editMode = S._tabEditMode || false;
     if(fixed) fixed.innerHTML = `
-        <div class="chip" onclick="toggleTabEditMode()" title="Edit folders" style="padding:7px 10px;background:${editMode?'rgba(34,197,94,.12)':'var(--card)'};border-color:${editMode?'var(--primary)':'var(--border)'};color:${editMode?'var(--primary)':'var(--text-dim)'};">
+        <div class="chip" id="globalEditChip" onclick="toggleGlobalEdit()" title="Edit bookmarks & folders" style="padding:7px 10px;background:${editMode?'rgba(34,197,94,.12)':'var(--card)'};border-color:${editMode?'var(--primary)':'var(--border)'};color:${editMode?'var(--primary)':'var(--text-dim)'};">
             <i class="fa-solid fa-pen" style="font-size:12px;"></i>
         </div>
         <div class="chip ${S.activeTab==='all'?'active':''}" onclick="switchTab('all')">${T('all')} <span class="chip-cnt">${allN}</span></div>`;
@@ -1302,14 +1466,33 @@ function updateNavCounters(){
 function switchTab(t) {
     S.activeTab=t;
     S._tabEditMode=false;
+    if(t!=='__recent__'){
+        S._recentIds=null;
+        const hdr=document.getElementById('recentHeader');
+        if(hdr) hdr.style.display='none';
+    }
     // Update folder filter button active state
     const btn=document.getElementById('folderFilterBtn');
-    if(btn) btn.style.borderColor=(t!=='all'&&t!=='fav'&&t!=='archive')?'var(--primary)':'var(--border)';
+    if(btn) btn.style.borderColor=(t!=='all'&&t!=='fav'&&t!=='archive'&&t!=='__recent__')?'var(--primary)':'var(--border)';
     const icon=document.getElementById('folderFilterIcon');
-    if(icon) icon.style.color=(t!=='all'&&t!=='fav'&&t!=='archive')?'var(--primary)':'var(--text-dim)';
+    if(icon) icon.style.color=(t!=='all'&&t!=='fav'&&t!=='archive'&&t!=='__recent__')?'var(--primary)':'var(--text-dim)';
     renderTabs(); renderLinks();
 }
 
+function toggleGlobalEdit(){
+    S._tabEditMode = !S._tabEditMode;
+    S._bmEditMode = S._tabEditMode;
+    const wrap = document.getElementById('linkListWrap');
+    if(wrap) wrap.classList.toggle('link-list-edit-mode', S._bmEditMode);
+    // Show/hide edit mode banner
+    const banner = document.getElementById('editModeBanner');
+    if(banner) banner.style.display = S._bmEditMode ? 'flex' : 'none';
+    // Show/hide sort paused note
+    const sortNote = document.getElementById('sortEditNote');
+    if(sortNote) sortNote.style.display = S._bmEditMode ? 'inline' : 'none';
+    renderTabs();
+    renderLinks(); // re-render to apply/remove sort bypass
+}
 function toggleTabEditMode(){
     S._tabEditMode = !S._tabEditMode;
     renderTabs();
@@ -1360,12 +1543,19 @@ function quickDeleteFolderFromTab(id){
     save(); init(); renderManageFolders && renderManageFolders();
 }
 
+function closeAllPanels(){
+    // Close all dropdowns
+    ['sortDD','folderFilterDD','tagDD','viewDD'].forEach(id=>{ const d=document.getElementById(id); if(d) d.classList.remove('open'); });
+    // Exit edit mode
+    if(S._bmEditMode){ S._bmEditMode=false; const wrap=document.getElementById('linkListWrap'); if(wrap) wrap.classList.remove('link-list-edit-mode'); const btn=document.getElementById('editModeToggle'); if(btn){btn.style.background='none';btn.style.borderColor='var(--border)';btn.style.color='var(--text-dim)';} const lbl=document.getElementById('editModeLabel'); if(lbl) lbl.textContent='Edit / Reorder'; const chk=document.getElementById('editModeCheck'); if(chk) chk.style.display='none'; const lblD=document.getElementById('editModeLabelDesktop'); if(lblD) lblD.textContent='Edit'; const btnD=document.getElementById('editModeToggleDesktop'); if(btnD){btnD.style.background='none';btnD.style.borderColor='var(--border)';btnD.style.color='var(--text-dim)';} }
+}
 function navTo(tab, navId) {
+    closeAllPanels();
     // Close ALL inline pages
     document.querySelectorAll('.inline-page').forEach(p => p.classList.remove('active'));
     // Close ALL open modals
     document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-    // Reset return-to-settings flag
+    // Reset return flags
     if(typeof _returnToSettings !== 'undefined') _returnToSettings = false;
     if(typeof _returnToFolders !== 'undefined') _returnToFolders = false;
     document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
@@ -1380,6 +1570,7 @@ function renderLinks() {
     let arr = [...S.links];
     if(S.activeTab==='fav')    arr = arr.filter(l=>l.fav&&!l.archived);
     else if(S.activeTab==='archive') arr = arr.filter(l=>l.archived);
+    else if(S.activeTab==='__recent__') { const ids=S._recentIds||[]; arr=ids.map(id=>S.links.find(l=>l.id===id)).filter(Boolean); }
     else if(typeof S.activeTab==='number') arr = arr.filter(l=>l.fId===S.activeTab&&!l.archived);
     else arr = arr.filter(l=>!l.archived);
     if(q) arr = arr.filter(l=>l.title.toLowerCase().includes(q)||(l.tags&&l.tags.some(t=>t.toLowerCase().includes(q))));
@@ -1389,13 +1580,26 @@ function renderLinks() {
     } else if(S.settings && S.settings.hiddenBrowsers && S.settings.hiddenBrowsers.length){
         arr = arr.filter(l=>!l.imported || !S.settings.hiddenBrowsers.includes(l.importedFrom));
     }
-    // Sort by date descending (newest first)
-    if(S.settings&&S.settings.sortByDate) arr.sort((a,b)=>(b.id||0)-(a.id||0));
-    // Pinned always on top (can be toggled in settings, default ON)
-    const pinnedTopOn = S.settings ? S.settings.pinnedTop !== false : true;
-    if(pinnedTopOn) arr.sort((a,b)=>{ if(a.pinned&&!b.pinned) return -1; if(!a.pinned&&b.pinned) return 1; return 0; });
+    // Sort logic:
+    // - Manual mode: keep S.links order (drag/saved order), no sorting
+    // - Edit mode: keep S.links order so drag commits are preserved
+    // - All other modes: sort by selected criterion
+    const _sm = S._sortMode || 'date';
+    const inEditMode = S._bmEditMode || false;
+    const isManual = (_sm === 'manual');
+    if(!isManual && !inEditMode) {
+        if(_sm === 'date')        arr.sort((a,b)=>(b.id||0)-(a.id||0));
+        else if(_sm === 'visits') arr.sort((a,b)=>(b.views||0)-(a.views||0));
+        else if(_sm === 'last')   arr.sort((a,b)=>(b.lastVisited||0)-(a.lastVisited||0));
+        else if(_sm === 'folder') arr.sort((a,b)=>{ const fa=S.folders.find(f=>f.id===a.fId); const fb=S.folders.find(f=>f.id===b.fId); return (fa?fa.name:'zzz').localeCompare(fb?fb.name:'zzz'); });
+        else if(_sm === 'name')   arr.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+        // Pinned always on top (not in manual/edit)
+        const pinnedTopOn = S.settings ? S.settings.pinnedTop !== false : true;
+        if(pinnedTopOn) arr.sort((a,b)=>{ if(a.pinned&&!b.pinned) return -1; if(!a.pinned&&b.pinned) return 1; return 0; });
+    }
+    // Manual or edit mode: use S.links order as-is
 
-    if(!arr.length) { el.innerHTML=`<div class="empty"><i class="fa-regular fa-bookmark"></i><p>No bookmarks found</p></div>`; return; }
+    if(!arr.length) { el.innerHTML=`<div class="empty"><i class="fa-regular fa-bookmark"></i><p>${T('noBookmarks')||'No bookmarks found'}</p></div>`; return; }
 
     el.innerHTML = arr.map(l => {
         const f = S.folders.find(x=>x.id===l.fId);
@@ -1418,15 +1622,14 @@ function renderLinks() {
             <div class="link-card" onclick="openEditDetail(${l.id})">
                 <i class="fa-solid fa-arrow-up-right-from-square ext-icon" onclick="event.stopPropagation();openLink('${esc(l.url)}')"></i>
                 <i class="${l.archived?'fa-solid fa-box-open':'fa-solid fa-box-archive'} arc-icon" onclick="event.stopPropagation();toggleArchiveById(${l.id})" title="${l.archived?'Unarchive':'Archive'}"></i>
-                <div class="bm-edit-overlay">
-                    <div class="bm-edit-top">
-                        <div class="bm-move-btn bm-edit-btn" draggable="true" ondragstart="bmDragStart(event,'${l.id}')" ondragend="bmDragEnd(event)" ontouchstart="_bmTouchStart(event,${l.id})" ontouchmove="_bmTouchMove(event)" ontouchend="_bmTouchEnd(event)" title="Drag to reorder"><i class="fa-solid fa-up-down-left-right"></i></div>
-                        <div class="bm-del-btn bm-edit-btn" onclick="event.stopPropagation();deleteLink(${l.id})" title="Delete"><i class="fa-solid fa-xmark"></i></div>
+                <div class="bm-edit-overlay" style="flex-direction:row;align-items:center;padding:0 12px;justify-content:space-between;">
+                    <div class="bm-move-btn bm-edit-btn" draggable="true" ondragstart="bmDragStart(event,'${l.id}')" ondragend="bmDragEnd(event)" ontouchstart="_bmTouchStart(event,${l.id})" ontouchmove="_bmTouchMove(event)" ontouchend="_bmTouchEnd(event)" title="Hold &amp; drag to reorder" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;cursor:grab;touch-action:none;">
+                        <span style="display:block;width:20px;height:3px;background:#f97316;border-radius:2px;"></span>
+                        <span style="display:block;width:14px;height:3px;background:#f97316;border-radius:2px;"></span>
+                        <span style="display:block;width:20px;height:3px;background:#f97316;border-radius:2px;"></span>
                     </div>
-                    <div class="bm-edit-actions">
-                        <button class="bm-edit-full-btn-edit" onclick="event.stopPropagation();openAddModal(${l.id})"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="bm-edit-full-btn-open bm-archive-btn" onclick="event.stopPropagation();toggleArchiveById(${l.id})" style="background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.4);color:#60a5fa;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;"><i class="fa-solid fa-box-archive"></i> Archive</button>
-                        <button class="bm-edit-full-btn-open" onclick="event.stopPropagation();openLink('${esc(l.url)}')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open</button>
+                    <div class="bm-del-btn bm-edit-btn" onclick="event.stopPropagation();deleteLink(${l.id})" title="Delete" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;">
+                        <i class="fa-solid fa-trash-can"></i>
                     </div>
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;">
@@ -1435,7 +1638,9 @@ function renderLinks() {
                         <span class="card-act${l.fav?' ca-red':''}" onclick="event.stopPropagation();toggleFav(${l.id})" title="Favorite"><i class="${l.fav?'fa-solid':'fa-regular'} fa-heart" style="${l.fav?'color:#ef4444;':''}"></i></span>
                         <span class="card-act${l.pinned?' ca-blue':''}" onclick="event.stopPropagation();togglePin(${l.id})" title="Pin"><i class="fa-solid fa-thumbtack"></i></span>
                         <span class="card-act" onclick="event.stopPropagation();shareCard('${esc(l.url)}','${esc(l.title)}')" title="Share" style="color:#22c55e;"><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                        <span class="card-act" onclick="event.stopPropagation();copyUrl('${esc(l.url)}',this)" title="Copy URL"><i class="fa-regular fa-copy"></i></span>
                     </div>
+                    <div style="font-size:10px;color:var(--text-dim);text-align:center;line-height:1.3;opacity:.7;white-space:nowrap;">${l.id?_fmtDate(l.id):''}</div>
                 </div>
                 <div class="linfo">
                     <h4>${esc(l.title)}</h4>
@@ -1496,6 +1701,13 @@ function updVCheck(){
 }
 
 // ADD MODAL
+function confirmCloseAddModal(){
+    const url = document.getElementById('lUrl')?.value.trim();
+    const title = document.getElementById('lTitle')?.value.trim();
+    const hasInput = (url && url.length>0) || (title && title.length>0);
+    if(hasInput && !confirm(T('confirmLeave')||'Leave without saving?')) return;
+    closeModal('addModal');
+}
 function openAddModal(id=null){
     S.editingLink=id; S.tempLogo=null; S.selectedFolderId=null;
     // Hide generating banner
@@ -2363,8 +2575,13 @@ function openCreateFolder(){
     document.getElementById('folderDelBtn').style.display='none';
     updIPreview(); renderCPick();
     closeModal('folderSelectModal'); closeModal('manageFoldersModal');
+    // On mobile inline page: hide folders page and return to it after save
+    if(window.innerWidth <= 767 && document.getElementById('page-folders') &&
+       document.getElementById('page-folders').classList.contains('active')){
+        document.getElementById('page-folders').classList.remove('active');
+        _returnToFolders = true;
+    }
     openModal('folderModal');
-    // remember source so saveFolder can return to the right modal
     S._createFolderFromAdd = (S.folderSelectSrc==='add');
 }
 
@@ -2436,7 +2653,11 @@ function quickDeleteFolder(id){
 
 function deleteFolder(id){ quickDeleteFolder(id); }
 
-function closeFolderModal(){ closeModal('folderModal'); if(S.editingFolder) openManageFolders(); }
+function closeFolderModal(){
+    const name = document.getElementById('fName').value.trim();
+    if(name.length > 0 && !confirm(T('confirmLeaveFolder')||'Leave without saving?')) return;
+    closeModal('folderModal'); if(S.editingFolder) openManageFolders();
+}
 
 // ICON PICKER
 function openIconPicker(){ document.getElementById('iconSearch').value=''; renderIconGrid(); openModal('iconPickerModal'); }
@@ -2768,7 +2989,19 @@ function renderIconGrid(){
 }
 
 function selIcon(ic){ S.selIcon=ic; renderIconGrid(); }
-function saveIconSel(){ updIPreview(); closeModal('iconPickerModal'); }
+function saveIconSel(){
+    updIPreview();
+    // Temporarily suppress the _returnToFolders redirect so that closing the
+    // icon picker doesn't exit the folderModal — we want to stay in folderModal.
+    const savedReturnToFolders = typeof _returnToFolders !== 'undefined' ? _returnToFolders : false;
+    const savedReturnToSettings = typeof _returnToSettings !== 'undefined' ? _returnToSettings : false;
+    _returnToFolders = false;
+    _returnToSettings = false;
+    closeModal('iconPickerModal');
+    // Restore the flags so that closing folderModal still returns correctly.
+    _returnToFolders = savedReturnToFolders;
+    _returnToSettings = savedReturnToSettings;
+}
 function updIPreview(){ document.getElementById('iPreview').innerHTML=`<i class="${S.selIcon}" style="color:${S.selColor};font-size:22px;"></i>`; }
 
 function renderCPick(){
@@ -2788,24 +3021,53 @@ function saveTags(){
     closeModal('tagsModal');
 }
 
-function toggleSortDate(){
-    if(!S.settings) S.settings={};
-    S.settings.sortByDate=!S.settings.sortByDate;
-    S.sortByDate=S.settings.sortByDate;
-    localStorage.setItem('ly_settings',JSON.stringify(S.settings));
-    const icon=document.getElementById('sortDateIcon');
-    if(icon){ icon.style.color=S.settings.sortByDate?'var(--primary)':'var(--text-dim)'; }
-    const btn=document.getElementById('sortDateBtn');
-    if(btn){ btn.style.borderColor=S.settings.sortByDate?'var(--primary)':'var(--border)'; }
+// ── NEW SORT SYSTEM ──
+S._sortMode = localStorage.getItem('ly_sortMode') || 'date';
+
+function toggleSortDD(){
+    closeAllDropdowns();
+    const dd = document.getElementById('sortDD');
+    if(dd){ dd.classList.toggle('open'); updateSortChecks(); }
+}
+function closeAllDropdowns(){
+    ['sortDD','folderFilterDD','tagDD','viewDD'].forEach(id=>{
+        const d=document.getElementById(id); if(d) d.classList.remove('open');
+    });
+}
+function setSortMode(mode){
+    S._sortMode = mode;
+    localStorage.setItem('ly_sortMode', mode);
+    const icon = document.getElementById('sortDateIcon');
+    const btn  = document.getElementById('sortBtn');
+    const isDefault = (mode === 'date' || mode === 'name');
+    const isManual = (mode === 'manual');
+    // Manual = orange indicator, others = primary/dim
+    if(icon) icon.style.color = isManual ? '#f97316' : (isDefault ? 'var(--text-dim)' : 'var(--primary)');
+    if(btn)  btn.style.borderColor = isManual ? '#f97316' : (isDefault ? 'var(--border)' : 'var(--primary)');
+    updateSortChecks();
+    document.getElementById('sortDD')?.classList.remove('open');
+    // Manual order = just show in saved order, NO edit mode, NO overlay
+    // Edit mode is controlled only by the pencil button
     renderLinks();
 }
+function updateSortChecks(){
+    ['manual','date','visits','last','folder','name'].forEach(m=>{
+        const el = document.getElementById('schk-'+m);
+        if(el) el.style.display = (S._sortMode===m) ? 'inline' : 'none';
+    });
+}
+// Backward compat
+function toggleSortDate(){ setSortMode(S._sortMode==='date'?'name':'date'); }
+function updateSortDateBtn(){ updateSortChecks(); }
 
-function updateSortDateBtn(){
-    const on=S.settings&&S.settings.sortByDate;
-    const icon=document.getElementById('sortDateIcon');
-    if(icon) icon.style.color=on?'var(--primary)':'var(--text-dim)';
-    const btn=document.getElementById('sortDateBtn');
-    if(btn) btn.style.borderColor=on?'var(--primary)':'var(--border)';
+function _fmtDate(ts){
+    if(!ts) return '';
+    try {
+        const d = new Date(ts);
+        if(isNaN(d)) return '';
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+    } catch(e){ return ''; }
 }
 
 // LINK ACTIONS
@@ -2908,47 +3170,47 @@ function shareFormat(type){
 
     } else if(type==='excel'){
         try {
-            const wb=XLSX.utils.book_new();
-            // Helper to make a hyperlink cell
-            const hlink=(url)=>({f:`HYPERLINK("${url.replace(/"/g,'""')}","${url.replace(/"/g,'""')}")`});
-            // All Bookmarks sheet
-            const allRows=[];
-            org.forEach(g=>g.links.forEach(l=>allRows.push({
-                Folder: g.name,
-                Title: l.title,
-                URL: hlink(l.url),
-                Description: l.desc||'',
-                Tags: (l.tags||[]).join(', '),
-                Date: new Date(l.id).toLocaleDateString()
-            })));
-            const wsAll=XLSX.utils.json_to_sheet(allRows,{cellDates:false});
-            wsAll['!cols']=[{wch:20},{wch:40},{wch:55},{wch:50},{wch:30},{wch:14}];
-            XLSX.utils.book_append_sheet(wb,wsAll,'All Bookmarks');
-            // Per-folder sheets
-            const usedNames=new Set(['All Bookmarks']);
-            org.forEach(g=>{
-                if(!g.links.length) return;
-                const rows=g.links.map(l=>({
-                    Title: l.title,
-                    URL: hlink(l.url),
-                    Description: l.desc||'',
-                    Tags: (l.tags||[]).join(', '),
-                    Date: new Date(l.id).toLocaleDateString()
-                }));
-                const ws=XLSX.utils.json_to_sheet(rows);
-                ws['!cols']=[{wch:40},{wch:55},{wch:50},{wch:30},{wch:14}];
-                let safeN=g.name.replace(/[\\/:*?\[\]]/g,'').replace(/[^\x00-\x7E]/g,'').trim().slice(0,28)||'Sheet';
-                let finalN=safeN; let counter=2;
-                while(usedNames.has(finalN)){ finalN=safeN.slice(0,25)+' '+counter; counter++; }
-                usedNames.add(finalN);
-                XLSX.utils.book_append_sheet(wb,ws,finalN);
+            // Helper: strip all control chars and XML-unsafe chars that break Excel
+            function _xlClean(s){
+                if(!s) return '';
+                return String(s)
+                    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'') // control chars
+                    .replace(/[\uFFFE\uFFFF]/g,'')                           // BOM variants
+                    .replace(/[\uD800-\uDFFF]/g,'')                           // lone surrogates
+                    .trim();
+            }
+            const wb = XLSX.utils.book_new();
+            // Single "All Bookmarks" sheet only — multiple sheets increase corruption risk
+            const allRows = [];
+            S.links.filter(l=>!l.archived).forEach(l => {
+                const folder = S.folders.find(f=>f.id===l.fId);
+                allRows.push({
+                    Folder:      _xlClean(folder ? folder.name : 'Unsorted'),
+                    Title:       _xlClean(l.title),
+                    URL:         _xlClean(l.url),
+                    Description: _xlClean(l.desc),
+                    Tags:        _xlClean((l.tags||[]).join(', ')),
+                    Favorite:    l.fav ? 'Yes' : 'No',
+                    Views:       Number(l.views)||0,
+                    Saved:       l.id ? _xlClean(new Date(l.id).toLocaleDateString('en-GB')) : ''
+                });
             });
-            XLSX.writeFile(wb,'WebMark_Bookmarks.xlsx');
+            const ws = XLSX.utils.json_to_sheet(allRows);
+            ws['!cols'] = [{wch:18},{wch:38},{wch:55},{wch:45},{wch:25},{wch:9},{wch:7},{wch:13}];
+            XLSX.utils.book_append_sheet(wb, ws, 'Bookmarks');
+            // Use arraybuffer output to avoid binary string issues
+            const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+            const blob = new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'WebMark_Bookmarks.xlsx';
+            document.body.appendChild(a); a.click();
+            setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+            showToast('✅ Excel exported — '+allRows.length+' bookmarks','var(--primary)');
         } catch(err) {
             alert('Excel export failed: '+err.message);
         }
-
-    } else if(type==='pdf'){
+} else if(type==='pdf'){
         const {jsPDF}=window.jspdf;
         const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
         // Use Helvetica which supports Latin — for Arabic we transliterate note
@@ -3002,7 +3264,64 @@ function shareFormat(type){
     closeModal('shareModal');
 }
 
-function showHelp(){ alert('Linkery.Ai by Saad Mounir\n\nSwipe left → Archive / Delete\nSwipe right → Favorite / Pin\nTap bookmark to edit details'); }
+function showHelp(){
+    const existing = document.getElementById('helpModal');
+    if(existing) existing.remove();
+    const isAr = S.lang==='ar';
+    const dir = isAr ? 'rtl' : 'ltr';
+    const HL = {
+        en:{ title:'Help & Guide', gestures:'⚡ Quick Gestures', tap:'Tap a bookmark → view & edit details', open:'Tap 🔗 icon (top right) → open the link', actions:'♥ Pin ↑ Copy buttons under thumbnail', reminder:'🔔 Set Reminder — How it works', reminderDesc:'When you open a bookmark and tap <b style="color:#a78bfa;">Set Reminder</b>, you pick a <b>date and time</b>. At that exact moment the app sends you a <b>browser notification</b>:', reminderEx:'⏰ WebMark Reminder: [bookmark title]', reminderUse:'Example uses:', reminderU1:'Save an article → remind yourself at 8pm tonight', reminderU2:'Save a product → remind on payday', reminderU3:'Save a tool → remind on the weekend', reminderWarn:'⚠️ Limitation: Works only while the browser is open. You must allow notifications when prompted.', folders:'📁 Folders & Tags', foldersT1:'Use the ✏️ pencil next to "All" to enter edit mode — drag to reorder folders AND bookmarks', foldersT2:'The sort ↕ button lets you sort by date, visits, last visited, folder, or name', foldersT3:'Tags are only shown on manually saved bookmarks', backup:'💾 Backup & Import', backupT1:'Export JSON → saves all bookmarks to a file', backupT2:'Import JSON → restores from a backup file', backupT3:'Import HTML → import bookmarks from Chrome/Firefox/Safari/Edge' },
+        fr:{ title:'Aide & Guide', gestures:'⚡ Gestes rapides', tap:'Appuyer sur un favori → voir & modifier', open:'Appuyer sur 🔗 (en haut à droite) → ouvrir le lien', actions:'♥ Épingler ↑ Copier sous la vignette', reminder:'🔔 Définir un rappel — Comment ça marche', reminderDesc:'Quand vous ouvrez un favori et appuyez sur <b style="color:#a78bfa;">Définir rappel</b>, vous choisissez une <b>date et heure</b>. À ce moment exact, l\'app envoie une <b>notification</b>:', reminderEx:'⏰ WebMark Rappel: [titre du favori]', reminderUse:'Exemples:', reminderU1:'Sauvegarder un article → rappel ce soir à 20h', reminderU2:'Sauvegarder un produit → rappel le jour de paie', reminderU3:'Sauvegarder un outil → rappel ce week-end', reminderWarn:'⚠️ Limitation: Fonctionne uniquement quand le navigateur est ouvert.', folders:'📁 Dossiers & Étiquettes', foldersT1:'Utilisez ✏️ à côté de "Tout" pour le mode édition — glissez pour réorganiser', foldersT2:'Le bouton tri ↕ permet de trier par date, visites, dossier ou nom', foldersT3:'Les étiquettes sont uniquement sur les favoris sauvegardés manuellement', backup:'💾 Sauvegarde & Import', backupT1:'Exporter JSON → sauvegarde tous vos favoris', backupT2:'Importer JSON → restaurer une sauvegarde', backupT3:'Importer HTML → importer depuis Chrome/Firefox/Safari/Edge' },
+        es:{ title:'Ayuda & Guía', gestures:'⚡ Gestos rápidos', tap:'Toca un marcador → ver & editar detalles', open:'Toca 🔗 (arriba a la derecha) → abrir el enlace', actions:'♥ Fijar ↑ Copiar bajo la miniatura', reminder:'🔔 Establecer recordatorio — Cómo funciona', reminderDesc:'Cuando abres un marcador y tocas <b style="color:#a78bfa;">Establecer recordatorio</b>, eliges una <b>fecha y hora</b>. En ese momento exacto la app envía una <b>notificación</b>:', reminderEx:'⏰ WebMark Recordatorio: [título del marcador]', reminderUse:'Ejemplos:', reminderU1:'Guarda un artículo → recuérdame esta noche a las 8pm', reminderU2:'Guarda un producto → recuérdame el día de pago', reminderU3:'Guarda una herramienta → recuérdame el fin de semana', reminderWarn:'⚠️ Limitación: Solo funciona con el navegador abierto.', folders:'📁 Carpetas & Etiquetas', foldersT1:'Usa ✏️ junto a "Todo" para el modo edición — arrastra para reordenar', foldersT2:'El botón orden ↕ permite ordenar por fecha, visitas, carpeta o nombre', foldersT3:'Las etiquetas solo aparecen en marcadores guardados manualmente', backup:'💾 Copia & Importar', backupT1:'Exportar JSON → guarda todos tus marcadores', backupT2:'Importar JSON → restaurar una copia', backupT3:'Importar HTML → importar desde Chrome/Firefox/Safari/Edge' },
+        it:{ title:'Aiuto & Guida', gestures:'⚡ Gesti rapidi', tap:'Tocca un segnalibro → visualizza & modifica', open:'Tocca 🔗 (in alto a destra) → apri il link', actions:'♥ Fissa ↑ Copia sotto la miniatura', reminder:'🔔 Imposta promemoria — Come funziona', reminderDesc:'Quando apri un segnalibro e tocchi <b style="color:#a78bfa;">Imposta promemoria</b>, scegli <b>data e ora</b>. In quel momento esatto l\'app invia una <b>notifica</b>:', reminderEx:'⏰ WebMark Promemoria: [titolo del segnalibro]', reminderUse:'Esempi:', reminderU1:'Salva un articolo → ricordami stasera alle 20', reminderU2:'Salva un prodotto → ricordami il giorno di paga', reminderU3:'Salva uno strumento → ricordami nel weekend', reminderWarn:'⚠️ Limitazione: Funziona solo con il browser aperto.', folders:'📁 Cartelle & Tag', foldersT1:'Usa ✏️ accanto a "Tutti" per la modalità modifica — trascina per riordinare', foldersT2:'Il pulsante ordina ↕ permette di ordinare per data, visite, cartella o nome', foldersT3:'I tag appaiono solo sui segnalibri salvati manualmente', backup:'💾 Backup & Importa', backupT1:'Esporta JSON → salva tutti i segnalibri', backupT2:'Importa JSON → ripristina da un backup', backupT3:'Importa HTML → importa da Chrome/Firefox/Safari/Edge' },
+        ar:{ title:'المساعدة والدليل', gestures:'⚡ الإيماءات السريعة', tap:'اضغط على إشارة مرجعية ← عرض وتعديل التفاصيل', open:'اضغط على 🔗 (أعلى اليمين) ← فتح الرابط', actions:'♥ تثبيت ↑ نسخ تحت الصورة المصغرة', reminder:'🔔 ضبط تذكير — كيف يعمل', reminderDesc:'عند فتح إشارة مرجعية والضغط على <b style="color:#a78bfa;">ضبط تذكير</b>، تختار <b>تاريخاً ووقتاً</b>. في تلك اللحظة بالضبط يرسل التطبيق <b>إشعاراً</b>:', reminderEx:'⏰ تذكير WebMark: [عنوان الإشارة المرجعية]', reminderUse:'أمثلة:', reminderU1:'احفظ مقالاً ← ذكّرني الليلة الساعة 8 مساءً', reminderU2:'احفظ منتجاً ← ذكّرني يوم الراتب', reminderU3:'احفظ أداةً ← ذكّرني في عطلة نهاية الأسبوع', reminderWarn:'⚠️ قيد: يعمل فقط عندما يكون المتصفح مفتوحاً.', folders:'📁 المجلدات والوسوم', foldersT1:'استخدم ✏️ بجانب "الكل" للدخول إلى وضع التحرير — اسحب لإعادة الترتيب', foldersT2:'زر الترتيب ↕ يتيح الترتيب حسب التاريخ أو الزيارات أو المجلد أو الاسم', foldersT3:'تظهر الوسوم فقط على الإشارات المحفوظة يدوياً', backup:'💾 النسخ الاحتياطي والاستيراد', backupT1:'تصدير JSON ← حفظ جميع الإشارات المرجعية', backupT2:'استيراد JSON ← استعادة من نسخة احتياطية', backupT3:'استيراد HTML ← استيراد من Chrome/Firefox/Safari/Edge' }
+    };
+    const h = HL[S.lang] || HL.en;
+    const m = document.createElement('div');
+    m.id = 'helpModal';
+    m.dir = dir;
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0 40px;backdrop-filter:blur(6px);';
+    m.innerHTML = `
+    <div style="background:#1c1c1e;border:1px solid var(--border);border-radius:20px;padding:22px 20px 28px;width:100%;max-width:520px;margin:0 12px;animation:slideUp .28s ease;" dir="${dir}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <div style="font-size:18px;font-weight:800;">📖 ${h.title}</div>
+            <button onclick="document.getElementById('helpModal').remove()" style="background:rgba(255,255,255,.07);border:none;color:var(--text-dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="font-size:13px;line-height:1.7;color:var(--text-dim);display:flex;flex-direction:column;gap:14px;">
+            <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;">
+                <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;">${h.gestures}</div>
+                <div>• <b style="color:var(--text);">${h.tap}</b></div>
+                <div>• <b style="color:var(--text);">${h.open}</b></div>
+                <div>• <b style="color:var(--text);">${h.actions}</b></div>
+            </div>
+            <div style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:12px;padding:14px;">
+                <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;">${h.reminder}</div>
+                <div>${h.reminderDesc}</div>
+                <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:8px 12px;margin:8px 0;font-family:monospace;font-size:12px;color:#c4b5fd;">${h.reminderEx}</div>
+                <div style="color:#818cf8;font-size:12px;font-weight:600;margin-top:6px;">${h.reminderUse}</div>
+                <div>• ${h.reminderU1}</div>
+                <div>• ${h.reminderU2}</div>
+                <div>• ${h.reminderU3}</div>
+                <div style="margin-top:8px;color:#f87171;font-size:12px;">${h.reminderWarn}</div>
+            </div>
+            <div style="background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);border-radius:12px;padding:14px;">
+                <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;">${h.folders}</div>
+                <div>• ${h.foldersT1}</div>
+                <div>• ${h.foldersT2}</div>
+                <div>• ${h.foldersT3}</div>
+            </div>
+            <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:14px;">
+                <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;">${h.backup}</div>
+                <div>• ${h.backupT1}</div>
+                <div>• ${h.backupT2}</div>
+                <div>• ${h.backupT3}</div>
+            </div>
+            <div style="text-align:center;font-size:11px;opacity:.5;margin-top:4px;">WebMark · v3.0</div>
+        </div>
+    </div>`;
+    m.addEventListener('click', e=>{ if(e.target===m) m.remove(); });
+    document.body.appendChild(m);
+}
 function closeModal(id){ 
     document.getElementById(id).classList.remove('active');
     // If we came from the inline settings page, go back to it
@@ -3030,20 +3349,40 @@ function openModal(id){
 // EXPORT / IMPORT
 function exportData(){
     const blob = new Blob([JSON.stringify({f:S.folders,l:S.links},null,2)],{type:'application/json'});
-    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Linkery_Backup.json'; a.click();
+    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='WebMark_Backup.json'; a.click();
     closeModal('shareModal');
 }
 function importData(e){
-    const r=new FileReader();
-    r.onload=ev=>{
-        try{
-            const d=JSON.parse(ev.target.result);
-            if(d.f&&d.l){ S.folders=d.f; S.links=d.l; save(); init(); alert('Import successful! '+d.l.length+' bookmarks loaded.'); }
-            else alert('Invalid backup file.');
-        }catch(err){ alert('Could not read file. Make sure it is a Linkery JSON backup.'); }
+    const file = e.target.files[0];
+    if(!file){ e.target.value=''; return; }
+    const r = new FileReader();
+    r.onload = ev => {
+        try {
+            const raw = ev.target.result.trim();
+            const d = JSON.parse(raw);
+            // Accept both {f,l} format (WebMark/Linkery) and plain array
+            let folders = [], links = [];
+            if(d && Array.isArray(d.l) && Array.isArray(d.f)){
+                folders = d.f; links = d.l;
+            } else if(d && Array.isArray(d.links)){
+                links = d.links; folders = d.folders||[];
+            } else if(Array.isArray(d)){
+                links = d;
+            } else {
+                alert('Invalid backup file. Please use a WebMark JSON backup.');
+                e.target.value=''; return;
+            }
+            if(!links.length){ alert('No bookmarks found in this file.'); e.target.value=''; return; }
+            S.folders = folders; S.links = links;
+            save(); init();
+            alert('✅ Import successful! ' + links.length + ' bookmarks loaded.');
+        } catch(err) {
+            alert('Could not read file. Make sure it is a valid WebMark JSON backup.');
+        }
+        e.target.value='';
     };
-    r.readAsText(e.target.files[0]);
-    e.target.value='';
+    r.onerror = () => { alert('Error reading file. Please try again.'); e.target.value=''; };
+    r.readAsText(file);
 }
 
 // TAG DROPDOWN
@@ -3092,8 +3431,18 @@ function renderFolderFilterDD(){
     if(icon) icon.style.color=(!isAll)?'var(--primary)':'var(--text-dim)';
 }
 document.addEventListener('click',function(e){
-    const fb=document.getElementById('folderFilterBtn');
-    if(fb&&!fb.contains(e.target)) document.getElementById('folderFilterDD')?.classList.remove('open');
+    // Close all dropdowns when clicking outside their parent buttons
+    const pairs = [
+        ['sortBtn','sortDD'],
+        ['folderFilterBtn','folderFilterDD'],
+        ['tagBtn','tagDD'],
+        ['viewSwitcherBtn','viewDD'],
+    ];
+    pairs.forEach(([btnId, ddId])=>{
+        const btn = document.getElementById(btnId);
+        const dd  = document.getElementById(ddId);
+        if(dd && btn && !btn.contains(e.target)) dd.classList.remove('open');
+    });
 });
 function switchTabFromDD(id){
     S.activeTab=id;
@@ -3126,11 +3475,15 @@ function toggleTheme(){
     const inner=document.getElementById('themeInner');
     if(tog) tog.className=isLight?'theme-toggle light-mode-btn':'theme-toggle dark-mode-btn';
     if(inner) inner.innerHTML=isLight?'<i class="fa-regular fa-sun"></i>':'<i class="fa-regular fa-moon"></i>';
+    // Sync settings page toggle if it exists
+    if(typeof _syncSpThemeToggle === 'function') _syncSpThemeToggle();
 }
-// Apply saved theme on load
+// Apply saved theme on load — default is LIGHT MODE
 (function(){
-    const saved=localStorage.getItem('ly_theme');
-    if(saved==='light'){
+    const saved = localStorage.getItem('ly_theme');
+    // Default to light if no preference saved
+    const isLight = saved === null ? true : (saved === 'light');
+    if(isLight){
         document.body.classList.add('light-mode');
         setTimeout(()=>{
             const tog=document.getElementById('themeToggle');
@@ -3149,62 +3502,89 @@ let _dragSrcId = null;
 // Touch drag support for bookmark reordering
 let _touchDragEl = null, _touchDragId = null, _touchDragClone = null, _touchDragOffY = 0;
 
+// ── TOUCH DRAG REORDER ──
+let _tdId=null, _tdEl=null, _tdClone=null, _tdOffY=0, _tdScrollEl=null, _tdScrollRAF=null;
+
 function _bmTouchStart(e, id) {
     if(!S._bmEditMode) return;
-    _touchDragId = id;
-    _touchDragEl = document.getElementById('lc-'+id);
-    const touch = e.touches[0];
-    const rect = _touchDragEl.getBoundingClientRect();
-    _touchDragOffY = touch.clientY - rect.top;
-    // Create a visual clone
-    _touchDragClone = _touchDragEl.cloneNode(true);
-    _touchDragClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;opacity:0.7;pointer-events:none;transition:none;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
-    document.body.appendChild(_touchDragClone);
-    _touchDragEl.style.opacity = '0.3';
     e.preventDefault();
+    e.stopPropagation();
+    _tdId = id;
+    _tdEl = document.getElementById('lc-'+id);
+    _tdScrollEl = document.getElementById('linkListWrap');
+    const touch = e.touches[0];
+    const rect = _tdEl.getBoundingClientRect();
+    _tdOffY = touch.clientY - rect.top;
+    // Clone for visual feedback
+    _tdClone = _tdEl.cloneNode(true);
+    _tdClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:9999;opacity:0.85;pointer-events:none;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.6);transform:scale(1.02);`;
+    document.body.appendChild(_tdClone);
+    _tdEl.style.opacity = '0.25';
+    _tdEl.style.transform = 'scale(0.97)';
 }
+
 function _bmTouchMove(e) {
-    if(!_touchDragClone) return;
-    const touch = e.touches[0];
-    _touchDragClone.style.top = (touch.clientY - _touchDragOffY) + 'px';
+    if(!_tdClone) return;
     e.preventDefault();
+    const touch = e.touches[0];
+    const newTop = touch.clientY - _tdOffY;
+    _tdClone.style.top = newTop + 'px';
+    // Highlight target
+    _tdClone.style.display = 'none';
+    const under = document.elementFromPoint(touch.clientX, touch.clientY);
+    _tdClone.style.display = '';
+    document.querySelectorAll('.link-container.td-over').forEach(el=>el.classList.remove('td-over'));
+    const tc = under && under.closest('.link-container');
+    if(tc && tc.id !== 'lc-'+_tdId) tc.classList.add('td-over');
+    // Auto-scroll
+    if(_tdScrollEl) {
+        const scrollRect = _tdScrollEl.getBoundingClientRect();
+        const margin = 60;
+        if(touch.clientY < scrollRect.top + margin) {
+            _tdScrollEl.scrollTop -= 8;
+        } else if(touch.clientY > scrollRect.bottom - margin) {
+            _tdScrollEl.scrollTop += 8;
+        }
+    }
 }
+
 function _bmTouchEnd(e) {
-    if(!_touchDragClone) return;
+    if(!_tdClone) return;
+    e.preventDefault();
     const touch = e.changedTouches[0];
-    // Find element under finger
-    _touchDragClone.style.display = 'none';
-    const underEl = document.elementFromPoint(touch.clientX, touch.clientY);
-    _touchDragClone.style.display = '';
-    const targetContainer = underEl && underEl.closest('.link-container');
-    if(targetContainer && targetContainer.id !== 'lc-'+_touchDragId) {
-        const targetId = parseInt(targetContainer.id.replace('lc-',''));
-        const si = S.links.findIndex(l=>l.id===_touchDragId);
-        const ti = S.links.findIndex(l=>l.id===targetId);
-        if(si>=0 && ti>=0) {
-            const [moved] = S.links.splice(si,1);
-            S.links.splice(ti,0,moved);
+    // Remove highlight
+    document.querySelectorAll('.link-container.td-over').forEach(el=>el.classList.remove('td-over'));
+    // Find drop target
+    _tdClone.style.display = 'none';
+    const under = document.elementFromPoint(touch.clientX, touch.clientY);
+    _tdClone.style.display = '';
+    const tc = under && under.closest('.link-container');
+    if(tc && tc.id !== 'lc-'+_tdId) {
+        const targetId = tc.id.replace('lc-','');
+        const tidNum = isNaN(targetId) ? targetId : parseInt(targetId);
+        const si = S.links.findIndex(l=>String(l.id)===String(_tdId));
+        const ti = S.links.findIndex(l=>String(l.id)===String(tidNum));
+        if(si>=0 && ti>=0 && si!==ti) {
+            const [moved] = S.links.splice(si, 1);
+            S.links.splice(ti, 0, moved);
             save();
         }
     }
-    _touchDragClone.remove();
-    _touchDragClone = null;
-    if(_touchDragEl) { _touchDragEl.style.opacity = ''; _touchDragEl = null; }
-    _touchDragId = null;
-    const wrap = document.getElementById('linkListWrap');
-    if(wrap && S._bmEditMode) { wrap.classList.add('link-list-edit-mode'); }
+    // Cleanup
+    _tdClone.remove(); _tdClone = null;
+    if(_tdEl) { _tdEl.style.opacity=''; _tdEl.style.transform=''; _tdEl=null; }
+    _tdId = null;
+    // Re-render keeping edit mode
     renderLinks();
+    const wrap = document.getElementById('linkListWrap');
     if(wrap && S._bmEditMode) wrap.classList.add('link-list-edit-mode');
 }
 
 function toggleBookmarkEditMode(){
     S._bmEditMode = !S._bmEditMode;
-    const btn = document.getElementById('editModeToggle');
-    const lbl = document.getElementById('editModeLabel');
-    if(btn){ btn.style.background = S._bmEditMode ? 'rgba(34,197,94,.12)' : 'none'; btn.style.borderColor = S._bmEditMode ? 'var(--primary)' : 'var(--border)'; btn.style.color = S._bmEditMode ? 'var(--primary)' : 'var(--text-dim)'; }
-    if(lbl) lbl.textContent = S._bmEditMode ? 'Done' : 'Edit';
+    const on = S._bmEditMode;
     const wrap = document.getElementById('linkListWrap');
-    if(wrap) wrap.classList.toggle('link-list-edit-mode', S._bmEditMode);
+    if(wrap) wrap.classList.toggle('link-list-edit-mode', on);
 }
 
 function bmDragStart(e, id){
@@ -3327,6 +3707,12 @@ function openSettings(){
     openModal('settingsModal');
     setTimeout(updateBrowserPills,20);
     setTimeout(renderPerBrowserToggles,20);
+    // Sync font labels
+    const fSize = parseInt(localStorage.getItem('ly_fontSize')||'14');
+    const dfl = document.getElementById('desk-fontSizeLabel');
+    if(dfl) dfl.textContent = fSize+'px';
+    const savedF = localStorage.getItem('ly_font')||'Inter';
+    document.querySelectorAll('.font-pill').forEach(p=>p.classList.toggle('active', p.dataset.font===savedF));
 }
 function updateSettingToggles(){
     const defaultTrue=['showFolders','openNewTab','showThumbs','animEditMode','pinnedTop'];
@@ -3470,22 +3856,26 @@ async function importBrowserBookmarks(e){
             const title=(a.textContent||'').trim()||url;
             if(!url||url.startsWith('javascript')||url.startsWith('place:')) continue;
             if(S.links.find(x=>x.url===url)) continue;
-            // Parse date from ADD_DATE
-            let bookmarkDate = BASE_OLD_TS - (i * 1000);
+            // Parse date from ADD_DATE attribute (Unix timestamp in seconds)
+            let bookmarkDate;
             const addDate = a.getAttribute('add_date');
             if(addDate && !isNaN(parseInt(addDate))){
                 const parsed = parseInt(addDate) * 1000;
-                bookmarkDate = parsed < new Date('2025-01-01').getTime() ? parsed : BASE_OLD_TS - (i*1000);
+                // Valid if between 2000 and now
+                const now = Date.now();
+                const minTs = new Date('2000-01-01').getTime();
+                bookmarkDate = (parsed > minTs && parsed <= now) ? parsed : (now - (i * 500));
+            } else {
+                // No date in file — use now minus a small offset to keep order
+                bookmarkDate = Date.now() - (i * 500);
             }
             // Smart detect
             const siteInfo = detectSiteIcon(url);
             // Generate favicon
             let logo = null;
             try{ const host=new URL(url).hostname; logo=`https://www.google.com/s2/favicons?domain=${host}&sz=128`; }catch(err){}
-            // Smart tags
-            let tags = siteInfo ? [...(siteInfo.tags||[])] : autoTagsFromUrl(url);
-            tags.push('imported', browserName.toLowerCase());
-            tags = [...new Set(tags)].slice(0,8);
+            // No tags for imported bookmarks — tags are only for manually saved bookmarks
+            let tags = [];
             // Assign to category folder
             const category = siteInfo && siteInfo.category;
             const fId = category ? getOrCreateFolder(category) : getFallbackFolder();
@@ -3507,9 +3897,15 @@ async function importBrowserBookmarks(e){
         }
         save(); init();
         const res=document.getElementById('importBMResult');
-        res.style.display='block';
+        const okBtn=document.getElementById('importBMOkBtn');
+        const cancelBtn=document.getElementById('importBMCancelBtn');
         const folderCount=Object.keys(categoryFolderMap).length + (fallbackFolderId?1:0);
-        res.innerHTML=`✓ Imported <b>${imported}</b> bookmarks into <b>${folderCount}</b> category folders from ${browserName} (${anchors.length-imported} duplicates skipped)`;
+        if(res){
+            res.style.display='block';
+            res.innerHTML=`<i class="fa-solid fa-circle-check" style="color:var(--primary);font-size:18px;display:block;margin-bottom:8px;"></i><b style="font-size:15px;">Import Complete!</b><br>${imported} bookmarks added into ${folderCount} folders from ${browserName}${anchors.length-imported>0?' · '+( anchors.length-imported)+' duplicates skipped':''}`;
+        }
+        if(okBtn) okBtn.style.display='block';
+        if(cancelBtn) cancelBtn.style.display='none';
     };
     r.readAsText(file,'UTF-8');
     e.target.value='';
@@ -3585,7 +3981,8 @@ function updateBrowserPills(){
 
 function renderPerBrowserToggles(){
     const container = document.getElementById('perBrowserToggles');
-    if(!container) return;
+    const containerSp = document.getElementById('sp-perBrowserToggles');
+    if(!container && !containerSp) return;
     // Collect all browsers that have been imported
     const browserSet = new Set();
     S.links.filter(l=>l.imported&&l.importedFrom).forEach(l=>browserSet.add(l.importedFrom));
@@ -3607,7 +4004,8 @@ function renderPerBrowserToggles(){
             </div>
         </div>`;
     });
-    container.innerHTML = h;
+    if(container) container.innerHTML = h;
+    if(containerSp) containerSp.innerHTML = h;
 }
 
 function toggleBrowserVisibility(bname){
@@ -3764,14 +4162,13 @@ function markChanged(){
 // ── SYNC — Code-based via paste.rs (truly CORS-free, no account needed) ──
 
 function initUserChip(){
-    const name=localStorage.getItem('ly_username')||'';
+    // Header shows static "WebMark" + "by saad" — no greeting element needed
     const greeting=document.getElementById('greetingText');
-    const h=new Date().getHours();
-    const tw=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-    if(name){
-        if(greeting) greeting.textContent=`${tw}, ${name.split(' ')[0]}`;
-    } else {
-        if(greeting) greeting.textContent=tw+'!';
+    if(greeting){
+        const h=new Date().getHours();
+        const tw=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+        const name=localStorage.getItem('ly_username')||'';
+        greeting.textContent = name ? `${tw}, ${name.split(' ')[0]}` : tw+'!';
     }
 }
 
@@ -4222,7 +4619,224 @@ function openLink(url){
     else window.location.href=url;
 }
 
+// ══════════════════════════════════════════════
+// ── NEW FEATURES ──
+// ══════════════════════════════════════════════
+
+// ── 1. QUICK STATS BAR ──
+function updateQuickStats() {
+    const total = S.links.filter(l=>!l.archived).length;
+    const fav   = S.links.filter(l=>l.fav&&!l.archived).length;
+    const tags  = [...new Set(S.links.flatMap(l=>l.tags||[]))].length;
+    const flds  = S.folders.length;
+    const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('qs-total', total);
+    set('qs-fav',   fav);
+    set('qs-folders', flds);
+    set('qs-tags',  tags);
+}
+
+// ── 2. SURPRISE ME — open a random bookmark ──
+function surpriseMe() {
+    const pool = S.links.filter(l=>!l.archived);
+    if(!pool.length){ showToast('No bookmarks yet!','#f59e0b'); return; }
+    const pick = pool[Math.floor(Math.random()*pool.length)];
+    showToast('🎲 Opening: '+pick.title,'var(--primary)');
+    setTimeout(()=>openLink(pick.url), 400);
+}
+
+// ── 3. COPY URL to clipboard from card ──
+function copyUrl(url, el) {
+    navigator.clipboard.writeText(url).then(()=>{
+        const orig = el.innerHTML;
+        el.innerHTML = '<i class="fa-solid fa-check" style="color:var(--primary)"></i>';
+        setTimeout(()=>el.innerHTML=orig, 1500);
+    }).catch(()=>{ prompt('Copy this URL:', url); });
+}
+
+// ── 4. FOCUS MODE — filter by folder, hide all chrome ──
+let _focusActive = false;
+function enterFocusMode(folderId) {
+    _focusActive = true;
+    const f = S.folders.find(x=>x.id===folderId);
+    const bar = document.getElementById('focusModeBar');
+    const title = document.getElementById('focusModeTitle');
+    if(bar) bar.classList.add('active');
+    if(title) title.textContent = '🧠 Focus: ' + (f?f.name:'All');
+    // Switch to that folder tab
+    switchTab(folderId);
+    // On mobile push mainWrap down
+    const mw = document.getElementById('mainWrap');
+    if(mw && window.innerWidth<=767) mw.style.paddingTop='130px';
+    showToast('Focus mode: '+( f?f.name:'All'),'#8b5cf6');
+}
+function exitFocusMode() {
+    _focusActive = false;
+    const bar = document.getElementById('focusModeBar');
+    if(bar) bar.classList.remove('active');
+    const mw = document.getElementById('mainWrap');
+    if(mw) mw.style.paddingTop='';
+    switchTab('all');
+    showToast('Focus mode off','var(--text-dim)');
+}
+
+// ── 5. BOOKMARK NOTES — save personal notes on any bookmark ──
+function openNotes(id) {
+    const l = S.links.find(x=>x.id===id);
+    if(!l) return;
+    S.editingLink = id;
+    // Inline prompt fallback for simplicity
+    const note = prompt('📝 Your note for "'+l.title+'":', l.note||'');
+    if(note===null) return;
+    l.note = note.trim();
+    save();
+    renderLinks();
+    showToast(l.note ? '📝 Note saved!' : 'Note removed','#fbbf24');
+}
+
+// ── 6. EXPORT to CSV ──
+function exportCSV() {
+    const rows = [['Title','URL','Tags','Folder','Favorites','Views','Note']];
+    S.links.forEach(l=>{
+        const folder = S.folders.find(f=>f.id===l.fId);
+        rows.push([
+            '"'+(l.title||'').replace(/"/g,'""')+'"',
+            '"'+(l.url||'')+'"',
+            '"'+(l.tags||[]).join(', ')+'"',
+            '"'+(folder?folder.name:'Unsorted')+'"',
+            l.fav?'Yes':'No',
+            l.views||0,
+            '"'+(l.note||'').replace(/"/g,'""')+'"'
+        ]);
+    });
+    const csv = rows.map(r=>r.join(',')).join('\n');
+    const blob = new Blob([csv],{type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'WebMark_bookmarks.csv';
+    a.click();
+    showToast('📊 Exported '+S.links.length+' bookmarks as CSV','var(--primary)');
+}
+
+// ── 7. READING LIST mode — mark bookmarks as "read" ──
+function toggleRead(id) {
+    const l = S.links.find(x=>x.id===id);
+    if(!l) return;
+    l.read = !l.read;
+    save(); renderLinks();
+    showToast(l.read?'✅ Marked as read':'↩️ Marked as unread','var(--primary)');
+}
+
+// ── 8. RECENTLY VISITED quick tab ──
+function showRecentlyVisited() {
+    const recent = [...S.links].filter(l=>l.views>0&&!l.archived)
+        .sort((a,b)=>(b.lastVisited||0)-(a.lastVisited||0))
+        .slice(0,10);
+    if(!recent.length){ showToast('No visited bookmarks yet!','#f59e0b'); return; }
+    // Switch to a virtual "Last 10 Visits" tab
+    S.activeTab = '__recent__';
+    S._recentIds = recent.map(l=>l.id);
+    // Populate the 3 stat cards
+    _updateRecentHeader(recent);
+    // Close settings page on mobile
+    document.querySelectorAll('.inline-page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
+    document.getElementById('nav-home')?.classList.add('active');
+    renderTabs();
+    renderLinks();
+    showToast('📅 Last 10 visited bookmarks','#06b6d4');
+}
+
+function _updateRecentHeader(recent){
+    const hdr = document.getElementById('recentHeader');
+    if(!hdr) return;
+    const isRecent = S.activeTab === '__recent__';
+    hdr.style.display = isRecent ? 'block' : 'none';
+    if(!isRecent || !recent) return;
+    // Count card
+    const cnt = document.getElementById('rh-count');
+    if(cnt) cnt.textContent = recent.length;
+    // Most visited
+    const sorted = [...recent].sort((a,b)=>(b.views||0)-(a.views||0));
+    const top = sorted[0];
+    const rhTop = document.getElementById('rh-top');
+    if(rhTop) rhTop.textContent = top ? (top.title||'—').slice(0,18)+(top.title&&top.title.length>18?'…':'') : '—';
+    // Last opened
+    const lastLink = recent[0]; // already sorted by lastVisited
+    const rhLast = document.getElementById('rh-last');
+    if(rhLast && lastLink && lastLink.lastVisited){
+        const d = new Date(lastLink.lastVisited);
+        rhLast.textContent = d.toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    }
+}
+
+// Update quick stats whenever links render
+const _origRenderLinks = renderLinks;
+renderLinks = function() {
+    _origRenderLinks();
+    updateQuickStats();
+};
+
+// ── 9. PATCH openLink to track lastVisited ──
+const _origOpenLink = openLink;
+openLink = function(url) {
+    const l = S.links.find(x=>x.url===url);
+    if(l){ l.lastVisited=Date.now(); l.views=(l.views||0)+1; save(); }
+    _origOpenLink(url);
+};
+
+// ── INIT new features ──
+document.addEventListener('DOMContentLoaded', ()=>{
+    updateQuickStats();
+    // Only show quick stats bar on mobile
+    const qsb = document.getElementById('quickStatsBar');
+    if(qsb && window.innerWidth>=768) qsb.style.display='none';
+});
+
+
+// ── FONT SETTINGS ──
+function setAppFont(fontName){
+    const fontMap = {
+        'Inter': "'Inter',system-ui,sans-serif",
+        'Roboto': "'Roboto','Google Sans',sans-serif",
+        'Georgia': "Georgia,'Times New Roman',serif",
+        'Courier': "'Courier New',Courier,monospace",
+        'System': "system-ui,-apple-system,sans-serif"
+    };
+    const fontVal = fontMap[fontName] || fontMap['Inter'];
+    document.documentElement.style.setProperty('--app-font', fontVal);
+    localStorage.setItem('ly_font', fontName);
+    // Update pill active state
+    document.querySelectorAll('.font-pill').forEach(p=>{
+        p.classList.toggle('active', p.dataset.font===fontName);
+    });
+}
+function adjustFontSize(delta){
+    const cur = parseInt(localStorage.getItem('ly_fontSize')||'14');
+    const next = Math.min(20, Math.max(11, cur + delta));
+    document.documentElement.style.setProperty('--app-font-size', next+'px');
+    localStorage.setItem('ly_fontSize', next);
+    // Update both mobile and desktop labels
+    const lbl = document.getElementById('sp-fontSizeLabel');
+    if(lbl) lbl.textContent = next+'px';
+    const lbl2 = document.getElementById('desk-fontSizeLabel');
+    if(lbl2) lbl2.textContent = next+'px';
+}
+function applyFontSettings(){
+    const font = localStorage.getItem('ly_font');
+    const size = parseInt(localStorage.getItem('ly_fontSize')||'14');
+    if(font) setAppFont(font);
+    document.documentElement.style.setProperty('--app-font-size', size+'px');
+    const lbl = document.getElementById('sp-fontSizeLabel');
+    if(lbl) lbl.textContent = size+'px';
+    const lbl2 = document.getElementById('desk-fontSizeLabel');
+    if(lbl2) lbl2.textContent = size+'px';
+}
+applyFontSettings();
+
+
 init();
+updateQuickStats();
 
 // ── TWEMOJI: Render flag emojis as images on all browsers (fixes Chrome on Windows/Android/iOS) ──
 function applyTwemoji(){
@@ -4242,10 +4856,18 @@ function applyTwemoji(){
     if(lm) twemoji.parse(lm, {folder:'svg',ext:'.svg',base:'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/'});
 }
 setTimeout(applyTwemoji, 200);
-// Patch setLang to re-apply twemoji after language change
+// Patch setLang to re-apply twemoji after language change AND update mobile flag
 const _setLangOrig = setLang;
 window.setLang = function(l){
     _setLangOrig(l);
+    // Always update mobile settings language label immediately
+    const spLb = document.getElementById('sp-langLabel');
+    if(spLb) spLb.innerHTML = getFlagImg(l) + ' ' + (LANG_LABELS[l] || l);
+    // If the inline settings page is visible, re-sync it fully
+    if(document.getElementById('page-settings') && 
+       document.getElementById('page-settings').classList.contains('active')){
+        if(typeof syncSettingsPage === 'function') syncSettingsPage();
+    }
     setTimeout(applyTwemoji, 100);
 };
 </script>
@@ -4282,8 +4904,9 @@ window.setLang = function(l){
     </div>
     <input type="file" id="bmHtmlFile" accept=".html,.htm" onchange="importBrowserBookmarks(event)" style="display:none">
     <button class="btn-p" onclick="document.getElementById('bmHtmlFile').click()"><i class="fa-solid fa-file-import"></i> <span id="importBMBtn">Select Bookmark HTML File</span></button>
-    <div id="importBMResult" style="margin-top:12px;font-size:13px;color:var(--primary);display:none;"></div>
-    <button class="btn-s" onclick="closeModal('importBMModal')">Cancel</button>
+    <div id="importBMResult" style="margin-top:14px;padding:14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;font-size:13px;color:var(--primary);display:none;line-height:1.7;"></div>
+    <button id="importBMOkBtn" class="btn-p" onclick="closeModal('importBMModal')" style="display:none;margin-top:10px;background:var(--primary);color:#000;font-weight:700;"><i class="fa-solid fa-check"></i> Done</button>
+    <button class="btn-s" onclick="closeModal('importBMModal')" id="importBMCancelBtn">Cancel</button>
 </div>
 </div>
 
@@ -4295,7 +4918,7 @@ window.setLang = function(l){
     <div class="mhdr"><span class="mtitle" id="settingsTitle">⚙️ Settings</span></div>
 
     <!-- ── FOLDERS & TAGS ── -->
-    <div class="sett-section-hdr" id="settFolderTagsLabel">📁 FOLDERS & TAGS</div>
+    <div class="sett-section-hdr" id="settFolderTagsLabel" data-c="golden" data-tk="folders">📁 FOLDERS & TAGS</div>
     <div class="erow" onclick="openManageFolders();closeModal('settingsModal')">
         <div class="erow-lbl"><i class="fa-regular fa-folder"></i> <span id="settFolders">Manage Folders</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
@@ -4314,7 +4937,7 @@ window.setLang = function(l){
     </div>
 
     <!-- ── SORT & DISPLAY ── -->
-    <div class="sett-section-hdr" id="settSortLabel">🗂️ SORT & DISPLAY</div>
+    <div class="sett-section-hdr" id="settSortLabel" data-c="sky" data-tk="sortDisplay">🗂️ SORT & DISPLAY</div>
     <div class="erow" style="cursor:default;">
         <div class="erow-lbl"><i class="fa-solid fa-arrow-down-wide-short"></i> <span id="settSortDate">Sort by date (newest first)</span></div>
         <div onclick="toggleSetting('sortByDate')" id="tog-sortByDate" class="tog-btn"><div id="togInner-sortByDate" class="tog-knob"></div></div>
@@ -4341,7 +4964,7 @@ window.setLang = function(l){
     </div>
 
     <!-- ── BROWSER IMPORT ── -->
-    <div class="sett-section-hdr">🌐 BROWSER IMPORT</div>
+    <div class="sett-section-hdr" data-c="teal" data-tk="browserImport">🌐 BROWSER IMPORT</div>
     <div class="erow" style="cursor:default;">
         <div class="erow-lbl"><i class="fa-solid fa-eye-slash" style="color:#64748b;"></i> <span>Hide ALL imported bookmarks</span></div>
         <div onclick="toggleSetting('hideImported');renderLinks()" id="tog-hideImported" class="tog-btn"><div id="togInner-hideImported" class="tog-knob"></div></div>
@@ -4373,7 +4996,7 @@ window.setLang = function(l){
     </div>
 
     <!-- ── DATA ── -->
-    <div class="sett-section-hdr" id="settDataLabel">💾 DATA & BACKUP</div>
+    <div class="sett-section-hdr" id="settDataLabel" data-c="emerald" data-tk="dataBackup">💾 DATA & BACKUP</div>
     <div class="erow" onclick="document.getElementById('impFile').click();closeModal('settingsModal')">
         <div class="erow-lbl"><i class="fa-solid fa-upload"></i> <span id="settImport">Import JSON Backup</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
@@ -4384,7 +5007,7 @@ window.setLang = function(l){
     </div>
 
     <!-- ── LANGUAGE & APPEARANCE ── -->
-    <div class="sett-section-hdr" id="settLangLabel">🎨 LANGUAGE & APPEARANCE</div>
+    <div class="sett-section-hdr" id="settLangLabel" data-c="violet">🎨 LANGUAGE & APPEARANCE</div>
     <div class="erow" onclick="closeModal('settingsModal');openLangModal()">
         <div class="erow-lbl"><i class="fa-solid fa-language"></i> <span id="settLanguage">Language</span></div>
         <div class="erow-val" style="color:var(--primary);font-size:13px;font-weight:600;" id="settLangCurrent">English</div>
@@ -4409,8 +5032,30 @@ window.setLang = function(l){
         </div>
     </div>
 
+    <!-- FONT FAMILY -->
+    <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-font" style="color:#a78bfa;"></i> Font Family</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+            <button onclick="setAppFont('Inter')" data-font="Inter" class="font-pill active" style="font-family:'Inter',sans-serif;">Inter</button>
+            <button onclick="setAppFont('Roboto')" data-font="Roboto" class="font-pill" style="font-family:'Roboto',sans-serif;">Roboto</button>
+            <button onclick="setAppFont('Georgia')" data-font="Georgia" class="font-pill" style="font-family:Georgia,serif;">Georgia</button>
+            <button onclick="setAppFont('Courier')" data-font="Courier" class="font-pill" style="font-family:'Courier New',monospace;">Mono</button>
+            <button onclick="setAppFont('System')" data-font="System" class="font-pill" style="font-family:system-ui;">System</button>
+        </div>
+    </div>
+
+    <!-- FONT SIZE -->
+    <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-text-height" style="color:#22d3ee;"></i> Font Size</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button onclick="adjustFontSize(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:20px;font-weight:300;display:flex;align-items:center;justify-content:center;">−</button>
+            <span id="desk-fontSizeLabel" style="font-size:15px;color:var(--primary);font-weight:700;min-width:40px;text-align:center;">14px</span>
+            <button onclick="adjustFontSize(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:20px;font-weight:300;display:flex;align-items:center;justify-content:center;">+</button>
+        </div>
+    </div>
+
     <!-- ── STATS & TOOLS ── -->
-    <div class="sett-section-hdr">📊 STATS & TOOLS</div>
+    <div class="sett-section-hdr" data-c="orange" data-tk="statsTools">📊 STATS & TOOLS</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
         <div class="stat-card"><div style="font-size:26px;font-weight:800;color:var(--primary);" id="statTotalLinks">0</div><div class="stat-label">Total Bookmarks</div></div>
         <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#8b5cf6;" id="statTotalFolders">0</div><div class="stat-label">Folders</div></div>
@@ -4435,7 +5080,7 @@ window.setLang = function(l){
     </div>
 
     <!-- ── DANGER ZONE ── -->
-    <div class="sett-section-hdr" style="color:#ef4444;">⚠️ DANGER ZONE</div>
+    <div class="sett-section-hdr" data-c="red" data-tk="dangerZone">⚠️ DANGER ZONE</div>
     <div class="erow" onclick="openTrashModal()">
         <div class="erow-lbl"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> <span>Deleted Bookmarks</span> <span id="trashCountBadge" style="font-size:11px;font-weight:700;background:rgba(239,68,68,.15);color:#ef4444;border-radius:6px;padding:2px 7px;margin-left:4px;display:none;"></span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
@@ -4451,7 +5096,7 @@ window.setLang = function(l){
     </div>
 
     <!-- ── ABOUT ── -->
-    <div class="sett-section-hdr">ℹ️ ABOUT</div>
+    <div class="sett-section-hdr" data-c="indigo" data-tk="about">ℹ️ ABOUT</div>
     <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:6px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
             <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
@@ -4521,8 +5166,8 @@ window.setLang = function(l){
 <div id="page-folders" class="inline-page">
     <div class="inline-page-hdr">
         <button class="inline-page-back" onclick="closePage()"><i class="fa-solid fa-arrow-left"></i></button>
-        <span class="inline-page-title"><i class="fa-solid fa-folder-open" style="color:#ca8a04;margin-right:8px;"></i>Folders</span>
-        <div class="creat-btn" onclick="openCreateFolder()" style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;flex-shrink:0;">Create Folder <i class="fa-solid fa-plus"></i></div>
+        <span class="inline-page-title"><i class="fa-solid fa-folder-open" style="color:#ca8a04;margin-right:8px;"></i><span data-tk="folders">Folders</span></span>
+        <div class="creat-btn" onclick="openCreateFolder()" style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;flex-shrink:0;"><span data-tk="createFolder">Create Folder</span> <i class="fa-solid fa-plus"></i></div>
     </div>
     <div class="inline-page-body" id="inlineFoldersList"></div>
 </div>
@@ -4531,17 +5176,60 @@ window.setLang = function(l){
 <div id="page-settings" class="inline-page">
     <div class="inline-page-hdr">
         <button class="inline-page-back" onclick="closePage()"><i class="fa-solid fa-arrow-left"></i></button>
-        <span class="inline-page-title"><i class="fa-solid fa-gear" style="color:#a78bfa;margin-right:8px;"></i>Settings</span>
+        <span class="inline-page-title"><i class="fa-solid fa-gear" style="color:#a78bfa;margin-right:8px;"></i><span data-tk="settings">Settings</span></span>
     </div>
     <div class="inline-page-body" id="settingsPageBody">
         <!-- content cloned from settingsModal, IDs prefixed with sp- -->
-        <div class="sett-section-hdr">📁 FOLDERS & TAGS</div>
+        <div class="sett-section-hdr" data-c="violet" data-tk="appearance">🎨 APPEARANCE</div>
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl"><i class="fa-solid fa-circle-half-stroke"></i> <span>Dark / Light Mode</span></div>
+            <div onclick="toggleTheme()" id="sp-themeToggleRow" style="width:44px;height:24px;border-radius:12px;background:#27272a;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+                <div id="sp-themeToggleKnob" style="position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s;display:flex;align-items:center;justify-content:center;font-size:11px;"></div>
+            </div>
+        </div>
+        <div class="erow" onclick="openFromSettingsPage('langModal')">
+            <div class="erow-lbl"><i class="fa-solid fa-language"></i> <span>Language</span></div>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span id="sp-langLabel" style="font-size:13px;color:var(--text-dim);"></span>
+                <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+            </div>
+        </div>
+
+        <!-- ── FONT FAMILY ── -->
+        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <i class="fa-solid fa-font" style="color:#a78bfa;width:20px;text-align:center;"></i>
+                <span style="font-size:14px;font-weight:600;color:var(--text);">Font Family</span>
+            </div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                <button onclick="setAppFont('Inter')" data-font="Inter" class="font-pill active">Inter</button>
+                <button onclick="setAppFont('Roboto')" data-font="Roboto" class="font-pill" style="font-family:'Roboto',sans-serif;">Roboto</button>
+                <button onclick="setAppFont('Georgia')" data-font="Georgia" class="font-pill" style="font-family:Georgia,serif;">Georgia</button>
+                <button onclick="setAppFont('Courier')" data-font="Courier" class="font-pill" style="font-family:'Courier New',monospace;">Mono</button>
+                <button onclick="setAppFont('System')" data-font="System" class="font-pill" style="font-family:system-ui;">System</button>
+            </div>
+        </div>
+
+        <!-- ── FONT SIZE ── -->
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl">
+                <i class="fa-solid fa-text-height" style="color:#22d3ee;width:20px;text-align:center;"></i>
+                <span style="font-weight:600;color:var(--text);">Font Size</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <button onclick="adjustFontSize(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:300;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
+                <span id="sp-fontSizeLabel" style="font-size:14px;color:var(--primary);font-weight:700;min-width:36px;text-align:center;">14px</span>
+                <button onclick="adjustFontSize(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:300;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>
+            </div>
+        </div>
+
+        <div class="sett-section-hdr" data-c="golden" data-tk="folders">📁 FOLDERS & TAGS</div>
         <div class="erow" onclick="openPage('folders')">
-            <div class="erow-lbl"><i class="fa-regular fa-folder"></i> <span>Manage Folders</span></div>
+            <div class="erow-lbl"><i class="fa-regular fa-folder"></i> <span data-tk="manageFolders">Manage Folders</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" onclick="openFromSettingsPage('manageTagsModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-tags"></i> <span>Manage Tags</span></div>
+            <div class="erow-lbl"><i class="fa-solid fa-tags"></i> <span data-tk="manageTags">Manage Tags</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" style="cursor:default;">
@@ -4552,7 +5240,7 @@ window.setLang = function(l){
             <div class="erow-lbl"><i class="fa-solid fa-tag"></i> <span>Show tag badges on links</span></div>
             <div onclick="toggleSetting('showTags')" id="sp-tog-showTags" class="tog-btn"><div id="sp-togInner-showTags" class="tog-knob"></div></div>
         </div>
-        <div class="sett-section-hdr">🗂️ SORT & DISPLAY</div>
+        <div class="sett-section-hdr" data-c="sky" data-tk="sortDisplay">🗂️ SORT & DISPLAY</div>
         <div class="erow" style="cursor:default;">
             <div class="erow-lbl"><i class="fa-solid fa-arrow-down-wide-short"></i> <span>Sort by date (newest first)</span></div>
             <div onclick="toggleSetting('sortByDate')" id="sp-tog-sortByDate" class="tog-btn"><div id="sp-togInner-sortByDate" class="tog-knob"></div></div>
@@ -4577,7 +5265,7 @@ window.setLang = function(l){
             <div class="erow-lbl"><i class="fa-solid fa-magic-wand-sparkles" style="color:#fbbf24;"></i> <span>Animate edit mode (sparkle)</span></div>
             <div onclick="toggleSetting('animEditMode');applyAnimEditMode()" id="sp-tog-animEditMode" class="tog-btn"><div id="sp-togInner-animEditMode" class="tog-knob"></div></div>
         </div>
-        <div class="sett-section-hdr">🌐 BROWSER IMPORT</div>
+        <div class="sett-section-hdr" data-c="teal" data-tk="browserImport">🌐 BROWSER IMPORT</div>
         <div class="erow" style="cursor:default;">
             <div class="erow-lbl"><i class="fa-solid fa-eye-slash" style="color:#64748b;"></i> <span>Hide ALL imported bookmarks</span></div>
             <div onclick="toggleSetting('hideImported');renderLinks()" id="sp-tog-hideImported" class="tog-btn"><div id="sp-togInner-hideImported" class="tog-knob"></div></div>
@@ -4586,23 +5274,42 @@ window.setLang = function(l){
             <div class="erow-lbl"><i class="fa-solid fa-tag" style="color:#64748b;"></i> <span>Show "Imported" badge on links</span></div>
             <div onclick="toggleSetting('showImportedBadge');renderLinks()" id="sp-tog-showImportedBadge" class="tog-btn"><div id="sp-togInner-showImportedBadge" class="tog-knob"></div></div>
         </div>
+        <!-- Per-browser show/hide toggles (mobile) -->
+        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Show/Hide by browser source</div>
+            <div id="sp-perBrowserToggles" style="display:flex;flex-direction:column;gap:6px;"></div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:8px;opacity:.7;">Toggle to show or hide imports from each browser</div>
+        </div>
+        <!-- Browser chooser for next import -->
+        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+            <div class="erow-lbl" style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-globe"></i> <span style="color:var(--text);font-weight:600;">Browser for next import</span></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;" id="sp-browserChooser">
+                <button onclick="setImportBrowser('Chrome')" class="browser-pill" data-b="Chrome"><i class="fa-brands fa-chrome"></i> Chrome</button>
+                <button onclick="setImportBrowser('Firefox')" class="browser-pill" data-b="Firefox"><i class="fa-brands fa-firefox"></i> Firefox</button>
+                <button onclick="setImportBrowser('Edge')" class="browser-pill" data-b="Edge"><i class="fa-brands fa-edge"></i> Edge</button>
+                <button onclick="setImportBrowser('Safari')" class="browser-pill" data-b="Safari"><i class="fa-brands fa-safari"></i> Safari</button>
+                <button onclick="setImportBrowser('Opera')" class="browser-pill" data-b="Opera"><i class="fa-brands fa-opera"></i> Opera</button>
+            </div>
+        </div>
         <div class="erow" onclick="openFromSettingsPage('importBMModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-file-import"></i> <span>Import Browser Bookmarks (HTML)</span></div>
+            <div class="erow-lbl"><i class="fa-solid fa-file-import"></i> <span data-tk="importBMHtml">Import Browser Bookmarks (HTML)</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="sett-section-hdr">💾 DATA & BACKUP</div>
+        <div class="sett-section-hdr" data-c="emerald" data-tk="dataBackup">💾 DATA & BACKUP</div>
         <div class="erow" onclick="document.getElementById('impFile').click()">
-            <div class="erow-lbl"><i class="fa-solid fa-upload"></i> <span>Import JSON Backup</span></div>
+            <div class="erow-lbl"><i class="fa-solid fa-upload"></i> <span data-tk="importJSON2">Import JSON Backup</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" onclick="exportData()">
-            <div class="erow-lbl"><i class="fa-solid fa-download"></i> <span>Export JSON Backup</span></div>
+            <div class="erow-lbl"><i class="fa-solid fa-download" style="color:#eab308;"></i> <span style="color:#eab308;font-weight:700;" data-tk="exportJSON3">Export JSON Backup</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="sett-section-hdr">🎨 LANGUAGE & APPEARANCE</div>
-        <div class="erow" onclick="openFromSettingsPage('langModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-language"></i> <span>Language</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;margin-left:8px;"></i>
+
+        <div class="sett-section-hdr" data-c="pink" data-tk="quickActions">⚡ QUICK ACTIONS</div>
+
+        <div class="erow" onclick="showRecentlyVisited()">
+            <div class="erow-lbl"><i class="fa-solid fa-clock-rotate-left" style="color:#06b6d4;"></i> <span data-tk="recentlyVisited">Recently Visited (last 10)</span></div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" style="cursor:default;">
             <div class="erow-lbl"><i class="fa-solid fa-up-right-from-square"></i> <span>Open links in new tab</span></div>
@@ -4621,7 +5328,7 @@ window.setLang = function(l){
                 <div class="accent-dot" data-color="#eab308" style="width:28px;height:28px;border-radius:50%;background:#eab308;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#eab308')"></div>
             </div>
         </div>
-        <div class="sett-section-hdr">📊 STATS & TOOLS</div>
+        <div class="sett-section-hdr" data-c="orange" data-tk="statsTools">📊 STATS & TOOLS</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
             <div class="stat-card"><div style="font-size:26px;font-weight:800;color:var(--primary);" id="sp-statTotalLinks">0</div><div class="stat-label">Total Bookmarks</div></div>
             <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#8b5cf6;" id="sp-statTotalFolders">0</div><div class="stat-label">Folders</div></div>
@@ -4644,7 +5351,7 @@ window.setLang = function(l){
             <div class="erow-lbl"><i class="fa-solid fa-eraser" style="color:#f59e0b;"></i> <span>Remove All Imported Bookmarks</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="sett-section-hdr" style="color:#ef4444;">⚠️ DANGER ZONE</div>
+        <div class="sett-section-hdr" data-c="red" data-tk="dangerZone">⚠️ DANGER ZONE</div>
         <div class="erow" onclick="openFromSettingsPage('trashModal')">
             <div class="erow-lbl"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> <span>Deleted Bookmarks</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
@@ -4657,7 +5364,7 @@ window.setLang = function(l){
             <div class="erow-lbl" style="color:#ef4444;"><i class="fa-solid fa-trash" style="color:#ef4444;"></i> <span>Clear All Data</span></div>
             <i class="fa-solid fa-chevron-right" style="color:#ef4444;font-size:12px;"></i>
         </div>
-        <div class="sett-section-hdr">ℹ️ ABOUT</div>
+        <div class="sett-section-hdr" data-c="indigo" data-tk="about">ℹ️ ABOUT</div>
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:20px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
                 <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
@@ -4684,11 +5391,24 @@ function openFromSettingsPage(modalId, customFn) {
     if (customFn) { customFn(); }
     else {
         if (modalId === 'manageTagsModal') renderAllTags();
+        if (modalId === 'trashModal') {
+            // Always render trash list before opening
+            renderTrashModal();
+        }
+        if (modalId === 'importBMModal') {
+            const res = document.getElementById('importBMResult');
+            const okBtn = document.getElementById('importBMOkBtn');
+            const cancelBtn = document.getElementById('importBMCancelBtn');
+            if(res){ res.style.display='none'; res.innerHTML=''; }
+            if(okBtn) okBtn.style.display='none';
+            if(cancelBtn) cancelBtn.style.display='block';
+        }
         openModal(modalId);
     }
 }
 
 function openPage(name) {
+    closeAllPanels();
     if (window.innerWidth >= 768) {
         if (name === 'folders') openManageFolders();
         else if (name === 'settings') openSettings();
@@ -4697,13 +5417,24 @@ function openPage(name) {
     document.querySelectorAll('.inline-page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nitem').forEach(n => n.classList.remove('active'));
     if (name === 'folders') {
-        document.getElementById('nav-fold').classList.add('active');
         renderInlineFolders();
         document.getElementById('page-folders').classList.add('active');
     } else if (name === 'settings') {
         syncSettingsPage();
+        document.getElementById('nav-settings').classList.add('active');
         document.getElementById('page-settings').classList.add('active');
         document.getElementById('settingsPageBody').scrollTop = 0;
+        // Update theme toggle knob in settings page
+        _syncSpThemeToggle();
+        // Always update language label with correct current flag
+        const lb = document.getElementById('sp-langLabel');
+        if (lb) lb.innerHTML = getFlagImg(S.lang) + ' ' + (LANG_LABELS[S.lang]||'English');
+        // Update font size label
+        const fsLbl = document.getElementById('sp-fontSizeLabel');
+        if(fsLbl) fsLbl.textContent = (localStorage.getItem('ly_fontSize')||'14')+'px';
+        // Update font pill active state
+        const savedFont = localStorage.getItem('ly_font')||'Inter';
+        document.querySelectorAll('.font-pill').forEach(p=>p.classList.toggle('active', p.dataset.font===savedFont));
     }
 }
 
@@ -4812,6 +5543,25 @@ function syncSettingsPage() {
     if (g('sp-statTotalFolders')) g('sp-statTotalFolders').textContent = S.folders.length;
     if (g('sp-statFavs')) g('sp-statFavs').textContent = S.links.filter(l => l.fav && !l.archived).length;
     if (g('sp-statArchived')) g('sp-statArchived').textContent = S.links.filter(l => l.archived).length;
+    _syncSpThemeToggle();
+    // Update language label
+    const lb = document.getElementById('sp-langLabel');
+    if (lb) lb.innerHTML = getFlagImg(S.lang) + ' ' + (LANG_LABELS[S.lang]||'English');
+    // Populate browser source toggles in mobile settings
+    setTimeout(renderPerBrowserToggles, 10);
+    setTimeout(updateBrowserPills, 10);
+}
+
+function _syncSpThemeToggle() {
+    const isDark = !document.body.classList.contains('light-mode');
+    const tog = document.getElementById('sp-themeToggleRow');
+    const knob = document.getElementById('sp-themeToggleKnob');
+    if (tog) tog.style.background = isDark ? '#27272a' : 'var(--primary)';
+    if (knob) {
+        knob.style.left = isDark ? '2px' : 'auto';
+        knob.style.right = isDark ? 'auto' : '2px';
+        knob.innerHTML = isDark ? '<i class="fa-solid fa-moon" style="color:#a78bfa;font-size:10px;"></i>' : '<i class="fa-solid fa-sun" style="color:#f59e0b;font-size:10px;"></i>';
+    }
 }
 
 // Patch openManageFolders & openSettings to route to inline page on mobile
