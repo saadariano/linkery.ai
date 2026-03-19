@@ -315,7 +315,6 @@
             .bnav { display:none; }
             .fab { display:none; }
             /* Mobile: full desktop interface */
-            #quickStatsBar { display:none !important; }
             #mainWrap { max-width:1400px; margin:0 auto; padding:20px 28px 20px; position:fixed; top:60px; left:0; right:0; bottom:0; display:flex; flex-direction:column; overflow:hidden; box-sizing:border-box; }
             .tabs-outer { padding:0 0 14px; flex-wrap:nowrap; }
             .search-row { padding:0 0 14px; }
@@ -599,11 +598,6 @@
         #dtNotes { width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:13px;font-family:inherit;resize:vertical;min-height:70px;outline:none;margin-top:6px; }
 
         /* Quick Stats bar at top of home */
-        .quick-stats-bar { display:flex;gap:8px;padding:0 0 10px;overflow-x:auto;scrollbar-width:none; }
-        .quick-stats-bar::-webkit-scrollbar { display:none; }
-        .qs-card { flex:0 0 auto;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:72px; }
-        .qs-num { font-size:20px;font-weight:800; }
-        .qs-lbl { font-size:10px;color:var(--text-dim);white-space:nowrap; }
 
         /* Focus mode overlay */
         #focusModeBar { display:none;position:fixed;top:0;left:0;right:0;z-index:800;background:linear-gradient(135deg,#1e1b4b,#312e81);padding:14px 20px;align-items:center;gap:12px;border-bottom:2px solid #8b5cf6; }
@@ -677,16 +671,6 @@
         <div class="hbtn" onclick="openShareOptions()" title="Share"><i class="fa-solid fa-share-nodes"></i></div>
         <input type="file" id="impFile" hidden accept=".json" onchange="importData(event)">
     </div>
-</div>
-
-
-<!-- QUICK STATS BAR (mobile only) -->
-<div class="quick-stats-bar" id="quickStatsBar" style="padding:0 8px 10px;">
-    <div class="qs-card"><div class="qs-num" id="qs-total" style="color:var(--primary);">0</div><div class="qs-lbl" data-tk="saved">Saved</div></div>
-    <div class="qs-card"><div class="qs-num" id="qs-fav" style="color:#ef4444;">0</div><div class="qs-lbl" data-tk="fav">Favorites</div></div>
-    <div class="qs-card"><div class="qs-num" id="qs-folders" style="color:#f59e0b;">0</div><div class="qs-lbl" data-tk="folders">Folders</div></div>
-    <div class="qs-card"><div class="qs-num" id="qs-tags" style="color:#8b5cf6;">0</div><div class="qs-lbl" data-tk="tags">Tags</div></div>
-
 </div>
 
 <!-- STICKY BAR: tabs + search always visible -->
@@ -1344,10 +1328,7 @@ function applyTranslations(){
     document.querySelectorAll('[data-tk]').forEach(el=>{
         const k=el.getAttribute('data-tk'); if(k) el.textContent=T(k);
     });
-    // Translate quick stats bar labels
-    document.querySelectorAll('.qs-lbl[data-tk]').forEach(el=>{
-        const k=el.getAttribute('data-tk'); if(k) el.textContent=T(k);
-    });
+
     // Translate "No bookmarks found" empty state
     document.querySelectorAll('[data-t="noBookmarks"]').forEach(el=>{ el.textContent=T('noBookmarks'); });
     // Translate sort dropdown options
@@ -4746,18 +4727,6 @@ document.addEventListener('click', function(){
 // ── NEW FEATURES ──
 // ══════════════════════════════════════════════
 
-// ── 1. QUICK STATS BAR ──
-function updateQuickStats() {
-    const total = S.links.filter(l=>!l.archived).length;
-    const fav   = S.links.filter(l=>l.fav&&!l.archived).length;
-    const tags  = [...new Set(S.links.flatMap(l=>l.tags||[]))].length;
-    const flds  = S.folders.length;
-    const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-    set('qs-total', total);
-    set('qs-fav',   fav);
-    set('qs-folders', flds);
-    set('qs-tags',  tags);
-}
 
 // ── 2. SURPRISE ME — open a random bookmark ──
 function surpriseMe() {
@@ -4897,7 +4866,6 @@ function _updateRecentHeader(recent){
 const _origRenderLinks = renderLinks;
 renderLinks = function() {
     _origRenderLinks();
-    updateQuickStats();
 };
 
 // ── 9. PATCH openLink to track lastVisited ──
@@ -4910,10 +4878,7 @@ openLink = function(url) {
 
 // ── INIT new features ──
 document.addEventListener('DOMContentLoaded', ()=>{
-    updateQuickStats();
     // Only show quick stats bar on mobile
-    const qsb = document.getElementById('quickStatsBar');
-    if(qsb && window.innerWidth>=768) qsb.style.display='none';
 });
 
 
@@ -4995,7 +4960,7 @@ function applyFontSizeScale(pxNum){
         body { font-size: ${pxNum}px !important; }
         .link-card, .linfo h4, .linfo p, .badge, .chip, .erow-lbl span,
         .vopt, .mhdr .mtitle, .field label, .frow-name, .fm-name,
-        .nitem, .dnl, .greeting h2, .greeting p, .qs-num, .qs-lbl,
+        .nitem, .dnl, .greeting h2, .greeting p,
         .stat-label, .sett-section-hdr, .btn-p, .btn-s, .btn-d,
         input[type=text], input[type=url], select, textarea,
         .bact span, .card-act, .mtitle { font-size: calc(1em * ${scale}) !important; }
@@ -5007,8 +4972,6 @@ function applyFontSizeScale(pxNum){
         .vopt { font-size: calc(14px * ${scale}) !important; }
         .mtitle { font-size: calc(18px * ${scale}) !important; }
         .nitem { font-size: calc(10px * ${scale}) !important; }
-        .qs-lbl { font-size: calc(10px * ${scale}) !important; }
-        .qs-num { font-size: calc(20px * ${scale}) !important; }
         .sett-section-hdr { font-size: calc(10px * ${scale}) !important; }
         .btn-p, .btn-s, .btn-d { font-size: calc(15px * ${scale}) !important; }
     `;
@@ -5036,7 +4999,6 @@ applyFontSettings();
 
 
 init();
-updateQuickStats();
 
 // ── TWEMOJI: Render flag emojis as images on all browsers (fixes Chrome on Windows/Android/iOS) ──
 function applyTwemoji(){
