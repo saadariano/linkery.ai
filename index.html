@@ -87,10 +87,10 @@
         .sq-btn { width:40px; height:40px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; position:relative; flex-shrink:0; }
 
         /* VIEW DROPDOWN */
-        .view-dd { position:absolute; right:0; top:46px; background:#1c1c1e; border:1px solid var(--border); border-radius:14px; min-width:190px; z-index:300; padding:6px; box-shadow:0 12px 40px rgba(0,0,0,.7); display:none; }
+        .view-dd { position:absolute; right:0; top:46px; background:var(--card); border:1px solid var(--border); border-radius:14px; min-width:190px; z-index:300; padding:6px; box-shadow:0 12px 40px rgba(0,0,0,.25); display:none; }
         .view-dd.open { display:block; }
-        .vopt { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:500; }
-        .vopt:hover { background:rgba(255,255,255,.05); }
+        .vopt { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:500; color:var(--text); }
+        .vopt:hover { background:rgba(128,128,128,.1); }
         .vchk { margin-left:auto; color:var(--primary); }
 
         /* LINK ITEMS */
@@ -139,7 +139,7 @@
         .view-headlines .linfo h4 { font-size:14px; padding-right:28px; }
 
         /* FAB */
-        .fab { position:fixed; bottom:calc(14px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%); width:60px; height:60px; border-radius:50%; background:var(--primary); color:#000; border:3px solid var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:700; font-size:26px; box-shadow:0 4px 24px rgba(34,197,94,.55); }
+        .fab { position:fixed; bottom:calc(14px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%); width:46px; height:46px; border-radius:50%; background:var(--primary); color:#000; border:2px solid var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:700; font-size:20px; box-shadow:0 4px 20px rgba(34,197,94,.5); }
 
         /* BOTTOM NAV */
         .bnav { position:fixed; bottom:0; left:0; right:0; background:#111113; border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; padding:7px 0; padding-bottom:max(14px,env(safe-area-inset-bottom)); z-index:600; }
@@ -207,8 +207,12 @@
         .sact { color:var(--text-dim); font-size:19px; cursor:pointer; }
         .erow { display:flex; align-items:center; padding:15px 0; border-bottom:1px solid var(--border); cursor:pointer; }
         .erow:last-child { border-bottom:none; }
-        .erow-lbl { display:flex; align-items:center; gap:10px; font-size:15px; color:var(--text-dim); flex:1; }
-        .erow-lbl i { width:20px; text-align:center; }
+        .erow-lbl { display:flex; align-items:center; gap:12px; flex:1; font-size:13px; font-weight:500; color:var(--text); font-family:'Inter',system-ui,sans-serif; }
+        .erow-lbl i { width:20px; text-align:center; flex-shrink:0; }
+        .sicon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+        .sett-select { appearance:none; -webkit-appearance:none; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:5px 22px 5px 9px; font-size:12px; font-weight:500; color:var(--text); cursor:pointer; outline:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 7px center; min-width:0; max-width:110px; width:auto; }
+        .sett-select:focus { border-color:var(--primary); }
+        body.light-mode .sett-select { background-color:#f4f4f5; color:#09090b; }
         .erow-val { display:flex; align-items:center; gap:8px; font-size:13px; }
         .tchip { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; }
         .bact-bar { display:flex; justify-content:space-around; padding:16px 0 0; border-top:1px solid var(--border); margin-top:10px; }
@@ -246,6 +250,15 @@
         .tog-btn { width:44px;height:24px;border-radius:12px;background:#27272a;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s; }
         .font-pill { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;transition:all .15s; }
         .font-pill.active,.font-pill:hover { border-color:var(--primary);background:rgba(34,197,94,.12);color:var(--primary); }
+        .font-list-item { padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text-dim);transition:all .15s;border:1px solid transparent; }
+        .font-list-item:hover { background:rgba(255,255,255,.05);color:var(--text); }
+        .font-list-item.active { background:rgba(34,197,94,.1);border-color:var(--primary);color:var(--primary); }
+        /* Open link dropdown */
+        .open-dd { position:absolute;top:36px;right:0;background:var(--card);border:1px solid var(--border);border-radius:12px;z-index:500;min-width:190px;padding:4px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:none; }
+        .open-dd.show { display:block; }
+        .open-dd-item { display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);transition:background .12s; }
+        .open-dd-item:hover { background:rgba(255,255,255,.07); }
+        body.light-mode .open-dd-item:hover { background:rgba(0,0,0,.05); }
         .tog-knob { position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s,right .2s; }
         /* Browser pills */
         .browser-pill { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s; }
@@ -447,7 +460,7 @@
         .bm-del-btn { background:#ef4444; color:#fff; animation:bmDelPulse 1.8s ease-in-out infinite; border-radius:50%; width:32px !important; height:32px !important; font-size:14px !important; }
         @keyframes bmDelPulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(239,68,68,0);} 50%{transform:scale(1.1);box-shadow:0 0 8px 3px rgba(239,68,68,.5);} }
         /* Drag handle — orange glow */
-        .bm-move-btn { background:rgba(249,115,22,.25); color:#f97316; cursor:grab; animation:bmMoveGlow 2s ease-in-out infinite; }
+        .bm-move-btn { background:rgba(34,197,94,.15); color:#22c55e; cursor:grab; animation:bmMoveGlow 2s ease-in-out infinite; }
         @keyframes bmMoveGlow { 0%,100%{color:#f97316;box-shadow:0 0 0 0 rgba(249,115,22,0);} 50%{color:#fdba74;box-shadow:0 0 8px 3px rgba(249,115,22,.5);} }
         .bm-edit-link-btn { background:var(--primary); color:#000; }
         .bm-edit-actions { display:flex; justify-content:center; gap:8px; }
@@ -623,7 +636,7 @@
         <div class="desktop-logo" onclick="navTo('all','nav-home')" style="cursor:pointer;">
         <div class="desktop-logo-icon"><i class="fa-solid fa-bookmark"></i></div>
         <div style="display:flex;flex-direction:column;line-height:1.1;">
-            <span style="font-size:18px;font-weight:800;">WebMark</span>
+            <span class="app-name-protected" style="font-size:18px;font-weight:800;font-family:'Inter',system-ui,sans-serif !important;">WebMark</span>
         </div>
     </div>
     <div class="desktop-nav-btns-wrap">
@@ -656,7 +669,7 @@
             <i class="fa-solid fa-bookmark"></i>
         </div>
         <div class="greeting">
-            <h2 style="font-size:17px;font-weight:800;">WebMark</h2>
+            <h2 class="app-name-protected" style="font-size:17px;font-weight:800;font-family:'Inter',system-ui,sans-serif !important;">WebMark</h2>
         </div>
     </div>
     <div class="header-right">
@@ -685,7 +698,7 @@
 <!-- SEARCH ROW -->
 <div class="search-row">
     <div class="sw">
-        <input type="text" id="search" placeholder="Search bookmarks..." oninput="renderLinks()">
+        <input type="text" id="search" placeholder="Search bookmarks..." oninput="renderLinks()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="wm-search-nofill">
     </div>
     <div class="sq-btn" id="sortBtn" onclick="toggleSortDD()" title="Sort" style="position:relative;">
         <i class="fa-solid fa-arrow-down-wide-short" id="sortDateIcon" style="color:var(--text-dim);"></i>
@@ -738,7 +751,7 @@
 <!-- Edit mode banner -->
 <div id="editModeBanner" style="display:none;margin:0 8px 6px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.35);border-radius:12px;padding:9px 14px;font-size:12px;color:#f97316;font-weight:600;align-items:center;gap:8px;">
     <i class="fa-solid fa-hand-pointer" style="font-size:15px;"></i>
-    <span>Drag the <i class="fa-solid fa-bars" style="font-size:11px;vertical-align:middle;"></i> handles to reorder · Sort paused</span>
+    <span>Drag the <i class="fa-solid fa-bars" style="font-size:11px;vertical-align:middle;"></i> handles to reorder bookmarks</span>
     <button onclick="toggleGlobalEdit()" style="margin-left:auto;background:rgba(249,115,22,.2);border:1px solid rgba(249,115,22,.4);color:#f97316;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;">Done</button>
 </div>
 <!-- Recent visits header — shown only when last 10 visits tab is active -->
@@ -1163,6 +1176,7 @@ const TRANSLATIONS = {
     folderLabel:'Folder', chooseFolder:'Choose Folder...',
     hour:'Hour', minute:'Minute', importSuccess:'Import successful!', bookmarksLoaded:'bookmarks loaded.',
     edit:"Edit", done:"Done", sortBy:"Sort by", dateAdded:"Date Added", mostVisited:"Most Visited", lastVisited:"Last Visited", byFolder:"By Folder", nameAZ:"Name (A–Z)", filterFolder:"Filter by Folder", changeView:"Change View", appearance:"Appearance", sortDisplay:"Sort & Display", browserImport:"Browser Import", dataBackup:"Data & Backup", quickActions:"Quick Actions", statsTools:"Stats & Tools", dangerZone:"Danger Zone", about:"About", darkLight:"Dark / Light Mode", openNewTab:"Open links in new tab", accentColor:"Accent Color", manageFolders:"Manage Folders", manageTags:"Manage Tags", showFolderBadges:"Show folder badges on links", showTagBadges:"Show tag badges on links", sortNewest:"Sort by date (newest first)", pinnedTop:"Pinned bookmarks always on top", compactCards:"Compact cards", showThumbs:"Show thumbnails / favicons", showViews:"Show visit count badge", animEdit:"Animate edit mode (sparkle)", hideImported:"Hide ALL imported bookmarks", showImportedBadge:"Show \"Imported\" badge on links", importBMHtml:"Import Browser Bookmarks (HTML)", importJSON2:"Import JSON Backup", exportJSON3:"Export JSON Backup", recentlyVisited:"Recently Visited (last 10)", findDuplicates:"Find & Remove Duplicates", archiveVisited:"Archive All Visited", clearData:"Clear All Data", deletePass:"Delete Password", deleted:"Deleted Bookmarks", saved:"Saved", favorites:"Favorites", noBookmarksFound:"No bookmarks found",
+    fontFamily:"Font Family", fontSize:"Font Size", openLinkIn:"Open Link In", showFolderBadgesShort:"Show folder badges", showTagBadgesShort:"Show tag badges", sortByDateNewest:"Sort by date newest first", pinnedAlwaysTop:"Pinned always on top", showThumbnails:"Show thumbnails / favicons", showVisitCount:"Show visit count badge", animateEdit:"Animate edit mode", hideAllImported:"Hide ALL imported", showImportedBadgeShort:"Show \"Imported\" badge", browserNextImport:"Browser for next import", exportImportedOnly:"Export Imported Only", removeAllImported:"Remove All Imported", totalBookmarks:"Total Bookmarks", deletedBookmarks:"Deleted Bookmarks", deletePassword:"Delete Password", clearAllData:"Clear All Data", contactBtn:"Contact", newTab:"New Tab", currentTab:"Current Tab", small:"Small", medium:"Medium", large:"Large", helpBtn:"Help",
     confirmLeave:"Are you sure you want to leave without saving?", confirmLeaveFolder:"Are you sure you want to leave without saving this folder?",
   },
   fr:{
@@ -1188,6 +1202,7 @@ const TRANSLATIONS = {
     folderLabel:'Dossier', chooseFolder:'Choisir un dossier...',
     hour:'Heure', minute:'Minute', importSuccess:'Importation réussie!', bookmarksLoaded:'favoris chargés.',
     edit:"Modifier", done:"Terminé", sortBy:"Trier par", dateAdded:"Date ajoutée", mostVisited:"Plus visités", lastVisited:"Dernière visite", byFolder:"Par dossier", nameAZ:"Nom (A–Z)", filterFolder:"Filtrer par dossier", changeView:"Changer la vue", appearance:"Apparence", sortDisplay:"Tri & Affichage", browserImport:"Import navigateur", dataBackup:"Données & Sauvegarde", quickActions:"Actions rapides", statsTools:"Stats & Outils", dangerZone:"Zone dangereuse", about:"À propos", darkLight:"Mode sombre / clair", openNewTab:"Ouvrir dans un nouvel onglet", accentColor:"Couleur d'accentuation", manageFolders:"Gérer les dossiers", manageTags:"Gérer les étiquettes", showFolderBadges:"Afficher dossiers sur les liens", showTagBadges:"Afficher étiquettes sur les liens", sortNewest:"Trier par date (plus récent)", pinnedTop:"Épinglés toujours en haut", compactCards:"Cartes compactes", showThumbs:"Afficher vignettes", showViews:"Afficher le compteur de visites", animEdit:"Animer le mode édition", hideImported:"Masquer tous les imports", showImportedBadge:"Badge \"Importé\"", importBMHtml:"Importer favoris navigateur (HTML)", importJSON2:"Importer JSON", exportJSON3:"Exporter JSON", recentlyVisited:"Récemment visités (10 derniers)", findDuplicates:"Trouver les doublons", archiveVisited:"Archiver tout visité", clearData:"Effacer toutes les données", deletePass:"Mot de passe suppression", deleted:"Signets supprimés", saved:"Sauvegardés", favorites:"Favoris", noBookmarksFound:"Aucun favori trouvé",
+    fontFamily:"Police", fontSize:"Taille de police", openLinkIn:"Ouvrir le lien dans", showFolderBadgesShort:"Afficher dossiers", showTagBadgesShort:"Afficher étiquettes", sortByDateNewest:"Trier par date récente", pinnedAlwaysTop:"Épinglés toujours en haut", showThumbnails:"Afficher vignettes", showVisitCount:"Compteur de visites", animateEdit:"Animer le mode édition", hideAllImported:"Masquer tous les imports", showImportedBadgeShort:"Badge \"Importé\"", browserNextImport:"Navigateur pour le prochain import", exportImportedOnly:"Exporter les importés uniquement", removeAllImported:"Supprimer tous les importés", totalBookmarks:"Total des favoris", deletedBookmarks:"Favoris supprimés", deletePassword:"Mot de passe suppression", clearAllData:"Effacer toutes les données", contactBtn:"Contact", newTab:"Nouvel onglet", currentTab:"Onglet actuel", small:"Petit", medium:"Moyen", large:"Grand", helpBtn:"Aide",
     confirmLeave:"Êtes-vous sûr de vouloir quitter sans sauvegarder?", confirmLeaveFolder:"Êtes-vous sûr de vouloir quitter sans sauvegarder ce dossier?",
   },
   es:{
@@ -1213,6 +1228,7 @@ const TRANSLATIONS = {
     folderLabel:'Carpeta', chooseFolder:'Elegir carpeta...',
     hour:'Hora', minute:'Minuto', importSuccess:'¡Importación exitosa!', bookmarksLoaded:'marcadores cargados.',
     edit:"Editar", done:"Hecho", sortBy:"Ordenar por", dateAdded:"Fecha añadida", mostVisited:"Más visitados", lastVisited:"Última visita", byFolder:"Por carpeta", nameAZ:"Nombre (A–Z)", filterFolder:"Filtrar por carpeta", changeView:"Cambiar vista", appearance:"Apariencia", sortDisplay:"Orden & Pantalla", browserImport:"Importar navegador", dataBackup:"Datos & Copia", quickActions:"Acciones rápidas", statsTools:"Stats & Herramientas", dangerZone:"Zona de peligro", about:"Acerca de", darkLight:"Modo oscuro / claro", openNewTab:"Abrir en nueva pestaña", accentColor:"Color de acento", manageFolders:"Gestionar carpetas", manageTags:"Gestionar etiquetas", showFolderBadges:"Mostrar carpetas en enlaces", showTagBadges:"Mostrar etiquetas en enlaces", sortNewest:"Ordenar por fecha (más reciente)", pinnedTop:"Fijados siempre arriba", compactCards:"Tarjetas compactas", showThumbs:"Mostrar miniaturas", showViews:"Mostrar contador de visitas", animEdit:"Animar modo edición", hideImported:"Ocultar todos los importados", showImportedBadge:"Badge \"Importado\"", importBMHtml:"Importar marcadores (HTML)", importJSON2:"Importar JSON", exportJSON3:"Exportar JSON", recentlyVisited:"Visitados recientemente (10 últimos)", findDuplicates:"Encontrar duplicados", archiveVisited:"Archivar todo visitado", clearData:"Borrar todos los datos", deletePass:"Contraseña de eliminación", deleted:"Marcadores eliminados", saved:"Guardados", favorites:"Favoritos", noBookmarksFound:"No se encontraron marcadores",
+    fontFamily:"Tipografía", fontSize:"Tamaño de fuente", openLinkIn:"Abrir enlace en", showFolderBadgesShort:"Mostrar carpetas", showTagBadgesShort:"Mostrar etiquetas", sortByDateNewest:"Ordenar por fecha reciente", pinnedAlwaysTop:"Fijados siempre arriba", showThumbnails:"Mostrar miniaturas", showVisitCount:"Contador de visitas", animateEdit:"Animar modo edición", hideAllImported:"Ocultar todos importados", showImportedBadgeShort:"Badge \"Importado\"", browserNextImport:"Navegador para próxima importación", exportImportedOnly:"Exportar solo importados", removeAllImported:"Eliminar todos los importados", totalBookmarks:"Total marcadores", deletedBookmarks:"Marcadores eliminados", deletePassword:"Contraseña de eliminación", clearAllData:"Borrar todos los datos", contactBtn:"Contacto", newTab:"Nueva pestaña", currentTab:"Pestaña actual", small:"Pequeño", medium:"Mediano", large:"Grande", helpBtn:"Ayuda",
     confirmLeave:"¿Estás seguro de que quieres salir sin guardar?", confirmLeaveFolder:"¿Estás seguro de que quieres salir sin guardar esta carpeta?",
   },
   it:{
@@ -1238,6 +1254,7 @@ const TRANSLATIONS = {
     folderLabel:'Cartella', chooseFolder:'Scegli cartella...',
     hour:'Ora', minute:'Minuto', importSuccess:'Importazione riuscita!', bookmarksLoaded:'segnalibri caricati.',
     edit:"Modifica", done:"Fatto", sortBy:"Ordina per", dateAdded:"Data aggiunta", mostVisited:"Più visitati", lastVisited:"Ultima visita", byFolder:"Per cartella", nameAZ:"Nome (A–Z)", filterFolder:"Filtra per cartella", changeView:"Cambia vista", appearance:"Aspetto", sortDisplay:"Ordine & Visualizzazione", browserImport:"Importa browser", dataBackup:"Dati & Backup", quickActions:"Azioni rapide", statsTools:"Stats & Strumenti", dangerZone:"Zona pericolosa", about:"Informazioni", darkLight:"Modalità scura / chiara", openNewTab:"Apri in nuova scheda", accentColor:"Colore accento", manageFolders:"Gestisci cartelle", manageTags:"Gestisci tag", showFolderBadges:"Mostra cartelle sui link", showTagBadges:"Mostra tag sui link", sortNewest:"Ordina per data (più recente)", pinnedTop:"Fissati sempre in cima", compactCards:"Schede compatte", showThumbs:"Mostra miniature", showViews:"Mostra contatore visite", animEdit:"Anima modalità modifica", hideImported:"Nascondi tutti gli importati", showImportedBadge:"Badge \"Importato\"", importBMHtml:"Importa segnalibri browser (HTML)", importJSON2:"Importa JSON", exportJSON3:"Esporta JSON", recentlyVisited:"Visitati di recente (ultimi 10)", findDuplicates:"Trova duplicati", archiveVisited:"Archivia tutti i visitati", clearData:"Cancella tutti i dati", deletePass:"Password eliminazione", deleted:"Segnalibri eliminati", saved:"Salvati", favorites:"Preferiti", noBookmarksFound:"Nessun segnalibro trovato",
+    fontFamily:"Carattere", fontSize:"Dimensione carattere", openLinkIn:"Apri link in", showFolderBadgesShort:"Mostra cartelle", showTagBadgesShort:"Mostra tag", sortByDateNewest:"Ordina per data recente", pinnedAlwaysTop:"Fissati sempre in cima", showThumbnails:"Mostra miniature", showVisitCount:"Contatore visite", animateEdit:"Anima modalità modifica", hideAllImported:"Nascondi tutti importati", showImportedBadgeShort:"Badge \"Importato\"", browserNextImport:"Browser per prossima importazione", exportImportedOnly:"Esporta solo importati", removeAllImported:"Rimuovi tutti gli importati", totalBookmarks:"Totale segnalibri", deletedBookmarks:"Segnalibri eliminati", deletePassword:"Password eliminazione", clearAllData:"Cancella tutti i dati", contactBtn:"Contatto", newTab:"Nuova scheda", currentTab:"Scheda corrente", small:"Piccolo", medium:"Medio", large:"Grande", helpBtn:"Aiuto",
     confirmLeave:"Sei sicuro di voler uscire senza salvare?", confirmLeaveFolder:"Sei sicuro di voler uscire senza salvare questa cartella?",
   },
   ar:{
@@ -1263,6 +1280,7 @@ const TRANSLATIONS = {
     folderLabel:'المجلد', chooseFolder:'اختر مجلداً...',
     hour:'ساعة', minute:'دقيقة', importSuccess:'تم الاستيراد بنجاح!', bookmarksLoaded:'إشارة تم تحميلها.',
     edit:"تعديل", done:"تم", sortBy:"ترتيب حسب", dateAdded:"تاريخ الإضافة", mostVisited:"الأكثر زيارة", lastVisited:"آخر زيارة", byFolder:"حسب المجلد", nameAZ:"الاسم (أ-ي)", filterFolder:"تصفية حسب المجلد", changeView:"تغيير العرض", appearance:"المظهر", sortDisplay:"الترتيب والعرض", browserImport:"استيراد المتصفح", dataBackup:"البيانات والنسخ الاحتياطي", quickActions:"إجراءات سريعة", statsTools:"الإحصاءات والأدوات", dangerZone:"المنطقة الخطرة", about:"حول", darkLight:"الوضع الداكن / الفاتح", openNewTab:"فتح في تبويب جديد", accentColor:"لون التمييز", manageFolders:"إدارة المجلدات", manageTags:"إدارة الوسوم", showFolderBadges:"إظهار المجلدات على الروابط", showTagBadges:"إظهار الوسوم على الروابط", sortNewest:"الأحدث أولاً", pinnedTop:"المثبتة دائماً في الأعلى", compactCards:"بطاقات مدمجة", showThumbs:"إظهار الصور المصغرة", showViews:"إظهار عداد الزيارات", animEdit:"تحريك وضع التعديل", hideImported:"إخفاء جميع المستوردة", showImportedBadge:"شارة \"مستورد\"", importBMHtml:"استيراد إشارات المتصفح (HTML)", importJSON2:"استيراد JSON", exportJSON3:"تصدير JSON", recentlyVisited:"زُيرت مؤخراً (آخر 10)", findDuplicates:"إيجاد المكررات", archiveVisited:"أرشفة جميع المزورة", clearData:"مسح جميع البيانات", deletePass:"كلمة مرور الحذف", deleted:"الإشارات المحذوفة", saved:"محفوظة", favorites:"المفضلة", noBookmarksFound:"لا توجد إشارات مرجعية",
+    fontFamily:"الخط", fontSize:"حجم الخط", openLinkIn:"فتح الرابط في", showFolderBadgesShort:"إظهار المجلدات", showTagBadgesShort:"إظهار الوسوم", sortByDateNewest:"ترتيب بالتاريخ الأحدث", pinnedAlwaysTop:"المثبتة دائماً في الأعلى", showThumbnails:"إظهار الصور المصغرة", showVisitCount:"عداد الزيارات", animateEdit:"تحريك وضع التعديل", hideAllImported:"إخفاء جميع المستوردة", showImportedBadgeShort:"شارة \"مستورد\"", browserNextImport:"المتصفح للاستيراد التالي", exportImportedOnly:"تصدير المستوردة فقط", removeAllImported:"إزالة جميع المستوردة", totalBookmarks:"إجمالي الإشارات", deletedBookmarks:"الإشارات المحذوفة", deletePassword:"كلمة مرور الحذف", clearAllData:"مسح جميع البيانات", contactBtn:"تواصل", newTab:"تبويب جديد", currentTab:"التبويب الحالي", small:"صغير", medium:"متوسط", large:"كبير", helpBtn:"مساعدة",
     confirmLeave:"هل أنت متأكد أنك تريد المغادرة دون حفظ؟", confirmLeaveFolder:"هل أنت متأكد أنك تريد المغادرة دون حفظ هذا المجلد؟",
   }
 };
@@ -1332,6 +1350,54 @@ function applyTranslations(){
     });
     // Translate "No bookmarks found" empty state
     document.querySelectorAll('[data-t="noBookmarks"]').forEach(el=>{ el.textContent=T('noBookmarks'); });
+    // Translate sort dropdown options
+    const _soptDate = document.getElementById('sopt-date'); if(_soptDate) { _soptDate.innerHTML=`<i class="fa-solid fa-calendar-days" style="color:#60a5fa;"></i> ${T('dateAdded')} <span class="vchk" id="schk-date" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span>`; }
+    const _soptVisits = document.getElementById('sopt-visits'); if(_soptVisits) { _soptVisits.innerHTML=`<i class="fa-solid fa-eye" style="color:#a78bfa;"></i> ${T('mostVisited')} <span class="vchk" id="schk-visits" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span>`; }
+    const _soptLast = document.getElementById('sopt-last'); if(_soptLast) { _soptLast.innerHTML=`<i class="fa-solid fa-clock-rotate-left" style="color:#22d3ee;"></i> ${T('lastVisited')} <span class="vchk" id="schk-last" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span>`; }
+    const _soptFolder = document.getElementById('sopt-folder'); if(_soptFolder) { _soptFolder.innerHTML=`<i class="fa-solid fa-folder" style="color:#fbbf24;"></i> ${T('byFolder')} <span class="vchk" id="schk-folder" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span>`; }
+    const _soptName = document.getElementById('sopt-name'); if(_soptName) { _soptName.innerHTML=`<i class="fa-solid fa-font" style="color:#4ade80;"></i> ${T('nameAZ')} <span class="vchk" id="schk-name" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span>`; }
+    // Re-apply sort checks after rebuild
+    if(typeof updateSortChecks === 'function') setTimeout(updateSortChecks, 0);
+    // Translate Add modal fields
+    const addModal = document.getElementById('addModal');
+    if(addModal){
+        const labels = addModal.querySelectorAll('.field label');
+        labels.forEach(l=>{
+            const txt = l.textContent.trim().toLowerCase();
+            if(txt==='url') l.textContent='URL';
+            else if(txt==='title') l.textContent=T('titleLabel');
+            else if(txt==='description') l.textContent=T('descLabel');
+            else if(txt==='tags') l.textContent=T('tagsLabel');
+            else if(txt==='folder') l.textContent=T('folderLabel');
+            else if(txt==='logo / icon') l.textContent='Logo / Icon';
+        });
+        const selFolderName = document.getElementById('selFolderName');
+        if(selFolderName && selFolderName.textContent===selFolderName.textContent) selFolderName.textContent=T('chooseFolder');
+        const saveBtnAdd = addModal.querySelector('.btn-p');
+        if(saveBtnAdd) saveBtnAdd.textContent=T('save')+' Bookmark';
+        const cancelBtnAdd = addModal.querySelector('.btn-s');
+        if(cancelBtnAdd) cancelBtnAdd.textContent=T('cancel');
+    }
+    // Translate Help button in About sections
+    document.querySelectorAll('[data-tk="helpBtn"]').forEach(el=>el.textContent=T('helpBtn'));
+    document.querySelectorAll('[data-tk="contactBtn"]').forEach(el=>el.textContent=T('contactBtn'));
+    // Translate sort view dropdown labels
+    const voptDD = document.getElementById('viewDD');
+    if(voptDD){
+        const el = voptDD.querySelector('[data-tk="changeView"]');
+        // already handled by data-tk
+    }
+    // Translate font size options in selects
+    document.querySelectorAll('#sp-fontSizeSelect option, #desk-fontSizeSelect option').forEach(opt=>{
+        if(opt.value==='small') opt.textContent=T('small')||'Small';
+        else if(opt.value==='medium') opt.textContent=T('medium')||'Medium';
+        else if(opt.value==='large') opt.textContent=T('large')||'Large';
+    });
+    // Translate Open Link In select options
+    document.querySelectorAll('#sp-openLinkSelect option, #desk-openLinkSelect option').forEach(opt=>{
+        if(opt.value==='newtab') opt.textContent=T('newTab')||'New Tab';
+        else if(opt.value==='current') opt.textContent=T('currentTab')||'Current Tab';
+    });
 }
 
 function save() {
@@ -1487,9 +1553,7 @@ function toggleGlobalEdit(){
     // Show/hide edit mode banner
     const banner = document.getElementById('editModeBanner');
     if(banner) banner.style.display = S._bmEditMode ? 'flex' : 'none';
-    // Show/hide sort paused note
-    const sortNote = document.getElementById('sortEditNote');
-    if(sortNote) sortNote.style.display = S._bmEditMode ? 'inline' : 'none';
+    // Sort paused note no longer needed — edit mode respects current sort
     renderTabs();
     renderLinks(); // re-render to apply/remove sort bypass
 }
@@ -1581,23 +1645,22 @@ function renderLinks() {
         arr = arr.filter(l=>!l.imported || !S.settings.hiddenBrowsers.includes(l.importedFrom));
     }
     // Sort logic:
-    // - Manual mode: keep S.links order (drag/saved order), no sorting
-    // - Edit mode: keep S.links order so drag commits are preserved
-    // - All other modes: sort by selected criterion
+    // - Manual mode only: keep S.links order (drag/saved order), no sorting
+    // - Edit mode uses the SAME sort as normal view — edit mode never changes display order
+    // - Drag actions reorder S.links directly, independent of current sort
     const _sm = S._sortMode || 'date';
-    const inEditMode = S._bmEditMode || false;
     const isManual = (_sm === 'manual');
-    if(!isManual && !inEditMode) {
+    if(!isManual) {
         if(_sm === 'date')        arr.sort((a,b)=>(b.id||0)-(a.id||0));
         else if(_sm === 'visits') arr.sort((a,b)=>(b.views||0)-(a.views||0));
         else if(_sm === 'last')   arr.sort((a,b)=>(b.lastVisited||0)-(a.lastVisited||0));
         else if(_sm === 'folder') arr.sort((a,b)=>{ const fa=S.folders.find(f=>f.id===a.fId); const fb=S.folders.find(f=>f.id===b.fId); return (fa?fa.name:'zzz').localeCompare(fb?fb.name:'zzz'); });
         else if(_sm === 'name')   arr.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
-        // Pinned always on top (not in manual/edit)
+        // Pinned always on top (except in manual mode)
         const pinnedTopOn = S.settings ? S.settings.pinnedTop !== false : true;
         if(pinnedTopOn) arr.sort((a,b)=>{ if(a.pinned&&!b.pinned) return -1; if(!a.pinned&&b.pinned) return 1; return 0; });
     }
-    // Manual or edit mode: use S.links order as-is
+    // Manual mode: use S.links order as-is (saved drag order)
 
     if(!arr.length) { el.innerHTML=`<div class="empty"><i class="fa-regular fa-bookmark"></i><p>${T('noBookmarks')||'No bookmarks found'}</p></div>`; return; }
 
@@ -1620,13 +1683,20 @@ function renderLinks() {
         return `
         <div class="link-container" id="lc-${l.id}" ondragover="bmDragOver(event,${l.id})" ondrop="bmDrop(event,${l.id})">
             <div class="link-card" onclick="openEditDetail(${l.id})">
-                <i class="fa-solid fa-arrow-up-right-from-square ext-icon" onclick="event.stopPropagation();openLink('${esc(l.url)}')"></i>
+                <div style="position:absolute;top:10px;right:10px;z-index:10;">
+                    <i class="fa-solid fa-arrow-up-right-from-square" onclick="event.stopPropagation();openLink('${esc(l.url)}')" style="color:var(--primary);font-size:16px;cursor:pointer;padding:4px;"></i>
+                </div>
                 <i class="${l.archived?'fa-solid fa-box-open':'fa-solid fa-box-archive'} arc-icon" onclick="event.stopPropagation();toggleArchiveById(${l.id})" title="${l.archived?'Unarchive':'Archive'}"></i>
                 <div class="bm-edit-overlay" style="flex-direction:row;align-items:center;padding:0 12px;justify-content:space-between;">
-                    <div class="bm-move-btn bm-edit-btn" draggable="true" ondragstart="bmDragStart(event,'${l.id}')" ondragend="bmDragEnd(event)" ontouchstart="_bmTouchStart(event,${l.id})" ontouchmove="_bmTouchMove(event)" ontouchend="_bmTouchEnd(event)" title="Hold &amp; drag to reorder" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;cursor:grab;touch-action:none;">
-                        <span style="display:block;width:20px;height:3px;background:#f97316;border-radius:2px;"></span>
-                        <span style="display:block;width:14px;height:3px;background:#f97316;border-radius:2px;"></span>
-                        <span style="display:block;width:20px;height:3px;background:#f97316;border-radius:2px;"></span>
+                    <div class="bm-move-btn bm-edit-btn" draggable="true" ondragstart="bmDragStart(event,'${l.id}')" ondragend="bmDragEnd(event)" ontouchstart="_bmTouchStart(event,${l.id})" ontouchmove="_bmTouchMove(event)" ontouchend="_bmTouchEnd(event)" title="Hold &amp; drag to reorder" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;background:rgba(34,197,94,.15);">
+                        <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="5" cy="4"  r="2.5" fill="#22c55e"/>
+                            <circle cx="13" cy="4"  r="2.5" fill="#22c55e"/>
+                            <circle cx="5" cy="11" r="2.5" fill="#22c55e"/>
+                            <circle cx="13" cy="11" r="2.5" fill="#22c55e"/>
+                            <circle cx="5" cy="18" r="2.5" fill="#22c55e"/>
+                            <circle cx="13" cy="18" r="2.5" fill="#22c55e"/>
+                        </svg>
                     </div>
                     <div class="bm-del-btn bm-edit-btn" onclick="event.stopPropagation();deleteLink(${l.id})" title="Delete" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;">
                         <i class="fa-solid fa-trash-can"></i>
@@ -3280,14 +3350,14 @@ function showHelp(){
     const m = document.createElement('div');
     m.id = 'helpModal';
     m.dir = dir;
-    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0 40px;backdrop-filter:blur(6px);';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0 40px;backdrop-filter:blur(6px);';
     m.innerHTML = `
-    <div style="background:#1c1c1e;border:1px solid var(--border);border-radius:20px;padding:22px 20px 28px;width:100%;max-width:520px;margin:0 12px;animation:slideUp .28s ease;" dir="${dir}">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px 20px 28px;width:100%;max-width:520px;margin:0 12px;animation:slideUp .28s ease;" dir="${dir}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
             <div style="font-size:18px;font-weight:800;">📖 ${h.title}</div>
             <button onclick="document.getElementById('helpModal').remove()" style="background:rgba(255,255,255,.07);border:none;color:var(--text-dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
-        <div style="font-size:13px;line-height:1.7;color:var(--text-dim);display:flex;flex-direction:column;gap:14px;">
+        <div style="font-size:13px;line-height:1.7;color:var(--text);display:flex;flex-direction:column;gap:14px;">
             <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;">
                 <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:14px;">${h.gestures}</div>
                 <div>• <b style="color:var(--text);">${h.tap}</b></div>
@@ -3316,7 +3386,7 @@ function showHelp(){
                 <div>• ${h.backupT2}</div>
                 <div>• ${h.backupT3}</div>
             </div>
-            <div style="text-align:center;font-size:11px;opacity:.5;margin-top:4px;">WebMark · v3.0</div>
+            <div style="text-align:center;font-size:11px;opacity:.5;margin-top:4px;">WebMark · by Saad Mounir · v3.0</div>
         </div>
     </div>`;
     m.addEventListener('click', e=>{ if(e.target===m) m.remove(); });
@@ -3568,6 +3638,17 @@ function _bmTouchEnd(e) {
             const [moved] = S.links.splice(si, 1);
             S.links.splice(ti, 0, moved);
             save();
+            // Auto-switch to manual mode so the new order is visible
+            if(S._sortMode !== 'manual'){
+                S._sortMode = 'manual';
+                localStorage.setItem('ly_sortMode','manual');
+                updateSortChecks();
+                const icon=document.getElementById('sortDateIcon');
+                const btn=document.getElementById('sortBtn');
+                if(icon) icon.style.color='#f97316';
+                if(btn) btn.style.borderColor='#f97316';
+                showToast('↕ Switched to Manual Order','#22c55e');
+            }
         }
     }
     // Cleanup
@@ -3609,8 +3690,19 @@ function bmDrop(e, targetId){
     if(srcIdx<0||tgtIdx<0) return;
     const [moved] = S.links.splice(srcIdx,1);
     S.links.splice(tgtIdx,0,moved);
-    save(); renderLinks();
-    // Re-apply edit mode overlay
+    save();
+    // Auto-switch to manual mode after drag so the new order is visible
+    if(S._sortMode !== 'manual'){
+        S._sortMode = 'manual';
+        localStorage.setItem('ly_sortMode','manual');
+        updateSortChecks();
+        const icon=document.getElementById('sortDateIcon');
+        const btn=document.getElementById('sortBtn');
+        if(icon) icon.style.color='#f97316';
+        if(btn) btn.style.borderColor='#f97316';
+        showToast('↕ Switched to Manual Order','#22c55e');
+    }
+    renderLinks();
     const wrap=document.getElementById('linkListWrap');
     if(wrap&&S._bmEditMode) wrap.classList.add('link-list-edit-mode');
     _dragSrcId=null;
@@ -4453,7 +4545,7 @@ function openEnterDeletePassword(onSuccess){
     document.getElementById('deletePassTitle').textContent='🔐 Enter Delete Password';
     el.innerHTML=`
         <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.6;">Enter your password to confirm this action.</p>
-        <div class="field"><label>Password</label><input type="password" id="dp-enter" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')verifyDeletePassword()"></div>
+        <div class="field"><label>Password</label><input type="password" id="dp-enter" placeholder="Enter your password" autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')verifyDeletePassword()"></div>
         <div id="dp-err2" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none;"></div>
         <button class="btn-p" onclick="verifyDeletePassword()" style="background:#ef4444;"><i class="fa-solid fa-trash"></i> Confirm Delete</button>
         <button class="btn-s" onclick="closeModal('deletePassModal')">Cancel</button>
@@ -4461,7 +4553,7 @@ function openEnterDeletePassword(onSuccess){
     `;
     window._dpCallback=onSuccess;
     openModal('deletePassModal');
-    setTimeout(()=>document.getElementById('dp-enter')?.focus(),200);
+    setTimeout(()=>{ const f=document.getElementById('dp-enter'); if(f){f.value='';f.focus();} },200);
 }
 
 function verifyDeletePassword(){
@@ -4578,7 +4670,7 @@ function confirmRemoveDeletePassword(){
     document.getElementById('deletePassTitle').textContent='🔐 Remove Password';
     el.innerHTML=`
         <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.6;">Enter your current password to remove protection.</p>
-        <div class="field"><label>Current Password</label><input type="password" id="dp-remove-verify" placeholder="Enter current password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doRemoveDeletePassword()"></div>
+        <div class="field"><label>Current Password</label><input type="password" id="dp-remove-verify" placeholder="Enter current password" autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')doRemoveDeletePassword()"></div>
         <div id="dp-remove-err" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none;"></div>
         <button class="btn-p" onclick="doRemoveDeletePassword()" style="background:#ef4444;"><i class="fa-solid fa-lock-open"></i> Remove Password</button>
         <button class="btn-s" onclick="openManageDeletePassword()">Back</button>
@@ -4614,10 +4706,41 @@ function archiveAllRead(){
 }
 
 function openLink(url){
-    const newTab = S.settings && S.settings.openNewTab !== false; // default true
-    if(newTab) window.open(url,'_blank');
-    else window.location.href=url;
+    const mode = localStorage.getItem('ly_openLinkMode') || 'newtab';
+    openLinkMode(url, mode);
 }
+function setOpenLinkMode(mode){
+    localStorage.setItem('ly_openLinkMode', mode);
+    // Sync all select elements
+    document.querySelectorAll('#sp-openLinkSelect,#desk-openLinkSelect').forEach(s=>{ if(s) s.value=mode; });
+}
+function openLinkMode(url, mode){
+    // Close all open dropdowns first
+    document.querySelectorAll('.open-dd.show').forEach(d=>d.classList.remove('show'));
+    if(mode==='newtab')    { window.open(url,'_blank'); }
+    else if(mode==='current') { window.location.href=url; }
+    else if(mode==='incognito'){
+        // Can't open incognito programmatically, so copy URL and show info
+        navigator.clipboard.writeText(url).then(()=>{
+            showToast('🕵️ URL copied! Open an incognito window and paste.','#a78bfa');
+        }).catch(()=>{ window.open(url,'_blank'); });
+    }
+    else if(mode==='copy') {
+        navigator.clipboard.writeText(url).then(()=>showToast('🔗 Link copied!','#22d3ee')).catch(()=>prompt('Copy:',url));
+    }
+}
+function toggleOpenDD(el, url){
+    // Close all others first
+    document.querySelectorAll('.open-dd.show').forEach(d=>{
+        if(d!==el.nextElementSibling) d.classList.remove('show');
+    });
+    const dd = el.nextElementSibling;
+    if(dd) dd.classList.toggle('show');
+}
+// Close open-dd when clicking outside
+document.addEventListener('click', function(){
+    document.querySelectorAll('.open-dd.show').forEach(d=>d.classList.remove('show'));
+});
 
 // ══════════════════════════════════════════════
 // ── NEW FEATURES ──
@@ -4797,18 +4920,39 @@ document.addEventListener('DOMContentLoaded', ()=>{
 // ── FONT SETTINGS ──
 function setAppFont(fontName){
     const fontMap = {
-        'Inter': "'Inter',system-ui,sans-serif",
-        'Roboto': "'Roboto','Google Sans',sans-serif",
-        'Georgia': "Georgia,'Times New Roman',serif",
-        'Courier': "'Courier New',Courier,monospace",
-        'System': "system-ui,-apple-system,sans-serif"
+        'Inter':       "'Inter',system-ui,sans-serif",
+        'Roboto':      "'Roboto',sans-serif",
+        'Poppins':     "'Poppins',sans-serif",
+        'Lato':        "'Lato',sans-serif",
+        'Nunito':      "'Nunito',sans-serif",
+        'Georgia':     "Georgia,'Times New Roman',serif",
+        'Merriweather':"'Merriweather',serif",
+        'Courier':     "'Courier New',Courier,monospace",
+        'System':      "system-ui,-apple-system,sans-serif"
     };
+    // Load Google Font if needed
+    const gFonts = ['Roboto','Poppins','Lato','Nunito','Merriweather'];
+    if(gFonts.includes(fontName)){
+        const id='gf-'+fontName;
+        if(!document.getElementById(id)){
+            const link=document.createElement('link');
+            link.id=id; link.rel='stylesheet';
+            link.href='https://fonts.googleapis.com/css2?family='+fontName+':wght@300;400;600;700;800&display=swap';
+            document.head.appendChild(link);
+        }
+    }
     const fontVal = fontMap[fontName] || fontMap['Inter'];
     document.documentElement.style.setProperty('--app-font', fontVal);
     localStorage.setItem('ly_font', fontName);
     // Update pill active state
-    document.querySelectorAll('.font-pill').forEach(p=>{
+    document.querySelectorAll('.font-pill,[data-font]').forEach(p=>{
         p.classList.toggle('active', p.dataset.font===fontName);
+    });
+    // Sync select dropdowns
+    document.querySelectorAll('#sp-fontSelect,#desk-fontSelect').forEach(s=>{ if(s) s.value=fontName; });
+    // Keep app name always in Inter regardless of font choice
+    document.querySelectorAll('.app-name-protected').forEach(el=>{
+        el.style.fontFamily = "'Inter',system-ui,sans-serif";
     });
 }
 function adjustFontSize(delta){
@@ -4816,21 +4960,77 @@ function adjustFontSize(delta){
     const next = Math.min(20, Math.max(11, cur + delta));
     document.documentElement.style.setProperty('--app-font-size', next+'px');
     localStorage.setItem('ly_fontSize', next);
-    // Update both mobile and desktop labels
     const lbl = document.getElementById('sp-fontSizeLabel');
     if(lbl) lbl.textContent = next+'px';
     const lbl2 = document.getElementById('desk-fontSizeLabel');
     if(lbl2) lbl2.textContent = next+'px';
 }
+const FONT_SIZES = { small:'12px', medium:'14px', large:'17px' };
+function setFontSize(size){
+    const px = FONT_SIZES[size] || '14px';
+    const pxNum = parseInt(px);
+    // Apply to both the CSS variable AND the html root so all elements scale
+    document.documentElement.style.setProperty('--app-font-size', px);
+    // Scale all explicit font sizes by patching a style tag
+    applyFontSizeScale(pxNum);
+    localStorage.setItem('ly_fontSizeName', size);
+    localStorage.setItem('ly_fontSize', pxNum);
+    document.querySelectorAll('[data-size]').forEach(b=>b.classList.toggle('active', b.dataset.size===size));
+    const lbl=document.getElementById('sp-fontSizeLabel'); if(lbl) lbl.textContent=px;
+    const lbl2=document.getElementById('desk-fontSizeLabel'); if(lbl2) lbl2.textContent=px;
+    document.querySelectorAll('#sp-fontSizeSelect,#desk-fontSizeSelect').forEach(s=>{ if(s) s.value=size; });
+}
+function applyFontSizeScale(pxNum){
+    // Base is 14px. Scale = pxNum/14
+    const scale = pxNum / 14;
+    let el = document.getElementById('_fontScaleStyle');
+    if(!el){ el = document.createElement('style'); el.id='_fontScaleStyle'; document.head.appendChild(el); }
+    if(scale === 1){
+        el.textContent = '';
+        return;
+    }
+    // Override body font-size and let inheritance do the work where possible
+    // Also scale key text elements explicitly
+    el.textContent = `
+        body { font-size: ${pxNum}px !important; }
+        .link-card, .linfo h4, .linfo p, .badge, .chip, .erow-lbl span,
+        .vopt, .mhdr .mtitle, .field label, .frow-name, .fm-name,
+        .nitem, .dnl, .greeting h2, .greeting p, .qs-num, .qs-lbl,
+        .stat-label, .sett-section-hdr, .btn-p, .btn-s, .btn-d,
+        input[type=text], input[type=url], select, textarea,
+        .bact span, .card-act, .mtitle { font-size: calc(1em * ${scale}) !important; }
+        .linfo h4 { font-size: calc(15px * ${scale}) !important; }
+        .linfo p { font-size: calc(12px * ${scale}) !important; }
+        .badge { font-size: calc(11px * ${scale}) !important; }
+        .chip { font-size: calc(13px * ${scale}) !important; }
+        .erow-lbl span { font-size: calc(13px * ${scale}) !important; }
+        .vopt { font-size: calc(14px * ${scale}) !important; }
+        .mtitle { font-size: calc(18px * ${scale}) !important; }
+        .nitem { font-size: calc(10px * ${scale}) !important; }
+        .qs-lbl { font-size: calc(10px * ${scale}) !important; }
+        .qs-num { font-size: calc(20px * ${scale}) !important; }
+        .sett-section-hdr { font-size: calc(10px * ${scale}) !important; }
+        .btn-p, .btn-s, .btn-d { font-size: calc(15px * ${scale}) !important; }
+    `;
+}
 function applyFontSettings(){
-    const font = localStorage.getItem('ly_font');
+    const font = localStorage.getItem('ly_font') || 'Inter';
+    const sizeName = localStorage.getItem('ly_fontSizeName') || 'medium';
     const size = parseInt(localStorage.getItem('ly_fontSize')||'14');
+    const openMode = localStorage.getItem('ly_openLinkMode') || 'newtab';
+    // On first use, save defaults so selects show correctly
+    if(!localStorage.getItem('ly_font')) localStorage.setItem('ly_font','Inter');
+    if(!localStorage.getItem('ly_fontSizeName')) localStorage.setItem('ly_fontSizeName','medium');
+    if(!localStorage.getItem('ly_fontSize')) localStorage.setItem('ly_fontSize','14');
     if(font) setAppFont(font);
     document.documentElement.style.setProperty('--app-font-size', size+'px');
-    const lbl = document.getElementById('sp-fontSizeLabel');
-    if(lbl) lbl.textContent = size+'px';
-    const lbl2 = document.getElementById('desk-fontSizeLabel');
-    if(lbl2) lbl2.textContent = size+'px';
+    applyFontSizeScale(size);
+    setTimeout(()=>{
+        document.querySelectorAll('[data-size]').forEach(b=>b.classList.toggle('active', b.dataset.size===sizeName));
+        document.querySelectorAll('#sp-fontSelect,#desk-fontSelect').forEach(s=>{ if(s) s.value=font; });
+        document.querySelectorAll('#sp-fontSizeSelect,#desk-fontSizeSelect').forEach(s=>{ if(s) s.value=sizeName; });
+        document.querySelectorAll('#sp-openLinkSelect,#desk-openLinkSelect').forEach(s=>{ if(s) s.value=openMode; });
+    }, 100);
 }
 applyFontSettings();
 
@@ -4947,15 +5147,15 @@ window.setLang = function(l){
         <div onclick="toggleSetting('pinnedTop')" id="tog-pinnedTop" class="tog-btn" style="background:var(--primary);"><div id="togInner-pinnedTop" class="tog-knob" style="right:2px;left:auto;"></div></div>
     </div>
     <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-compress"></i> <span>Compact cards</span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-compress"></i> <span data-tk="compactCards">Compact cards</span></div>
         <div onclick="toggleSetting('compactCards')" id="tog-compactCards" class="tog-btn"><div id="togInner-compactCards" class="tog-knob"></div></div>
     </div>
     <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-image"></i> <span>Show thumbnails / favicons</span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-image"></i> <span data-tk="showThumbnails">Show thumbnails / favicons</span></div>
         <div onclick="toggleSetting('showThumbs')" id="tog-showThumbs" class="tog-btn" style="background:var(--primary);"><div id="togInner-showThumbs" class="tog-knob" style="right:2px;left:auto;"></div></div>
     </div>
     <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-eye"></i> <span>Show visit count badge</span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-eye"></i> <span data-tk="showVisitCount">Show visit count badge</span></div>
         <div onclick="toggleSetting('showViews')" id="tog-showViews" class="tog-btn"><div id="togInner-showViews" class="tog-knob"></div></div>
     </div>
     <div class="erow" style="cursor:default;">
@@ -4981,7 +5181,7 @@ window.setLang = function(l){
     </div>
     <!-- Browser chooser for next import -->
     <div style="padding:12px 0;border-bottom:1px solid var(--border);">
-        <div class="erow-lbl" style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-globe"></i> <span style="color:var(--text);font-weight:600;">Browser for next import</span></div>
+        <div class="erow-lbl" style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-globe"></i> <span style="color:var(--text);font-weight:600;" data-tk="browserNextImport">Browser for next import</span></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;" id="browserChooser">
             <button onclick="setImportBrowser('Chrome')" class="browser-pill" data-b="Chrome"><i class="fa-brands fa-chrome"></i> Chrome</button>
             <button onclick="setImportBrowser('Firefox')" class="browser-pill" data-b="Firefox"><i class="fa-brands fa-firefox"></i> Firefox</button>
@@ -5014,8 +5214,11 @@ window.setLang = function(l){
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;margin-left:8px;"></i>
     </div>
     <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-up-right-from-square"></i> <span>Open links in new tab</span></div>
-        <div onclick="toggleSetting('openNewTab')" id="tog-openNewTab" class="tog-btn" style="background:var(--primary);"><div id="togInner-openNewTab" class="tog-knob" style="right:2px;left:auto;"></div></div>
+        <div class="erow-lbl"><i class="fa-solid fa-globe" style="color:var(--primary);"></i> <span data-tk="openLinkIn">Open Link In</span></div>
+        <select class="sett-select" id="desk-openLinkSelect" onchange="setOpenLinkMode(this.value)">
+            <option value="newtab">New Tab</option>
+            <option value="current">Current Tab</option>
+        </select>
     </div>
     <!-- ACCENT COLOR -->
     <div style="padding:14px 0;border-bottom:1px solid var(--border);">
@@ -5032,42 +5235,44 @@ window.setLang = function(l){
         </div>
     </div>
 
-    <!-- FONT FAMILY -->
-    <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-font" style="color:#a78bfa;"></i> Font Family</div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap;">
-            <button onclick="setAppFont('Inter')" data-font="Inter" class="font-pill active" style="font-family:'Inter',sans-serif;">Inter</button>
-            <button onclick="setAppFont('Roboto')" data-font="Roboto" class="font-pill" style="font-family:'Roboto',sans-serif;">Roboto</button>
-            <button onclick="setAppFont('Georgia')" data-font="Georgia" class="font-pill" style="font-family:Georgia,serif;">Georgia</button>
-            <button onclick="setAppFont('Courier')" data-font="Courier" class="font-pill" style="font-family:'Courier New',monospace;">Mono</button>
-            <button onclick="setAppFont('System')" data-font="System" class="font-pill" style="font-family:system-ui;">System</button>
-        </div>
+    <!-- FONT FAMILY + SIZE as erow selects -->
+    <div class="erow" style="cursor:default;">
+        <div class="erow-lbl"><i class="fa-solid fa-font" style="color:#a78bfa;"></i> <span>Font Family</span></div>
+        <select class="sett-select" id="desk-fontSelect" onchange="setAppFont(this.value)">
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Lato">Lato</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Courier">Courier New</option>
+            <option value="System">System UI</option>
+        </select>
     </div>
-
-    <!-- FONT SIZE -->
-    <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-text-height" style="color:#22d3ee;"></i> Font Size</div>
-        <div style="display:flex;align-items:center;gap:12px;">
-            <button onclick="adjustFontSize(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:20px;font-weight:300;display:flex;align-items:center;justify-content:center;">−</button>
-            <span id="desk-fontSizeLabel" style="font-size:15px;color:var(--primary);font-weight:700;min-width:40px;text-align:center;">14px</span>
-            <button onclick="adjustFontSize(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:20px;font-weight:300;display:flex;align-items:center;justify-content:center;">+</button>
-        </div>
+    <div class="erow" style="cursor:default;">
+        <div class="erow-lbl"><i class="fa-solid fa-text-height" style="color:#22d3ee;"></i> <span>Font Size</span></div>
+        <select class="sett-select" id="desk-fontSizeSelect" onchange="setFontSize(this.value)">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+        </select>
     </div>
 
     <!-- ── STATS & TOOLS ── -->
     <div class="sett-section-hdr" data-c="orange" data-tk="statsTools">📊 STATS & TOOLS</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-        <div class="stat-card"><div style="font-size:26px;font-weight:800;color:var(--primary);" id="statTotalLinks">0</div><div class="stat-label">Total Bookmarks</div></div>
+        <div class="stat-card"><div style="font-size:26px;font-weight:800;color:var(--primary);" id="statTotalLinks">0</div><div class="stat-label" data-tk-stat="totalBookmarks">Total Bookmarks</div></div>
         <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#8b5cf6;" id="statTotalFolders">0</div><div class="stat-label">Folders</div></div>
         <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#ef4444;" id="statFavs">0</div><div class="stat-label">Favorites</div></div>
         <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#f59e0b;" id="statArchived">0</div><div class="stat-label">Archived</div></div>
     </div>
     <div class="erow" onclick="findDuplicates()">
-        <div class="erow-lbl"><i class="fa-solid fa-copy" style="color:#f59e0b;"></i> <span>Find & Remove Duplicates</span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-copy" style="color:#f59e0b;"></i> <span data-tk="findDuplicates">Find & Remove Duplicates</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
     <div class="erow" onclick="archiveAllRead()">
-        <div class="erow-lbl"><i class="fa-solid fa-box-archive" style="color:#52525b;"></i> <span>Archive All Visited</span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-box-archive" style="color:#52525b;"></i> <span data-tk="archiveVisited">Archive All Visited</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
     <div class="erow" onclick="exportImportedLinks()">
@@ -5082,11 +5287,11 @@ window.setLang = function(l){
     <!-- ── DANGER ZONE ── -->
     <div class="sett-section-hdr" data-c="red" data-tk="dangerZone">⚠️ DANGER ZONE</div>
     <div class="erow" onclick="openTrashModal()">
-        <div class="erow-lbl"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> <span>Deleted Bookmarks</span> <span id="trashCountBadge" style="font-size:11px;font-weight:700;background:rgba(239,68,68,.15);color:#ef4444;border-radius:6px;padding:2px 7px;margin-left:4px;display:none;"></span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> <span data-tk="deletedBookmarks">Deleted Bookmarks</span> <span id="trashCountBadge" style="font-size:11px;font-weight:700;background:rgba(239,68,68,.15);color:#ef4444;border-radius:6px;padding:2px 7px;margin-left:4px;display:none;"></span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
     <div class="erow" onclick="openManageDeletePassword()">
-        <div class="erow-lbl"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> <span>Delete Password</span></div>
+        <div class="erow-lbl"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> <span data-tk="deletePassword">Delete Password</span></div>
         <div style="font-size:12px;font-weight:600;color:var(--primary);margin-right:6px;" id="delPassStatus"></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
@@ -5101,13 +5306,13 @@ window.setLang = function(l){
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
             <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
             <div>
-                <div style="font-size:15px;font-weight:700;">WebMark</div>
+                <div style="font-size:15px;font-weight:700;font-family:'Inter',system-ui,sans-serif !important;" class="app-name-protected">WebMark</div>
                 <div style="font-size:12px;color:var(--text-dim);">by Saad Mounir · v3.0 Premium</div>
             </div>
         </div>
         <div style="display:flex;gap:8px;">
-            <button onclick="closeModal('settingsModal');openContact()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> Contact</button>
-            <button onclick="showHelp()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-solid fa-circle-info"></i> Help</button>
+            <button onclick="closeModal('settingsModal');openContact()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> <span data-tk="contactBtn">Contact</span></button>
+            <button onclick="showHelp()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-solid fa-circle-info"></i> <span data-tk="helpBtn">Help</span></button>
         </div>
     </div>
     <button class="btn-s" onclick="closeModal('settingsModal')">Close</button>
@@ -5179,110 +5384,139 @@ window.setLang = function(l){
         <span class="inline-page-title"><i class="fa-solid fa-gear" style="color:#a78bfa;margin-right:8px;"></i><span data-tk="settings">Settings</span></span>
     </div>
     <div class="inline-page-body" id="settingsPageBody">
-        <!-- content cloned from settingsModal, IDs prefixed with sp- -->
+
+        <!-- ── APPEARANCE ── -->
         <div class="sett-section-hdr" data-c="violet" data-tk="appearance">🎨 APPEARANCE</div>
+
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-circle-half-stroke"></i> <span>Dark / Light Mode</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);"><i class="fa-solid fa-moon" style="color:#fff;font-size:15px;"></i></div> <span data-tk="darkLight">Dark / Light Mode</span></div>
             <div onclick="toggleTheme()" id="sp-themeToggleRow" style="width:44px;height:24px;border-radius:12px;background:#27272a;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
                 <div id="sp-themeToggleKnob" style="position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s;display:flex;align-items:center;justify-content:center;font-size:11px;"></div>
             </div>
         </div>
+
         <div class="erow" onclick="openFromSettingsPage('langModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-language"></i> <span>Language</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#06b6d4,#0284c7);"><i class="fa-solid fa-language" style="color:#fff;font-size:15px;"></i></div> <span data-tk="language">Language</span></div>
             <div style="display:flex;align-items:center;gap:6px;">
                 <span id="sp-langLabel" style="font-size:13px;color:var(--text-dim);"></span>
                 <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
             </div>
         </div>
 
-        <!-- ── FONT FAMILY ── -->
-        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                <i class="fa-solid fa-font" style="color:#a78bfa;width:20px;text-align:center;"></i>
-                <span style="font-size:14px;font-weight:600;color:var(--text);">Font Family</span>
-            </div>
-            <div style="display:flex;gap:7px;flex-wrap:wrap;">
-                <button onclick="setAppFont('Inter')" data-font="Inter" class="font-pill active">Inter</button>
-                <button onclick="setAppFont('Roboto')" data-font="Roboto" class="font-pill" style="font-family:'Roboto',sans-serif;">Roboto</button>
-                <button onclick="setAppFont('Georgia')" data-font="Georgia" class="font-pill" style="font-family:Georgia,serif;">Georgia</button>
-                <button onclick="setAppFont('Courier')" data-font="Courier" class="font-pill" style="font-family:'Courier New',monospace;">Mono</button>
-                <button onclick="setAppFont('System')" data-font="System" class="font-pill" style="font-family:system-ui;">System</button>
-            </div>
-        </div>
-
-        <!-- ── FONT SIZE ── -->
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl">
-                <i class="fa-solid fa-text-height" style="color:#22d3ee;width:20px;text-align:center;"></i>
-                <span style="font-weight:600;color:var(--text);">Font Size</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-                <button onclick="adjustFontSize(-1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:300;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
-                <span id="sp-fontSizeLabel" style="font-size:14px;color:var(--primary);font-weight:700;min-width:36px;text-align:center;">14px</span>
-                <button onclick="adjustFontSize(1)" style="background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;font-weight:300;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><i class="fa-solid fa-font" style="color:#fff;font-size:15px;"></i></div> <span data-tk="fontFamily">Font Family</span></div>
+            <select class="sett-select" id="sp-fontSelect" onchange="setAppFont(this.value)">
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Lato">Lato</option>
+                <option value="Nunito">Nunito</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="Courier">Courier New</option>
+                <option value="System">System UI</option>
+            </select>
+        </div>
+
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22d3ee,#0891b2);"><i class="fa-solid fa-text-height" style="color:#fff;font-size:15px;"></i></div> <span data-tk="fontSize">Font Size</span></div>
+            <select class="sett-select" id="sp-fontSizeSelect" onchange="setFontSize(this.value)">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+            </select>
+        </div>
+
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><i class="fa-solid fa-palette" style="color:#fff;font-size:15px;"></i></div> <span data-tk="accentColor">Accent Color</span></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+                <div class="accent-dot" data-color="#22c55e" style="width:22px;height:22px;border-radius:50%;background:#22c55e;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#22c55e')"></div>
+                <div class="accent-dot" data-color="#8b5cf6" style="width:22px;height:22px;border-radius:50%;background:#8b5cf6;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#8b5cf6')"></div>
+                <div class="accent-dot" data-color="#3b82f6" style="width:22px;height:22px;border-radius:50%;background:#3b82f6;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#3b82f6')"></div>
+                <div class="accent-dot" data-color="#ef4444" style="width:22px;height:22px;border-radius:50%;background:#ef4444;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#ef4444')"></div>
+                <div class="accent-dot" data-color="#ec4899" style="width:22px;height:22px;border-radius:50%;background:#ec4899;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#ec4899')"></div>
+                <div class="accent-dot" data-color="#f97316" style="width:22px;height:22px;border-radius:50%;background:#f97316;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#f97316')"></div>
+                <div class="accent-dot" data-color="#06b6d4" style="width:22px;height:22px;border-radius:50%;background:#06b6d4;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#06b6d4')"></div>
+                <div class="accent-dot" data-color="#eab308" style="width:22px;height:22px;border-radius:50%;background:#eab308;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#eab308')"></div>
             </div>
         </div>
 
+        <!-- ── FOLDERS & TAGS ── -->
         <div class="sett-section-hdr" data-c="golden" data-tk="folders">📁 FOLDERS & TAGS</div>
+
         <div class="erow" onclick="openPage('folders')">
-            <div class="erow-lbl"><i class="fa-regular fa-folder"></i> <span data-tk="manageFolders">Manage Folders</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><i class="fa-solid fa-folder" style="color:#fff;font-size:15px;"></i></div> <span data-tk="manageFolders">Manage Folders</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" onclick="openFromSettingsPage('manageTagsModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-tags"></i> <span data-tk="manageTags">Manage Tags</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#a78bfa,#6d28d9);"><i class="fa-solid fa-tags" style="color:#fff;font-size:15px;"></i></div> <span data-tk="manageTags">Manage Tags</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-regular fa-folder-open"></i> <span>Show folder badges on links</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fb923c,#ea580c);"><i class="fa-solid fa-folder-open" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showFolderBadgesShort">Show folder badges on links</span></div>
             <div onclick="toggleSetting('showFolders')" id="sp-tog-showFolders" class="tog-btn"><div id="sp-togInner-showFolders" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-tag"></i> <span>Show tag badges on links</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#34d399,#059669);"><i class="fa-solid fa-tag" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showTagBadgesShort">Show tag badges</span></div>
             <div onclick="toggleSetting('showTags')" id="sp-tog-showTags" class="tog-btn"><div id="sp-togInner-showTags" class="tog-knob"></div></div>
         </div>
+
+        <!-- ── SORT & DISPLAY ── -->
         <div class="sett-section-hdr" data-c="sky" data-tk="sortDisplay">🗂️ SORT & DISPLAY</div>
+
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-arrow-down-wide-short"></i> <span>Sort by date (newest first)</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#60a5fa,#2563eb);"><i class="fa-solid fa-arrow-down-wide-short" style="color:#fff;font-size:15px;"></i></div> <span data-tk="sortByDateNewest">Sort by date newest first</span></div>
             <div onclick="toggleSetting('sortByDate')" id="sp-tog-sortByDate" class="tog-btn"><div id="sp-togInner-sortByDate" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-thumbtack" style="color:#3b82f6;"></i> <span>Pinned bookmarks always on top</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);"><i class="fa-solid fa-thumbtack" style="color:#fff;font-size:15px;"></i></div> <span data-tk="pinnedAlwaysTop">Pinned always on top</span></div>
             <div onclick="toggleSetting('pinnedTop')" id="sp-tog-pinnedTop" class="tog-btn"><div id="sp-togInner-pinnedTop" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-compress"></i> <span>Compact cards</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#94a3b8,#475569);"><i class="fa-solid fa-compress" style="color:#fff;font-size:15px;"></i></div> <span data-tk="compactCards">Compact cards</span></div>
             <div onclick="toggleSetting('compactCards')" id="sp-tog-compactCards" class="tog-btn"><div id="sp-togInner-compactCards" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-image"></i> <span>Show thumbnails / favicons</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#818cf8,#4f46e5);"><i class="fa-solid fa-image" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showThumbnails">Show thumbnails / favicons</span></div>
             <div onclick="toggleSetting('showThumbs')" id="sp-tog-showThumbs" class="tog-btn"><div id="sp-togInner-showThumbs" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-eye"></i> <span>Show visit count badge</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22d3ee,#0e7490);"><i class="fa-solid fa-eye" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showVisitCount">Show visit count badge</span></div>
             <div onclick="toggleSetting('showViews')" id="sp-tog-showViews" class="tog-btn"><div id="sp-togInner-showViews" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-magic-wand-sparkles" style="color:#fbbf24;"></i> <span>Animate edit mode (sparkle)</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fbbf24,#b45309);"><i class="fa-solid fa-magic-wand-sparkles" style="color:#fff;font-size:15px;"></i></div> <span data-tk="animateEdit">Animate edit mode</span></div>
             <div onclick="toggleSetting('animEditMode');applyAnimEditMode()" id="sp-tog-animEditMode" class="tog-btn"><div id="sp-togInner-animEditMode" class="tog-knob"></div></div>
         </div>
-        <div class="sett-section-hdr" data-c="teal" data-tk="browserImport">🌐 BROWSER IMPORT</div>
+
+        <!-- ── LINKS ── -->
+        <div class="sett-section-hdr" data-c="teal" data-tk-links="links">🔗 LINKS</div>
+
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-eye-slash" style="color:#64748b;"></i> <span>Hide ALL imported bookmarks</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#4ade80,#16a34a);"><i class="fa-solid fa-globe" style="color:#fff;font-size:15px;"></i></div> <span data-tk="openLinkIn">Open Link In</span></div>
+            <select class="sett-select" id="sp-openLinkSelect" onchange="setOpenLinkMode(this.value)">
+                <option value="newtab">New Tab</option>
+                <option value="current">Current Tab</option>
+            </select>
+        </div>
+
+        <!-- ── BROWSER IMPORT ── -->
+        <div class="sett-section-hdr" data-c="teal" data-tk="browserImport">🌐 BROWSER IMPORT</div>
+
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#64748b,#334155);"><i class="fa-solid fa-eye-slash" style="color:#fff;font-size:15px;"></i></div> <span data-tk="hideAllImported">Hide ALL imported</span></div>
             <div onclick="toggleSetting('hideImported');renderLinks()" id="sp-tog-hideImported" class="tog-btn"><div id="sp-togInner-hideImported" class="tog-knob"></div></div>
         </div>
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-tag" style="color:#64748b;"></i> <span>Show "Imported" badge on links</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#94a3b8,#64748b);"><i class="fa-solid fa-tag" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showImportedBadgeShort">Show "Imported" badge</span></div>
             <div onclick="toggleSetting('showImportedBadge');renderLinks()" id="sp-tog-showImportedBadge" class="tog-btn"><div id="sp-togInner-showImportedBadge" class="tog-knob"></div></div>
         </div>
-        <!-- Per-browser show/hide toggles (mobile) -->
         <div style="padding:12px 0;border-bottom:1px solid var(--border);">
             <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">Show/Hide by browser source</div>
             <div id="sp-perBrowserToggles" style="display:flex;flex-direction:column;gap:6px;"></div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:8px;opacity:.7;">Toggle to show or hide imports from each browser</div>
         </div>
-        <!-- Browser chooser for next import -->
         <div style="padding:12px 0;border-bottom:1px solid var(--border);">
-            <div class="erow-lbl" style="margin-bottom:10px;font-size:13px;"><i class="fa-solid fa-globe"></i> <span style="color:var(--text);font-weight:600;">Browser for next import</span></div>
+            <div class="erow-lbl" style="margin-bottom:10px;font-size:13px;"><div class="sicon" style="background:linear-gradient(135deg,#38bdf8,#0284c7);"><i class="fa-solid fa-globe" style="color:#fff;font-size:15px;"></i></div> <span style="color:var(--text);font-weight:600;" data-tk="browserNextImport">Browser for next import</span></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;" id="sp-browserChooser">
                 <button onclick="setImportBrowser('Chrome')" class="browser-pill" data-b="Chrome"><i class="fa-brands fa-chrome"></i> Chrome</button>
                 <button onclick="setImportBrowser('Firefox')" class="browser-pill" data-b="Firefox"><i class="fa-brands fa-firefox"></i> Firefox</button>
@@ -5292,87 +5526,81 @@ window.setLang = function(l){
             </div>
         </div>
         <div class="erow" onclick="openFromSettingsPage('importBMModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-file-import"></i> <span data-tk="importBMHtml">Import Browser Bookmarks (HTML)</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#4285f4,#1a56db);"><i class="fa-solid fa-file-import" style="color:#fff;font-size:15px;"></i></div> <span data-tk="importBMHtml">Import from Browser (HTML)</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
+
+        <!-- ── DATA & BACKUP ── -->
         <div class="sett-section-hdr" data-c="emerald" data-tk="dataBackup">💾 DATA & BACKUP</div>
+
         <div class="erow" onclick="document.getElementById('impFile').click()">
-            <div class="erow-lbl"><i class="fa-solid fa-upload"></i> <span data-tk="importJSON2">Import JSON Backup</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#34d399,#059669);"><i class="fa-solid fa-upload" style="color:#fff;font-size:15px;"></i></div> <span data-tk="importJSON2">Import JSON Backup</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" onclick="exportData()">
-            <div class="erow-lbl"><i class="fa-solid fa-download" style="color:#eab308;"></i> <span style="color:#eab308;font-weight:700;" data-tk="exportJSON3">Export JSON Backup</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><i class="fa-solid fa-download" style="color:#fff;font-size:15px;"></i></div> <span data-tk="exportJSON3" style="color:#eab308;font-weight:700;">Export JSON Backup</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
 
+        <!-- ── QUICK ACTIONS ── -->
         <div class="sett-section-hdr" data-c="pink" data-tk="quickActions">⚡ QUICK ACTIONS</div>
 
         <div class="erow" onclick="showRecentlyVisited()">
-            <div class="erow-lbl"><i class="fa-solid fa-clock-rotate-left" style="color:#06b6d4;"></i> <span data-tk="recentlyVisited">Recently Visited (last 10)</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22d3ee,#0891b2);"><i class="fa-solid fa-clock-rotate-left" style="color:#fff;font-size:15px;"></i></div> <span data-tk="recentlyVisited">Recently Visited (last 10)</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><i class="fa-solid fa-up-right-from-square"></i> <span>Open links in new tab</span></div>
-            <div onclick="toggleSetting('openNewTab')" id="sp-tog-openNewTab" class="tog-btn"><div id="sp-togInner-openNewTab" class="tog-knob"></div></div>
+        <div class="erow" onclick="findDuplicates()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fbbf24,#b45309);"><i class="fa-solid fa-copy" style="color:#fff;font-size:15px;"></i></div> <span data-tk="findDuplicates">Find & Remove Duplicates</span></div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-            <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-palette"></i> Accent Color</div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <div class="accent-dot" data-color="#22c55e" style="width:28px;height:28px;border-radius:50%;background:#22c55e;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#22c55e')"></div>
-                <div class="accent-dot" data-color="#8b5cf6" style="width:28px;height:28px;border-radius:50%;background:#8b5cf6;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#8b5cf6')"></div>
-                <div class="accent-dot" data-color="#3b82f6" style="width:28px;height:28px;border-radius:50%;background:#3b82f6;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#3b82f6')"></div>
-                <div class="accent-dot" data-color="#ef4444" style="width:28px;height:28px;border-radius:50%;background:#ef4444;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#ef4444')"></div>
-                <div class="accent-dot" data-color="#ec4899" style="width:28px;height:28px;border-radius:50%;background:#ec4899;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#ec4899')"></div>
-                <div class="accent-dot" data-color="#f97316" style="width:28px;height:28px;border-radius:50%;background:#f97316;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#f97316')"></div>
-                <div class="accent-dot" data-color="#06b6d4" style="width:28px;height:28px;border-radius:50%;background:#06b6d4;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#06b6d4')"></div>
-                <div class="accent-dot" data-color="#eab308" style="width:28px;height:28px;border-radius:50%;background:#eab308;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#eab308')"></div>
-            </div>
+        <div class="erow" onclick="archiveAllRead()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#94a3b8,#475569);"><i class="fa-solid fa-box-archive" style="color:#fff;font-size:15px;"></i></div> <span data-tk="archiveVisited">Archive All Visited</span></div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="sett-section-hdr" data-c="orange" data-tk="statsTools">📊 STATS & TOOLS</div>
+        <div class="erow" onclick="exportImportedLinks()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#4285f4,#1a56db);"><i class="fa-brands fa-chrome" style="color:#fff;font-size:15px;"></i></div> <span data-tk="exportImportedOnly">Export Imported Only</span></div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+        </div>
+        <div class="erow" onclick="clearImportedLinks()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f97316,#c2410c);"><i class="fa-solid fa-eraser" style="color:#fff;font-size:15px;"></i></div> <span data-tk="removeAllImported">Remove All Imported</span></div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+        </div>
+
+        <!-- ── STATS ── -->
+        <div class="sett-section-hdr" data-c="orange" data-tk="statsTools">📊 STATS</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="stat-card"><div style="font-size:26px;font-weight:800;color:var(--primary);" id="sp-statTotalLinks">0</div><div class="stat-label">Total Bookmarks</div></div>
+            <div class="stat-card"><div style="font-size:26px;font-weight:800;color:var(--primary);" id="sp-statTotalLinks">0</div><div class="stat-label" data-tk-stat="totalBookmarks">Total Bookmarks</div></div>
             <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#8b5cf6;" id="sp-statTotalFolders">0</div><div class="stat-label">Folders</div></div>
             <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#ef4444;" id="sp-statFavs">0</div><div class="stat-label">Favorites</div></div>
             <div class="stat-card"><div style="font-size:26px;font-weight:800;color:#f59e0b;" id="sp-statArchived">0</div><div class="stat-label">Archived</div></div>
         </div>
-        <div class="erow" onclick="findDuplicates()">
-            <div class="erow-lbl"><i class="fa-solid fa-copy" style="color:#f59e0b;"></i> <span>Find & Remove Duplicates</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-        </div>
-        <div class="erow" onclick="archiveAllRead()">
-            <div class="erow-lbl"><i class="fa-solid fa-box-archive" style="color:#52525b;"></i> <span>Archive All Visited</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-        </div>
-        <div class="erow" onclick="exportImportedLinks()">
-            <div class="erow-lbl"><i class="fa-brands fa-chrome" style="color:#4285f4;"></i> <span>Export Imported Bookmarks Only</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-        </div>
-        <div class="erow" onclick="clearImportedLinks()">
-            <div class="erow-lbl"><i class="fa-solid fa-eraser" style="color:#f59e0b;"></i> <span>Remove All Imported Bookmarks</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-        </div>
+
+        <!-- ── DANGER ZONE ── -->
         <div class="sett-section-hdr" data-c="red" data-tk="dangerZone">⚠️ DANGER ZONE</div>
+
         <div class="erow" onclick="openFromSettingsPage('trashModal')">
-            <div class="erow-lbl"><i class="fa-solid fa-trash-can" style="color:#ef4444;"></i> <span>Deleted Bookmarks</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f87171,#dc2626);"><i class="fa-solid fa-trash-can" style="color:#fff;font-size:15px;"></i></div> <span data-tk="deletedBookmarks">Deleted Bookmarks</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
         <div class="erow" onclick="openFromSettingsPage('deletePassModal',openManageDeletePassword)">
-            <div class="erow-lbl"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> <span>Delete Password</span></div>
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22c55e,#15803d);"><i class="fa-solid fa-shield-halved" style="color:#fff;font-size:15px;"></i></div> <span data-tk="deletePassword">Delete Password</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="erow" onclick="clearAllData()" style="color:#ef4444;">
-            <div class="erow-lbl" style="color:#ef4444;"><i class="fa-solid fa-trash" style="color:#ef4444;"></i> <span>Clear All Data</span></div>
+        <div class="erow" onclick="clearAllData()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#ef4444,#b91c1c);"><i class="fa-solid fa-trash" style="color:#fff;font-size:15px;"></i></div> <span style="color:#ef4444;font-weight:700;" data-tk="clearAllData">Clear All Data</span></div>
             <i class="fa-solid fa-chevron-right" style="color:#ef4444;font-size:12px;"></i>
         </div>
+
+        <!-- ── ABOUT ── -->
         <div class="sett-section-hdr" data-c="indigo" data-tk="about">ℹ️ ABOUT</div>
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:20px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
                 <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
-                <div><div style="font-size:15px;font-weight:700;">WebMark</div><div style="font-size:12px;color:var(--text-dim);">by Saad Mounir · v3.0 Premium</div></div>
+                <div><div style="font-size:15px;font-weight:700;font-family:'Inter',system-ui,sans-serif !important;" class="app-name-protected">WebMark</div><div style="font-size:12px;color:var(--text-dim);">by Saad Mounir · v3.0 Premium</div></div>
             </div>
             <div style="display:flex;gap:8px;">
-                <button onclick="openFromSettingsPage('contactModal')" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> Contact</button>
-                <button onclick="showHelp()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-solid fa-circle-info"></i> Help</button>
+                <button onclick="openFromSettingsPage('contactModal')" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> <span data-tk="contactBtn">Contact</span></button>
+                <button onclick="showHelp()" style="flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text-dim);cursor:pointer;font-size:12px;"><i class="fa-solid fa-circle-info"></i> <span data-tk="helpBtn">Help</span></button>
             </div>
         </div>
     </div>
