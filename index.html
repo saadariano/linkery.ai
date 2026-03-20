@@ -294,7 +294,7 @@
             body { padding-bottom:0; overflow:hidden; }
             .desktop-nav { display:flex; align-items:center; padding:0 28px; height:60px; background:var(--card); border-bottom:1px solid var(--border); position:fixed; top:0; left:0; right:0; z-index:200; gap:0; }
             .desktop-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; color:var(--text); margin-right:36px; cursor:pointer; justify-content:flex-start; }
-            .desktop-logo-icon { width:34px; height:34px; background:var(--primary); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#000; font-size:17px; font-weight:900; }
+            .desktop-logo-icon { width:34px; height:34px; background:#16a34a; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#000; font-size:17px; font-weight:900; }
             .dnl { display:flex; align-items:center; gap:7px; padding:8px 16px; border-radius:10px; color:var(--text-dim); font-size:14px; font-weight:600; cursor:pointer; border:none; background:none; white-space:nowrap; }
             .dnl:hover { background:rgba(255,255,255,.06); }
             .dnl.active { color:var(--primary); }
@@ -633,7 +633,7 @@
         .collapsible-section-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease; max-height:0; opacity:0; }
         .collapsible-section-body.open { max-height:2000px; opacity:1; }
         .sett-section-hdr.collapsible { cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; }
-        .sett-section-hdr.collapsible .coll-arrow { font-size:12px; transition:transform .25s; flex-shrink:0; }
+        .sett-section-hdr.collapsible .coll-arrow { font-size:13px; transition:transform .25s; flex-shrink:0; display:inline-flex !important; visibility:visible !important; opacity:1 !important; min-width:13px; }
         .sett-section-hdr.collapsible.open .coll-arrow { transform:rotate(180deg); }
 
         </style>
@@ -4599,6 +4599,9 @@ function toggleSettSection(bodyId, headerEl){
     const isOpen = body.classList.contains('open');
     body.classList.toggle('open', !isOpen);
     headerEl.classList.toggle('open', !isOpen);
+    // Force arrow icon to stay visible after DOM repaint
+    const arrow = headerEl.querySelector('.coll-arrow');
+    if(arrow){ arrow.style.display='inline-flex'; arrow.style.visibility='visible'; arrow.style.opacity='1'; }
 }
 
 function resetCollapsibleSections(){
@@ -6290,7 +6293,7 @@ window.setLang = function(l){
     <div class="sett-section-hdr" data-c="indigo" data-tk="about">ℹ️ ABOUT</div>
     <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:6px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-            <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
+            <div style="width:40px;height:40px;background:#16a34a;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
             <div>
                 <div style="font-size:15px;font-weight:700;font-family:'Inter',system-ui,sans-serif !important;" class="app-name-protected">WebMark</div>
                 <div style="font-size:12px;color:var(--text-dim);">by Saad Mounir · v3.0 Premium</div>
@@ -6563,7 +6566,7 @@ window.setLang = function(l){
         <div class="sett-section-hdr" data-c="indigo" data-tk="about">ℹ️ ABOUT</div>
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:20px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                <div style="width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
+                <div style="width:40px;height:40px;background:#16a34a;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;"><i class="fa-solid fa-bookmark"></i></div>
                 <div><div style="font-size:15px;font-weight:700;font-family:'Inter',system-ui,sans-serif !important;" class="app-name-protected">WebMark</div><div style="font-size:12px;color:var(--text-dim);">by Saad Mounir · v3.0 Premium</div></div>
             </div>
             <div style="display:flex;gap:8px;">
@@ -6827,7 +6830,7 @@ toggleSetting = function(k) {
 <!-- MANDATORY SIGNUP MODAL -->
 <div id="signupOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:var(--bg);align-items:center;justify-content:center;padding:20px;">
 <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px 24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:slideUp .3s ease;">
-    <div style="width:64px;height:64px;background:var(--primary);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:#000;">
+    <div style="width:64px;height:64px;background:#16a34a;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:#000;">
         <i class="fa-solid fa-bookmark"></i>
     </div>
     <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;" class="app-name-protected">WebMark</h2>
