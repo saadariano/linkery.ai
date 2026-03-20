@@ -5548,22 +5548,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // Update source button state on load
     updateSourceChecks();
 
-    // Mandatory signup — show only ONCE on first ever use of this device
-    // ly_welcomed is set permanently after first signup or skip
-    if(!localStorage.getItem('ly_welcomed') && !localStorage.getItem('ly_delpass')){
+    // Mandatory signup — show ONLY on first ever visit to this device
+    // ly_welcomed is set the MOMENT the overlay is first shown, so it never shows twice
+    if(!localStorage.getItem('ly_welcomed')){
         showSignupOverlay();
     }
 });
 
 function showSignupOverlay(){
     const overlay = document.getElementById('signupOverlay');
-    if(overlay){
-        overlay.style.display = 'flex';
-        setTimeout(()=>{
-            document.getElementById('signup-username')?.focus();
-            updateSignupLangButtons();
-        }, 300);
-    }
+    if(!overlay) return;
+    // Mark as seen IMMEDIATELY — so even a hard refresh won't show again
+    localStorage.setItem('ly_welcomed', '1');
+    overlay.style.display = 'flex';
+    setTimeout(()=>{
+        document.getElementById('signup-username')?.focus();
+        updateSignupLangButtons();
+    }, 300);
 }
 
 function updateSignupLangButtons(){
@@ -5574,6 +5575,44 @@ function updateSignupLangButtons(){
         btn.style.color = isActive ? 'var(--primary)' : 'var(--text-dim)';
         btn.style.background = isActive ? 'rgba(34,197,94,.1)' : 'var(--card)';
     });
+    updateSignupFormLang(cur);
+}
+
+function updateSignupFormLang(l){
+    const SIGNUP_LABELS = {
+        en: { sub:'Create your account to get started.<br>This protects your bookmarks from accidental deletion.', uLabel:'USERNAME', uPlaceholder:'Choose a username', pLabel:'PASSWORD', pPlaceholder:'Min 4 characters', cLabel:'CONFIRM PASSWORD', cPlaceholder:'Confirm password', btn:'&#8594; Get Started', skip:'Skip for now (not recommended)' },
+        it: { sub:'Crea il tuo account per iniziare.<br>Questo protegge i segnalibri da eliminazioni accidentali.', uLabel:'NOME UTENTE', uPlaceholder:'Scegli un nome utente', pLabel:'PASSWORD', pPlaceholder:'Min 4 caratteri', cLabel:'CONFERMA PASSWORD', cPlaceholder:'Conferma la password', btn:'&#8594; Inizia', skip:'Salta per ora (non consigliato)' },
+        fr: { sub:'Cr\u00e9ez votre compte pour commencer.<br>Cela prot\u00e8ge vos favoris des suppressions accidentelles.', uLabel:"NOM D'UTILISATEUR", uPlaceholder:"Choisissez un nom d'utilisateur", pLabel:'MOT DE PASSE', pPlaceholder:'Min 4 caract\u00e8res', cLabel:'CONFIRMER', cPlaceholder:'Confirmez le mot de passe', btn:'&#8594; Commencer', skip:"Ignorer pour l'instant (d\u00e9conseill\u00e9)" },
+        es: { sub:'Crea tu cuenta para comenzar.<br>Esto protege tus marcadores de eliminaciones accidentales.', uLabel:'USUARIO', uPlaceholder:'Elige un nombre de usuario', pLabel:'CONTRASE\u00d1A', pPlaceholder:'M\u00edn 4 caracteres', cLabel:'CONFIRMAR CONTRASE\u00d1A', cPlaceholder:'Confirma la contrase\u00f1a', btn:'&#8594; Empezar', skip:'Omitir por ahora (no recomendado)' },
+        ar: { sub:'\u0623\u0646\u0634\u0626 \u062d\u0633\u0627\u0628\u0643 \u0644\u0644\u0628\u062f\u0621.<br>\u0647\u0630\u0627 \u064a\u062d\u0645\u064a \u0625\u0634\u0627\u0631\u0627\u062a\u0643 \u0645\u0646 \u0627\u0644\u062d\u0630\u0641 \u0627\u0644\u0639\u0631\u0636\u064a.', uLabel:'\u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645', uPlaceholder:'\u0627\u062e\u062a\u0631 \u0627\u0633\u0645 \u0645\u0633\u062a\u062e\u062f\u0645', pLabel:'\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631', pPlaceholder:'4 \u0623\u062d\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644', cLabel:'\u062a\u0623\u0643\u064a\u062f \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631', cPlaceholder:'\u0623\u0643\u062f \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631', btn:'\u0627\u0628\u062f\u0623 \u2190', skip:'\u062a\u062e\u0637\u064a \u0627\u0644\u0622\u0646 (\u063a\u064a\u0631 \u0645\u0633\u062a\u062d\u0633\u0646)' },
+    };
+    const t = SIGNUP_LABELS[l] || SIGNUP_LABELS.en;
+    const overlay = document.getElementById('signupOverlay');
+    if(!overlay || overlay.style.display === 'none') return;
+    // Update subtitle
+    const sub = overlay.querySelector('p');
+    if(sub) sub.innerHTML = t.sub;
+    // Update labels
+    const labels = overlay.querySelectorAll('label');
+    if(labels[0]) labels[0].textContent = t.uLabel;
+    if(labels[1]) labels[1].textContent = t.pLabel;
+    if(labels[2]) labels[2].textContent = t.cLabel;
+    // Update placeholders
+    const uInp = document.getElementById('signup-username');
+    const pInp = document.getElementById('signup-pass');
+    const cInp = document.getElementById('signup-confirm');
+    if(uInp) uInp.placeholder = t.uPlaceholder;
+    if(pInp) pInp.placeholder = t.pPlaceholder;
+    if(cInp) cInp.placeholder = t.cPlaceholder;
+    // Update button
+    const btn = overlay.querySelector('button:not(.signup-lang-btn)');
+    if(btn) btn.innerHTML = t.btn;
+    // Update skip
+    const skip = overlay.querySelectorAll('button');
+    const skipBtn = [...skip].find(b=>b.onclick && b.onclick.toString().includes('skip') || b.getAttribute('onclick')?.includes('skip'));
+    if(skipBtn) skipBtn.textContent = t.skip;
+    // RTL for Arabic
+    overlay.style.direction = l === 'ar' ? 'rtl' : 'ltr';
 }
 
 function doSignup(){
@@ -5800,6 +5839,10 @@ setTimeout(applyTwemoji, 200);
 const _setLangOrig = setLang;
 window.setLang = function(l){
     _setLangOrig(l);
+    // Update signup overlay language buttons and text
+    if(typeof updateSignupLangButtons === 'function') updateSignupLangButtons();
+    // Update signup form placeholder text based on selected language
+    updateSignupFormLang(l);
     // Always update mobile settings language label immediately
     const spLb = document.getElementById('sp-langLabel');
     if(spLb) spLb.innerHTML = getFlagImg(l) + ' ' + (LANG_LABELS[l] || l);
@@ -5984,6 +6027,13 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-clock-rotate-left" style="color:#22d3ee;"></i> <span data-tk="recentlyVisited">Recently Visited (last 10)</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
+    <div class="erow" style="cursor:default;">
+        <div class="erow-lbl"><i class="fa-solid fa-globe" style="color:var(--primary);"></i> <span data-tk="openLinkIn">Open Link In</span></div>
+        <select class="sett-select" id="desk-openLinkSelect" onchange="setOpenLinkMode(this.value)">
+            <option value="newtab">New Tab</option>
+            <option value="current">Current Tab</option>
+        </select>
+    </div>
     <div class="erow" onclick="findDuplicates()">
         <div class="erow-lbl"><i class="fa-solid fa-copy" style="color:#f59e0b;"></i> <span data-tk="findDuplicates">Find & Remove Duplicates</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
@@ -6028,13 +6078,6 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-language"></i> <span id="settLanguage">Language</span></div>
         <div class="erow-val" style="color:var(--primary);font-size:13px;font-weight:600;" id="settLangCurrent">English</div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;margin-left:8px;"></i>
-    </div>
-    <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-globe" style="color:var(--primary);"></i> <span data-tk="openLinkIn">Open Link In</span></div>
-        <select class="sett-select" id="desk-openLinkSelect" onchange="setOpenLinkMode(this.value)">
-            <option value="newtab">New Tab</option>
-            <option value="current">Current Tab</option>
-        </select>
     </div>
     <div style="padding:14px 0;border-bottom:1px solid var(--border);">
         <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-palette"></i> Accent Color</div>
@@ -6606,7 +6649,7 @@ toggleSetting = function(k) {
 </div>
 
 <!-- MANDATORY SIGNUP MODAL -->
-<div id="signupOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;">
+<div id="signupOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:var(--bg);align-items:center;justify-content:center;padding:20px;">
 <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px 24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:slideUp .3s ease;">
     <div style="width:64px;height:64px;background:var(--primary);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:#000;">
         <i class="fa-solid fa-bookmark"></i>
@@ -6614,11 +6657,11 @@ toggleSetting = function(k) {
     <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;" class="app-name-protected">WebMark</h2>
     <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.6;">Create your account to get started.<br>This protects your bookmarks from accidental deletion.</p>
     <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-        <button onclick="setLang('en');updateSignupLangButtons()" data-lang="en" class="signup-lang-btn" style="padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🇬🇧 EN</button>
-        <button onclick="setLang('it');updateSignupLangButtons()" data-lang="it" class="signup-lang-btn" style="padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🇮🇹 IT</button>
-        <button onclick="setLang('fr');updateSignupLangButtons()" data-lang="fr" class="signup-lang-btn" style="padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🇫🇷 FR</button>
-        <button onclick="setLang('es');updateSignupLangButtons()" data-lang="es" class="signup-lang-btn" style="padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🇪🇸 ES</button>
-        <button onclick="setLang('ar');updateSignupLangButtons()" data-lang="ar" class="signup-lang-btn" style="padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🇸🇦 AR</button>
+        <button onclick="setLang('en');updateSignupLangButtons()" data-lang="en" class="signup-lang-btn" style="padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-dim);display:flex;align-items:center;gap:5px;"><img src="https://flagcdn.com/20x15/gb.png" style="border-radius:2px;vertical-align:middle;"> EN</button>
+        <button onclick="setLang('it');updateSignupLangButtons()" data-lang="it" class="signup-lang-btn" style="padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-dim);display:flex;align-items:center;gap:5px;"><img src="https://flagcdn.com/20x15/it.png" style="border-radius:2px;vertical-align:middle;"> IT</button>
+        <button onclick="setLang('fr');updateSignupLangButtons()" data-lang="fr" class="signup-lang-btn" style="padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-dim);display:flex;align-items:center;gap:5px;"><img src="https://flagcdn.com/20x15/fr.png" style="border-radius:2px;vertical-align:middle;"> FR</button>
+        <button onclick="setLang('es');updateSignupLangButtons()" data-lang="es" class="signup-lang-btn" style="padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-dim);display:flex;align-items:center;gap:5px;"><img src="https://flagcdn.com/20x15/es.png" style="border-radius:2px;vertical-align:middle;"> ES</button>
+        <button onclick="setLang('ar');updateSignupLangButtons()" data-lang="ar" class="signup-lang-btn" style="padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--text-dim);display:flex;align-items:center;gap:5px;"><img src="https://flagcdn.com/20x15/sa.png" style="border-radius:2px;vertical-align:middle;"> AR</button>
     </div>
     <div style="text-align:left;">
         <div class="field" style="margin-bottom:14px;">
