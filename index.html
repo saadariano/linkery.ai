@@ -87,8 +87,12 @@
         .sq-btn { width:40px; height:40px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; position:relative; flex-shrink:0; }
 
         /* VIEW DROPDOWN */
-        .view-dd { position:absolute; right:0; top:46px; background:var(--card); border:1px solid var(--border); border-radius:14px; min-width:190px; z-index:300; padding:6px; box-shadow:0 12px 40px rgba(0,0,0,.25); display:none; }
+        .view-dd { position:absolute; right:0; top:46px; background:var(--card); border:1px solid var(--border); border-radius:14px; min-width:190px; z-index:300; padding:6px; box-shadow:0 12px 40px rgba(0,0,0,.25); display:none; max-height:70vh; overflow-y:auto; }
         .view-dd.open { display:block; }
+        /* On mobile, fix the sort dropdown so it doesn't get cut off */
+        @media (max-width:767px) {
+            #sortDD { position:fixed !important; right:8px !important; top:auto !important; max-height:65vh !important; min-width:220px !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch; box-shadow:0 8px 40px rgba(0,0,0,.4) !important; border-radius:16px !important; }
+        }
         .vopt { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; cursor:pointer; font-size:14px; font-weight:500; color:var(--text); }
         .vopt:hover { background:rgba(128,128,128,.1); }
         .vchk { margin-left:auto; color:var(--primary); }
@@ -613,6 +617,19 @@
 
         /* Sync badge on settings nav */
         .nav-badge { position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border-radius:50%;width:8px;height:8px;font-size:0; }
+
+
+        #importHelpBox { background: var(--card2) !important; }
+        body.dark-mode #importHelpBox,
+        :root[data-theme=dark] #importHelpBox { background: #1e1e2e !important; }
+        #importBMHelp, #importBMHelp strong { color: var(--text) !important; }
+        /* ── COLLAPSIBLE SETTINGS SECTION ── */
+        .collapsible-section-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease; max-height:0; opacity:0; }
+        .collapsible-section-body.open { max-height:2000px; opacity:1; }
+        .sett-section-hdr.collapsible { cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+        .sett-section-hdr.collapsible .coll-arrow { font-size:12px; transition:transform .25s; flex-shrink:0; }
+        .sett-section-hdr.collapsible.open .coll-arrow { transform:rotate(180deg); }
+
         </style>
 </head>
 <body>
@@ -686,7 +703,7 @@
     </div>
     <div class="sq-btn" id="sortBtn" onclick="toggleSortDD()" title="Sort" style="position:relative;">
         <i class="fa-solid fa-arrow-down-wide-short" id="sortDateIcon" style="color:var(--text-dim);"></i>
-        <div class="view-dd" id="sortDD" style="min-width:210px;" onclick="event.stopPropagation()">
+        <div class="view-dd" id="sortDD" style="min-width:230px;" onclick="event.stopPropagation()">
             <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;"><span data-tk="sortBy">Sort by</span><span id="sortEditNote" style="display:none;font-size:10px;color:#f97316;font-weight:600;text-transform:none;">paused in edit mode</span></div>
             <div class="vopt" id="sopt-manual" onclick="setSortMode('manual')" style="border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:10px;"><i class="fa-solid fa-arrows-up-down" style="color:#f97316;"></i> <span style="font-weight:700;">Manual Order</span> <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">saved order</span><span class="vchk" id="schk-manual" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
             <div class="vopt" id="sopt-date"    onclick="setSortMode('date')"><i class="fa-solid fa-calendar-days" style="color:#60a5fa;"></i> Date Added <span class="vchk" id="schk-date" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
@@ -694,6 +711,9 @@
             <div class="vopt" id="sopt-last"    onclick="setSortMode('last')"><i class="fa-solid fa-clock-rotate-left" style="color:#22d3ee;"></i> Last Visited <span class="vchk" id="schk-last" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
             <div class="vopt" id="sopt-folder"  onclick="setSortMode('folder')"><i class="fa-solid fa-folder" style="color:#fbbf24;"></i> By Folder <span class="vchk" id="schk-folder" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
             <div class="vopt" id="sopt-name"    onclick="setSortMode('name')"><i class="fa-solid fa-font" style="color:#4ade80;"></i> Name (A–Z) <span class="vchk" id="schk-name" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div style="padding:6px 14px 4px;font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;border-top:1px solid var(--border);margin-top:4px;">My Bookmarks</div>
+            <div class="vopt" id="sopt-personal" onclick="setSortMode('personal')"><i class="fa-solid fa-bookmark" style="color:#22c55e;"></i> Personal <span style="font-size:11px;color:var(--text-dim);margin-left:4px;">manually saved</span><span class="vchk" id="schk-personal" style="margin-left:auto;color:var(--primary);display:none;"><i class="fa-solid fa-check"></i></span></div>
+            <div id="sortDD-browsers"></div>
         </div>
     </div>
     <div class="sq-btn" id="folderFilterBtn" onclick="toggleFolderFilterDD()" title="Filter by folder" style="position:relative;">
@@ -1011,7 +1031,7 @@
 <div class="mc">
     <div class="mhandle"></div>
     <h2 id="shareModalTitle" style="text-align:center;margin-bottom:20px;">Export / Share</h2>
-    <button class="btn-p" onclick="exportData()" style="background:linear-gradient(135deg,#eab308,#ca8a04);color:#000;box-shadow:0 4px 18px rgba(234,179,8,.4);"><i class="fa-solid fa-download"></i> <span id="lbl-exportJson">Export JSON (Backup)</span></button>
+    <button class="btn-p" onclick="openExportPicker();closeModal('shareModal')" style="background:linear-gradient(135deg,#eab308,#ca8a04);color:#000;box-shadow:0 4px 18px rgba(234,179,8,.4);"><i class="fa-solid fa-download"></i> <span id="lbl-exportJson">Export Bookmarks Backup</span></button>
     <button class="btn-p" style="background:#1d4ed8;margin-top:8px;" onclick="shareFormat('copy')"><i class="fa-regular fa-copy"></i> <span id="lbl-copyText">Copy as Text</span></button>
     <button class="btn-p" style="background:#ef4444;margin-top:8px;" onclick="shareFormat('pdf')"><i class="fa-regular fa-file-pdf"></i> <span id="lbl-exportPdf">Export as PDF</span></button>
     <button class="btn-p" style="background:#15803d;margin-top:8px;" onclick="shareFormat('excel')"><i class="fa-regular fa-file-excel"></i> <span id="lbl-exportExcel">Export as Excel</span></button>
@@ -1147,7 +1167,7 @@ const TRANSLATIONS = {
     tagsComma:'Tags (comma separated)', saveTags:'Save Tags',
     summarize:'Summarize with AI', reminder:'Reminder', setReminder:'Set Reminder',
     link:'Link', whatsapp:'Whatsapp', share:'Share', archiveBtn:'Archive', delete:'Delete',
-    exportShare:'Export / Share', exportJSON:'Export JSON (Backup)', copyText:'Copy as Text',
+    exportShare:'Export / Share', exportJSON:'Export Bookmarks Backup', copyText:'Copy as Text',
     exportPDF:'Export as PDF', exportExcel:'Export as Excel', contact:'Contact',
     close:'Close', saveChanges:'Save changes', chooseIcon:'Choose Icon',
     filterByTag:'Filter by Tag', noTags:'No tags yet', noBookmarks:'No bookmarks found',
@@ -1160,7 +1180,7 @@ const TRANSLATIONS = {
     folderLabel:'Folder', chooseFolder:'Choose Folder...',
     hour:'Hour', minute:'Minute', importSuccess:'Import successful!', bookmarksLoaded:'bookmarks loaded.',
     edit:"Edit", done:"Done", sortBy:"Sort by", dateAdded:"Date Added", mostVisited:"Most Visited", lastVisited:"Last Visited", byFolder:"By Folder", nameAZ:"Name (A–Z)", filterFolder:"Filter by Folder", changeView:"Change View", appearance:"Appearance", sortDisplay:"Sort & Display", browserImport:"Browser Import", dataBackup:"Data & Backup", quickActions:"Quick Actions", statsTools:"Stats & Tools", dangerZone:"Danger Zone", about:"About", darkLight:"Dark / Light Mode", openNewTab:"Open links in new tab", accentColor:"Accent Color", manageFolders:"Manage Folders", manageTags:"Manage Tags", showFolderBadges:"Show folder badges on links", showTagBadges:"Show tag badges on links", sortNewest:"Sort by date (newest first)", pinnedTop:"Pinned bookmarks always on top", compactCards:"Compact cards", showThumbs:"Show thumbnails / favicons", showViews:"Show visit count badge", animEdit:"Animate edit mode (sparkle)", hideImported:"Hide ALL imported bookmarks", showImportedBadge:"Show \"Imported\" badge on links", importBMHtml:"Import Browser Bookmarks (HTML)", importJSON2:"Import JSON Backup", exportJSON3:"Export JSON Backup", recentlyVisited:"Recently Visited (last 10)", findDuplicates:"Find & Remove Duplicates", archiveVisited:"Archive All Visited", clearData:"Clear All Data", deletePass:"Delete Password", deleted:"Deleted Bookmarks", saved:"Saved", favorites:"Favorites", noBookmarksFound:"No bookmarks found",
-    fontFamily:"Font Family", fontSize:"Font Size", openLinkIn:"Open Link In", showFolderBadgesShort:"Show folder badges", showTagBadgesShort:"Show tag badges", sortByDateNewest:"Sort by date newest first", pinnedAlwaysTop:"Pinned always on top", showThumbnails:"Show thumbnails / favicons", showVisitCount:"Show visit count badge", animateEdit:"Animate edit mode", hideAllImported:"Hide ALL imported", showImportedBadgeShort:"Show \"Imported\" badge", browserNextImport:"Browser for next import", exportImportedOnly:"Export Imported Only", removeAllImported:"Remove All Imported", totalBookmarks:"Total Bookmarks", deletedBookmarks:"Deleted Bookmarks", deletePassword:"Delete Password", clearAllData:"Clear All Data", contactBtn:"Contact", newTab:"New Tab", currentTab:"Current Tab", small:"Small", medium:"Medium", large:"Large", helpBtn:"Help",
+    fontFamily:"Font Family", fontSize:"Font Size", openLinkIn:"Open Link In", showFolderBadgesShort:"Show folder badges", showTagBadgesShort:"Show tag badges", sortByDateNewest:"Sort by date newest first", pinnedAlwaysTop:"Pinned always on top", showThumbnails:"Show thumbnails / favicons", showVisitCount:"Show visit count badge", animateEdit:"Animate edit mode", hideAllImported:"Hide ALL imported", showImportedBadgeShort:"Show \"Imported\" badge", browserNextImport:"Browser for next import", exportImportedOnly:"Export Imported Only", removeAllImported:"Remove All Imported", totalBookmarks:"Total Bookmarks", deletedBookmarks:"Deleted Bookmarks", deletePassword:"Delete Password", clearAllData:"Clear All Data", deletePersonal:"Delete Personal Bookmarks", contactBtn:"Contact", newTab:"New Tab", currentTab:"Current Tab", small:"Small", medium:"Medium", large:"Large", helpBtn:"Help",
     confirmLeave:"Are you sure you want to leave without saving?", confirmLeaveFolder:"Are you sure you want to leave without saving this folder?",
   },
   fr:{
@@ -1173,7 +1193,7 @@ const TRANSLATIONS = {
     tagsComma:'Étiquettes (séparées par virgule)', saveTags:'Sauver étiquettes',
     summarize:'Résumer avec IA', reminder:'Rappel', setReminder:'Définir rappel',
     link:'Lien', whatsapp:'Whatsapp', share:'Partager', archiveBtn:'Archiver', delete:'Supprimer',
-    exportShare:'Exporter / Partager', exportJSON:'Exporter JSON (Sauvegarde)', copyText:'Copier texte',
+    exportShare:'Exporter / Partager', exportJSON:'Export Bookmarks Backup', copyText:'Copier texte',
     exportPDF:'Exporter en PDF', exportExcel:'Exporter en Excel', contact:'Contact',
     close:'Fermer', saveChanges:'Sauvegarder', chooseIcon:'Choisir icône',
     filterByTag:'Filtrer par étiquette', noTags:'Aucune étiquette', noBookmarks:'Aucun favori',
@@ -1186,7 +1206,7 @@ const TRANSLATIONS = {
     folderLabel:'Dossier', chooseFolder:'Choisir un dossier...',
     hour:'Heure', minute:'Minute', importSuccess:'Importation réussie!', bookmarksLoaded:'favoris chargés.',
     edit:"Modifier", done:"Terminé", sortBy:"Trier par", dateAdded:"Date ajoutée", mostVisited:"Plus visités", lastVisited:"Dernière visite", byFolder:"Par dossier", nameAZ:"Nom (A–Z)", filterFolder:"Filtrer par dossier", changeView:"Changer la vue", appearance:"Apparence", sortDisplay:"Tri & Affichage", browserImport:"Import navigateur", dataBackup:"Données & Sauvegarde", quickActions:"Actions rapides", statsTools:"Stats & Outils", dangerZone:"Zone dangereuse", about:"À propos", darkLight:"Mode sombre / clair", openNewTab:"Ouvrir dans un nouvel onglet", accentColor:"Couleur d'accentuation", manageFolders:"Gérer les dossiers", manageTags:"Gérer les étiquettes", showFolderBadges:"Afficher dossiers sur les liens", showTagBadges:"Afficher étiquettes sur les liens", sortNewest:"Trier par date (plus récent)", pinnedTop:"Épinglés toujours en haut", compactCards:"Cartes compactes", showThumbs:"Afficher vignettes", showViews:"Afficher le compteur de visites", animEdit:"Animer le mode édition", hideImported:"Masquer tous les imports", showImportedBadge:"Badge \"Importé\"", importBMHtml:"Importer favoris navigateur (HTML)", importJSON2:"Importer JSON", exportJSON3:"Exporter JSON", recentlyVisited:"Récemment visités (10 derniers)", findDuplicates:"Trouver les doublons", archiveVisited:"Archiver tout visité", clearData:"Effacer toutes les données", deletePass:"Mot de passe suppression", deleted:"Signets supprimés", saved:"Sauvegardés", favorites:"Favoris", noBookmarksFound:"Aucun favori trouvé",
-    fontFamily:"Police", fontSize:"Taille de police", openLinkIn:"Ouvrir le lien dans", showFolderBadgesShort:"Afficher dossiers", showTagBadgesShort:"Afficher étiquettes", sortByDateNewest:"Trier par date récente", pinnedAlwaysTop:"Épinglés toujours en haut", showThumbnails:"Afficher vignettes", showVisitCount:"Compteur de visites", animateEdit:"Animer le mode édition", hideAllImported:"Masquer tous les imports", showImportedBadgeShort:"Badge \"Importé\"", browserNextImport:"Navigateur pour le prochain import", exportImportedOnly:"Exporter les importés uniquement", removeAllImported:"Supprimer tous les importés", totalBookmarks:"Total des favoris", deletedBookmarks:"Favoris supprimés", deletePassword:"Mot de passe suppression", clearAllData:"Effacer toutes les données", contactBtn:"Contact", newTab:"Nouvel onglet", currentTab:"Onglet actuel", small:"Petit", medium:"Moyen", large:"Grand", helpBtn:"Aide",
+    fontFamily:"Police", fontSize:"Taille de police", openLinkIn:"Ouvrir le lien dans", showFolderBadgesShort:"Afficher dossiers", showTagBadgesShort:"Afficher étiquettes", sortByDateNewest:"Trier par date récente", pinnedAlwaysTop:"Épinglés toujours en haut", showThumbnails:"Afficher vignettes", showVisitCount:"Compteur de visites", animateEdit:"Animer le mode édition", hideAllImported:"Masquer tous les imports", showImportedBadgeShort:"Badge \"Importé\"", browserNextImport:"Navigateur pour le prochain import", exportImportedOnly:"Exporter les importés uniquement", removeAllImported:"Supprimer tous les importés", totalBookmarks:"Total des favoris", deletedBookmarks:"Favoris supprimés", deletePassword:"Mot de passe suppression", clearAllData:"Effacer toutes les données", deletePersonal:"Supprimer mes signets", contactBtn:"Contact", newTab:"Nouvel onglet", currentTab:"Onglet actuel", small:"Petit", medium:"Moyen", large:"Grand", helpBtn:"Aide",
     confirmLeave:"Êtes-vous sûr de vouloir quitter sans sauvegarder?", confirmLeaveFolder:"Êtes-vous sûr de vouloir quitter sans sauvegarder ce dossier?",
   },
   es:{
@@ -1199,7 +1219,7 @@ const TRANSLATIONS = {
     tagsComma:'Etiquetas (separadas por coma)', saveTags:'Guardar etiquetas',
     summarize:'Resumir con IA', reminder:'Recordatorio', setReminder:'Establecer recordatorio',
     link:'Enlace', whatsapp:'Whatsapp', share:'Compartir', archiveBtn:'Archivar', delete:'Eliminar',
-    exportShare:'Exportar / Compartir', exportJSON:'Exportar JSON (Copia)', copyText:'Copiar texto',
+    exportShare:'Exportar / Compartir', exportJSON:'Export Bookmarks Backup', copyText:'Copiar texto',
     exportPDF:'Exportar como PDF', exportExcel:'Exportar como Excel', contact:'Contacto',
     close:'Cerrar', saveChanges:'Guardar cambios', chooseIcon:'Elegir ícono',
     filterByTag:'Filtrar por etiqueta', noTags:'Sin etiquetas', noBookmarks:'Sin marcadores',
@@ -1212,7 +1232,7 @@ const TRANSLATIONS = {
     folderLabel:'Carpeta', chooseFolder:'Elegir carpeta...',
     hour:'Hora', minute:'Minuto', importSuccess:'¡Importación exitosa!', bookmarksLoaded:'marcadores cargados.',
     edit:"Editar", done:"Hecho", sortBy:"Ordenar por", dateAdded:"Fecha añadida", mostVisited:"Más visitados", lastVisited:"Última visita", byFolder:"Por carpeta", nameAZ:"Nombre (A–Z)", filterFolder:"Filtrar por carpeta", changeView:"Cambiar vista", appearance:"Apariencia", sortDisplay:"Orden & Pantalla", browserImport:"Importar navegador", dataBackup:"Datos & Copia", quickActions:"Acciones rápidas", statsTools:"Stats & Herramientas", dangerZone:"Zona de peligro", about:"Acerca de", darkLight:"Modo oscuro / claro", openNewTab:"Abrir en nueva pestaña", accentColor:"Color de acento", manageFolders:"Gestionar carpetas", manageTags:"Gestionar etiquetas", showFolderBadges:"Mostrar carpetas en enlaces", showTagBadges:"Mostrar etiquetas en enlaces", sortNewest:"Ordenar por fecha (más reciente)", pinnedTop:"Fijados siempre arriba", compactCards:"Tarjetas compactas", showThumbs:"Mostrar miniaturas", showViews:"Mostrar contador de visitas", animEdit:"Animar modo edición", hideImported:"Ocultar todos los importados", showImportedBadge:"Badge \"Importado\"", importBMHtml:"Importar marcadores (HTML)", importJSON2:"Importar JSON", exportJSON3:"Exportar JSON", recentlyVisited:"Visitados recientemente (10 últimos)", findDuplicates:"Encontrar duplicados", archiveVisited:"Archivar todo visitado", clearData:"Borrar todos los datos", deletePass:"Contraseña de eliminación", deleted:"Marcadores eliminados", saved:"Guardados", favorites:"Favoritos", noBookmarksFound:"No se encontraron marcadores",
-    fontFamily:"Tipografía", fontSize:"Tamaño de fuente", openLinkIn:"Abrir enlace en", showFolderBadgesShort:"Mostrar carpetas", showTagBadgesShort:"Mostrar etiquetas", sortByDateNewest:"Ordenar por fecha reciente", pinnedAlwaysTop:"Fijados siempre arriba", showThumbnails:"Mostrar miniaturas", showVisitCount:"Contador de visitas", animateEdit:"Animar modo edición", hideAllImported:"Ocultar todos importados", showImportedBadgeShort:"Badge \"Importado\"", browserNextImport:"Navegador para próxima importación", exportImportedOnly:"Exportar solo importados", removeAllImported:"Eliminar todos los importados", totalBookmarks:"Total marcadores", deletedBookmarks:"Marcadores eliminados", deletePassword:"Contraseña de eliminación", clearAllData:"Borrar todos los datos", contactBtn:"Contacto", newTab:"Nueva pestaña", currentTab:"Pestaña actual", small:"Pequeño", medium:"Mediano", large:"Grande", helpBtn:"Ayuda",
+    fontFamily:"Tipografía", fontSize:"Tamaño de fuente", openLinkIn:"Abrir enlace en", showFolderBadgesShort:"Mostrar carpetas", showTagBadgesShort:"Mostrar etiquetas", sortByDateNewest:"Ordenar por fecha reciente", pinnedAlwaysTop:"Fijados siempre arriba", showThumbnails:"Mostrar miniaturas", showVisitCount:"Contador de visitas", animateEdit:"Animar modo edición", hideAllImported:"Ocultar todos importados", showImportedBadgeShort:"Badge \"Importado\"", browserNextImport:"Navegador para próxima importación", exportImportedOnly:"Exportar solo importados", removeAllImported:"Eliminar todos los importados", totalBookmarks:"Total marcadores", deletedBookmarks:"Marcadores eliminados", deletePassword:"Contraseña de eliminación", clearAllData:"Borrar todos los datos", deletePersonal:"Eliminar marcadores personales", contactBtn:"Contacto", newTab:"Nueva pestaña", currentTab:"Pestaña actual", small:"Pequeño", medium:"Mediano", large:"Grande", helpBtn:"Ayuda",
     confirmLeave:"¿Estás seguro de que quieres salir sin guardar?", confirmLeaveFolder:"¿Estás seguro de que quieres salir sin guardar esta carpeta?",
   },
   it:{
@@ -1225,7 +1245,7 @@ const TRANSLATIONS = {
     tagsComma:'Tag (separati da virgola)', saveTags:'Salva tag',
     summarize:'Riassumi con IA', reminder:'Promemoria', setReminder:'Imposta promemoria',
     link:'Link', whatsapp:'Whatsapp', share:'Condividi', archiveBtn:'Archivia', delete:'Elimina',
-    exportShare:'Esporta / Condividi', exportJSON:'Esporta JSON (Backup)', copyText:'Copia testo',
+    exportShare:'Esporta / Condividi', exportJSON:'Esporta Backup Segnalibri', copyText:'Copia testo',
     exportPDF:'Esporta PDF', exportExcel:'Esporta Excel', contact:'Contatto',
     close:'Chiudi', saveChanges:'Salva modifiche', chooseIcon:'Scegli icona',
     filterByTag:'Filtra per tag', noTags:'Nessun tag', noBookmarks:'Nessun segnalibro',
@@ -1238,7 +1258,7 @@ const TRANSLATIONS = {
     folderLabel:'Cartella', chooseFolder:'Scegli cartella...',
     hour:'Ora', minute:'Minuto', importSuccess:'Importazione riuscita!', bookmarksLoaded:'segnalibri caricati.',
     edit:"Modifica", done:"Fatto", sortBy:"Ordina per", dateAdded:"Data aggiunta", mostVisited:"Più visitati", lastVisited:"Ultima visita", byFolder:"Per cartella", nameAZ:"Nome (A–Z)", filterFolder:"Filtra per cartella", changeView:"Cambia vista", appearance:"Aspetto", sortDisplay:"Ordine & Visualizzazione", browserImport:"Importa browser", dataBackup:"Dati & Backup", quickActions:"Azioni rapide", statsTools:"Stats & Strumenti", dangerZone:"Zona pericolosa", about:"Informazioni", darkLight:"Modalità scura / chiara", openNewTab:"Apri in nuova scheda", accentColor:"Colore accento", manageFolders:"Gestisci cartelle", manageTags:"Gestisci tag", showFolderBadges:"Mostra cartelle sui link", showTagBadges:"Mostra tag sui link", sortNewest:"Ordina per data (più recente)", pinnedTop:"Fissati sempre in cima", compactCards:"Schede compatte", showThumbs:"Mostra miniature", showViews:"Mostra contatore visite", animEdit:"Anima modalità modifica", hideImported:"Nascondi tutti gli importati", showImportedBadge:"Badge \"Importato\"", importBMHtml:"Importa segnalibri browser (HTML)", importJSON2:"Importa JSON", exportJSON3:"Esporta JSON", recentlyVisited:"Visitati di recente (ultimi 10)", findDuplicates:"Trova duplicati", archiveVisited:"Archivia tutti i visitati", clearData:"Cancella tutti i dati", deletePass:"Password eliminazione", deleted:"Segnalibri eliminati", saved:"Salvati", favorites:"Preferiti", noBookmarksFound:"Nessun segnalibro trovato",
-    fontFamily:"Carattere", fontSize:"Dimensione carattere", openLinkIn:"Apri link in", showFolderBadgesShort:"Mostra cartelle", showTagBadgesShort:"Mostra tag", sortByDateNewest:"Ordina per data recente", pinnedAlwaysTop:"Fissati sempre in cima", showThumbnails:"Mostra miniature", showVisitCount:"Contatore visite", animateEdit:"Anima modalità modifica", hideAllImported:"Nascondi tutti importati", showImportedBadgeShort:"Badge \"Importato\"", browserNextImport:"Browser per prossima importazione", exportImportedOnly:"Esporta solo importati", removeAllImported:"Rimuovi tutti gli importati", totalBookmarks:"Totale segnalibri", deletedBookmarks:"Segnalibri eliminati", deletePassword:"Password eliminazione", clearAllData:"Cancella tutti i dati", contactBtn:"Contatto", newTab:"Nuova scheda", currentTab:"Scheda corrente", small:"Piccolo", medium:"Medio", large:"Grande", helpBtn:"Aiuto",
+    fontFamily:"Carattere", fontSize:"Dimensione carattere", openLinkIn:"Apri link in", showFolderBadgesShort:"Mostra cartelle", showTagBadgesShort:"Mostra tag", sortByDateNewest:"Ordina per data recente", pinnedAlwaysTop:"Fissati sempre in cima", showThumbnails:"Mostra miniature", showVisitCount:"Contatore visite", animateEdit:"Anima modalità modifica", hideAllImported:"Nascondi tutti importati", showImportedBadgeShort:"Badge \"Importato\"", browserNextImport:"Browser per prossima importazione", exportImportedOnly:"Esporta solo importati", removeAllImported:"Rimuovi tutti gli importati", totalBookmarks:"Totale segnalibri", deletedBookmarks:"Segnalibri eliminati", deletePassword:"Password eliminazione", clearAllData:"Cancella tutti i dati", deletePersonal:"Elimina segnalibri personali", contactBtn:"Contatto", newTab:"Nuova scheda", currentTab:"Scheda corrente", small:"Piccolo", medium:"Medio", large:"Grande", helpBtn:"Aiuto",
     confirmLeave:"Sei sicuro di voler uscire senza salvare?", confirmLeaveFolder:"Sei sicuro di voler uscire senza salvare questa cartella?",
   },
   ar:{
@@ -1251,7 +1271,7 @@ const TRANSLATIONS = {
     tagsComma:'الوسوم (مفصولة بفاصلة)', saveTags:'حفظ الوسوم',
     summarize:'تلخيص بالذكاء الاصطناعي', reminder:'تذكير', setReminder:'تعيين تذكير',
     link:'الرابط', whatsapp:'واتساب', share:'مشاركة', archiveBtn:'أرشفة', delete:'حذف',
-    exportShare:'تصدير / مشاركة', exportJSON:'تصدير JSON (نسخة احتياطية)', copyText:'نسخ كنص',
+    exportShare:'تصدير / مشاركة', exportJSON:'تصدير النسخ الاحتياطية', copyText:'نسخ كنص',
     exportPDF:'تصدير PDF', exportExcel:'تصدير Excel', contact:'التواصل',
     close:'إغلاق', saveChanges:'حفظ التغييرات', chooseIcon:'اختر أيقونة',
     filterByTag:'تصفية بالوسم', noTags:'لا وسوم', noBookmarks:'لا إشارات مرجعية',
@@ -1264,7 +1284,7 @@ const TRANSLATIONS = {
     folderLabel:'المجلد', chooseFolder:'اختر مجلداً...',
     hour:'ساعة', minute:'دقيقة', importSuccess:'تم الاستيراد بنجاح!', bookmarksLoaded:'إشارة تم تحميلها.',
     edit:"تعديل", done:"تم", sortBy:"ترتيب حسب", dateAdded:"تاريخ الإضافة", mostVisited:"الأكثر زيارة", lastVisited:"آخر زيارة", byFolder:"حسب المجلد", nameAZ:"الاسم (أ-ي)", filterFolder:"تصفية حسب المجلد", changeView:"تغيير العرض", appearance:"المظهر", sortDisplay:"الترتيب والعرض", browserImport:"استيراد المتصفح", dataBackup:"البيانات والنسخ الاحتياطي", quickActions:"إجراءات سريعة", statsTools:"الإحصاءات والأدوات", dangerZone:"المنطقة الخطرة", about:"حول", darkLight:"الوضع الداكن / الفاتح", openNewTab:"فتح في تبويب جديد", accentColor:"لون التمييز", manageFolders:"إدارة المجلدات", manageTags:"إدارة الوسوم", showFolderBadges:"إظهار المجلدات على الروابط", showTagBadges:"إظهار الوسوم على الروابط", sortNewest:"الأحدث أولاً", pinnedTop:"المثبتة دائماً في الأعلى", compactCards:"بطاقات مدمجة", showThumbs:"إظهار الصور المصغرة", showViews:"إظهار عداد الزيارات", animEdit:"تحريك وضع التعديل", hideImported:"إخفاء جميع المستوردة", showImportedBadge:"شارة \"مستورد\"", importBMHtml:"استيراد إشارات المتصفح (HTML)", importJSON2:"استيراد JSON", exportJSON3:"تصدير JSON", recentlyVisited:"زُيرت مؤخراً (آخر 10)", findDuplicates:"إيجاد المكررات", archiveVisited:"أرشفة جميع المزورة", clearData:"مسح جميع البيانات", deletePass:"كلمة مرور الحذف", deleted:"الإشارات المحذوفة", saved:"محفوظة", favorites:"المفضلة", noBookmarksFound:"لا توجد إشارات مرجعية",
-    fontFamily:"الخط", fontSize:"حجم الخط", openLinkIn:"فتح الرابط في", showFolderBadgesShort:"إظهار المجلدات", showTagBadgesShort:"إظهار الوسوم", sortByDateNewest:"ترتيب بالتاريخ الأحدث", pinnedAlwaysTop:"المثبتة دائماً في الأعلى", showThumbnails:"إظهار الصور المصغرة", showVisitCount:"عداد الزيارات", animateEdit:"تحريك وضع التعديل", hideAllImported:"إخفاء جميع المستوردة", showImportedBadgeShort:"شارة \"مستورد\"", browserNextImport:"المتصفح للاستيراد التالي", exportImportedOnly:"تصدير المستوردة فقط", removeAllImported:"إزالة جميع المستوردة", totalBookmarks:"إجمالي الإشارات", deletedBookmarks:"الإشارات المحذوفة", deletePassword:"كلمة مرور الحذف", clearAllData:"مسح جميع البيانات", contactBtn:"تواصل", newTab:"تبويب جديد", currentTab:"التبويب الحالي", small:"صغير", medium:"متوسط", large:"كبير", helpBtn:"مساعدة",
+    fontFamily:"الخط", fontSize:"حجم الخط", openLinkIn:"فتح الرابط في", showFolderBadgesShort:"إظهار المجلدات", showTagBadgesShort:"إظهار الوسوم", sortByDateNewest:"ترتيب بالتاريخ الأحدث", pinnedAlwaysTop:"المثبتة دائماً في الأعلى", showThumbnails:"إظهار الصور المصغرة", showVisitCount:"عداد الزيارات", animateEdit:"تحريك وضع التعديل", hideAllImported:"إخفاء جميع المستوردة", showImportedBadgeShort:"شارة \"مستورد\"", browserNextImport:"المتصفح للاستيراد التالي", exportImportedOnly:"تصدير المستوردة فقط", removeAllImported:"إزالة جميع المستوردة", totalBookmarks:"إجمالي الإشارات", deletedBookmarks:"الإشارات المحذوفة", deletePassword:"كلمة مرور الحذف", clearAllData:"مسح جميع البيانات", deletePersonal:"حذف الإشارات الشخصية", contactBtn:"تواصل", newTab:"تبويب جديد", currentTab:"التبويب الحالي", small:"صغير", medium:"متوسط", large:"كبير", helpBtn:"مساعدة",
     confirmLeave:"هل أنت متأكد أنك تريد المغادرة دون حفظ؟", confirmLeaveFolder:"هل أنت متأكد أنك تريد المغادرة دون حفظ هذا المجلد؟",
   }
 };
@@ -1389,6 +1409,44 @@ function save() {
 }
 
 function init() { 
+    // ── REPAIR: Fix browser import folders whose names were corrupted by ID collision ──
+    // Rebuild correct folder names from their metadata (_importBrowser + _importCategory)
+    let dataRepaired = false;
+    S.folders.forEach(f => {
+        if(!f._browserImport) return;
+        const expectedName = f._importCategory
+            ? `${f._importCategory} (${f._importBrowser})`
+            : `${f._importBrowser} Imports`;
+        if(f.name !== expectedName){
+            f.name = expectedName;
+            dataRepaired = true;
+        }
+        // Ensure _folderKey is set for future collision prevention
+        if(!f._folderKey){
+            f._folderKey = f._importBrowser + '::' + (f._importCategory || '__fallback__');
+            dataRepaired = true;
+        }
+    });
+    // Also fix any link whose fId points to the wrong browser folder
+    // (reassign to correct browser folder based on importedFrom)
+    S.links.forEach(l => {
+        if(!l.imported || !l.importedFrom) return;
+        const currentFolder = S.folders.find(f=>f.id===l.fId);
+        // If the folder belongs to a different browser, try to find the correct one
+        if(currentFolder && currentFolder._browserImport && currentFolder._importBrowser !== l.importedFrom){
+            // Look for a matching folder: same category, correct browser
+            const correctFolder = S.folders.find(f =>
+                f._browserImport &&
+                f._importBrowser === l.importedFrom &&
+                f._importCategory === currentFolder._importCategory
+            );
+            if(correctFolder){
+                l.fId = correctFolder.id;
+                dataRepaired = true;
+            }
+        }
+    });
+    if(dataRepaired){ localStorage.setItem('ly_f', JSON.stringify(S.folders)); localStorage.setItem('ly_l', JSON.stringify(S.links)); }
     setDate(); 
     renderTabs(); 
     renderLinks(); 
@@ -1459,7 +1517,19 @@ function renderTabs() {
         </div>
         <div class="chip ${S.activeTab==='all'?'active':''}" onclick="switchTab('all')">${T('all')} <span class="chip-cnt">${allN}</span></div>`;
     let h = '';
+    // Only show browser-import folders when a browser sort mode is active
+    const isBrowserMode = S._sortMode && S._sortMode.startsWith('browser-');
+    const activeBrowserName = isBrowserMode ? S._sortMode.replace('browser-','') : null;
+    const activeBrowserNameCap = activeBrowserName ? activeBrowserName.charAt(0).toUpperCase()+activeBrowserName.slice(1) : null;
     S.folders.forEach(f => {
+        // Hide browser-import folders unless we're in that browser's sort mode
+        if(f._browserImport){
+            if(!isBrowserMode) return; // hide all browser folders in normal mode
+            if(activeBrowserNameCap && f._importBrowser && f._importBrowser.toLowerCase() !== activeBrowserName) return; // wrong browser
+        } else {
+            // Non-browser (personal) folders: hide them when in browser mode
+            if(isBrowserMode) return;
+        }
         const cnt = S.links.filter(l=>l.fId===f.id&&!l.archived).length;
         const icon = f.icon || 'fa-solid fa-folder';
         const color = f.color || '#8b5cf6';
@@ -1632,11 +1702,29 @@ function renderLinks() {
     const _sm = S._sortMode || 'date';
     const isManual = (_sm === 'manual');
     if(!isManual) {
+        if(_sm === 'date' || _sm === 'visits' || _sm === 'last' || _sm === 'folder' || _sm === 'name' || _sm === 'manual'){
+            // Normal modes: exclude browser-imported bookmarks (they have their own browser filter)
+            arr = arr.filter(l => !l.imported);
+        }
         if(_sm === 'date')        arr.sort((a,b)=>(b.id||0)-(a.id||0));
         else if(_sm === 'visits') arr.sort((a,b)=>(b.views||0)-(a.views||0));
         else if(_sm === 'last')   arr.sort((a,b)=>(b.lastVisited||0)-(a.lastVisited||0));
         else if(_sm === 'folder') arr.sort((a,b)=>{ const fa=S.folders.find(f=>f.id===a.fId); const fb=S.folders.find(f=>f.id===b.fId); return (fa?fa.name:'zzz').localeCompare(fb?fb.name:'zzz'); });
         else if(_sm === 'name')   arr.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+        else if(_sm.startsWith('browser-')){
+            const br = _sm.replace('browser-','');
+            arr = arr.filter(l=>{
+                if(l.importedFrom && l.importedFrom.toLowerCase()===br) return true;
+                const f=S.folders.find(x=>x.id===l.fId);
+                if(f && f._importBrowser && f._importBrowser.toLowerCase()===br) return true;
+                return false;
+            });
+            arr.sort((a,b)=>(b.id||0)-(a.id||0));
+        } else if(_sm === 'personal'){
+            // Personal mode: only non-imported bookmarks
+            arr = arr.filter(l => !l.imported);
+            arr.sort((a,b)=>(b.id||0)-(a.id||0));
+        }
         // Pinned always on top (except in manual mode)
         const pinnedTopOn = S.settings ? S.settings.pinnedTop !== false : true;
         if(pinnedTopOn) arr.sort((a,b)=>{ if(a.pinned&&!b.pinned) return -1; if(!a.pinned&&b.pinned) return 1; return 0; });
@@ -1646,7 +1734,18 @@ function renderLinks() {
     if(!arr.length) { el.innerHTML=`<div class="empty"><i class="fa-regular fa-bookmark"></i><p>${T('noBookmarks')||'No bookmarks found'}</p></div>`; return; }
 
     el.innerHTML = arr.map(l => {
-        const f = S.folders.find(x=>x.id===l.fId);
+        // For imported bookmarks, always find the folder that matches the link's importedFrom browser
+        // This prevents showing the wrong browser name if folder IDs collided
+        let f = S.folders.find(x=>x.id===l.fId);
+        if(l.imported && l.importedFrom && f && f._browserImport && f._importBrowser !== l.importedFrom){
+            // The folder belongs to a different browser — find the correct one
+            const correctF = S.folders.find(x=>
+                x._browserImport &&
+                x._importBrowser === l.importedFrom &&
+                x._importCategory === f._importCategory
+            );
+            if(correctF) f = correctF;
+        }
         const fColor = f ? (f.color||'#8b5cf6') : null;
         const showThumb = S.settings ? (S.settings.showThumbs !== false) : true;
         // Use logo image, or siteIcon FA icon, or default globe
@@ -2082,14 +2181,19 @@ function autoTagsFromUrl(url){
 function detectSiteIcon(url){
     if(!url) return null;
     const urlLow = url.toLowerCase();
-    // 1) Exact domain match
+    // Extract just the hostname for more precise matching
+    let hostname = urlLow;
+    try { hostname = new URL(url).hostname.toLowerCase(); } catch(e){}
+    // 1) Exact domain match — match against full URL for path-based entries, hostname for domain entries
     for(const entry of SITE_ICON_MAP){
         for(const m of entry.match){
-            if(urlLow.includes(m)) return {icon:entry.icon, color:entry.color, tags:entry.tags||[], category:entry.category||null};
+            // Prefer hostname match to avoid false positives from URL paths
+            if(hostname.includes(m) || (m.includes('/') && urlLow.includes(m)))
+                return {icon:entry.icon, color:entry.color, tags:entry.tags||[], category:entry.category||null};
         }
     }
-    // 2) Smart keyword fallback — always returns an icon
-    return _keywordIcon(urlLow);
+    // 2) Smart keyword fallback — match against hostname ONLY (not path) to avoid false positives
+    return _keywordIcon(hostname);
 }
 
 // Keyword fallback — covers every site type, always produces an icon
@@ -2273,10 +2377,35 @@ async function fetchWebMeta(){
             return;
         }
     }catch(e){}
-    // Final fallback: Google favicon
+    // 3rd fallback: direct fetch with no-cors mode (gets at least favicon)
+    try {
+        const r = await fetch('https://jsonlink.io/api/extract?url='+encodeURIComponent(url));
+        const d = await r.json();
+        if(d && d.title && !document.getElementById('lTitle').value) document.getElementById('lTitle').value = d.title.trim();
+        if(d && d.description && !document.getElementById('lDesc').value) document.getElementById('lDesc').value = d.description.trim();
+        if(d && d.images && d.images[0]){ S.tempLogo=d.images[0]; document.getElementById('logoPrev').innerHTML='<img src="'+d.images[0]+'" onerror="this.parentElement.innerHTML=\'<i class=fa-solid\\\\ fa-globe></i>\'">'; }
+        else setFavicon(url);
+        _applyAutoIcon(url);
+        hideBanner('✓ Title, description & icon loaded','#22c55e');
+        return;
+    } catch(e){}
+    // Final fallback: Google favicon + generate title from URL hostname
     setFavicon(url);
     _applyAutoIcon(url);
-    hideBanner('✓ Icon loaded from favicon','#22c55e');
+    // Auto-fill title from URL if empty (especially useful on Android)
+    try {
+        const titleInput = document.getElementById('lTitle');
+        if(titleInput && !titleInput.value.trim()){
+            const u = new URL(url);
+            // Extract meaningful name from hostname + path
+            let autoTitle = u.hostname.replace('www.','');
+            const pathParts = u.pathname.split('/').filter(p=>p && p.length>1 && !/^\d+$/.test(p));
+            if(pathParts.length) autoTitle += ' - ' + pathParts[pathParts.length-1].replace(/[-_]/g,' ').replace(/\.\w+$/,'');
+            autoTitle = autoTitle.charAt(0).toUpperCase() + autoTitle.slice(1);
+            titleInput.value = autoTitle;
+        }
+    } catch(e){}
+    hideBanner('✓ Icon loaded (offline mode)','#22c55e');
 }
 
 function handleLogoUpload(e){
@@ -3074,11 +3203,89 @@ function saveTags(){
 
 // ── NEW SORT SYSTEM ──
 S._sortMode = localStorage.getItem('ly_sortMode') || 'date';
+// Restore sort button state on load
+(function(){
+    const mode = S._sortMode;
+    if(mode.startsWith('browser-')){
+        const browserColors={'browser-chrome':'#4285f4','browser-safari':'#006cff','browser-firefox':'#ff7139','browser-edge':'#0078d4','browser-opera':'#ff1b2d'};
+        const browserIcons={'browser-chrome':'fa-brands fa-chrome','browser-safari':'fa-brands fa-safari','browser-firefox':'fa-brands fa-firefox','browser-edge':'fa-brands fa-edge','browser-opera':'fa-brands fa-opera'};
+        setTimeout(()=>{
+            const icon=document.getElementById('sortDateIcon');
+            const btn=document.getElementById('sortBtn');
+            if(icon){ icon.className=browserIcons[mode]||'fa-solid fa-arrow-down-wide-short'; icon.style.color=browserColors[mode]||'var(--primary)'; }
+            if(btn) btn.style.borderColor=browserColors[mode]||'var(--primary)';
+        },0);
+    }
+})();
 
 function toggleSortDD(){
     closeAllDropdowns();
     const dd = document.getElementById('sortDD');
-    if(dd){ dd.classList.toggle('open'); updateSortChecks(); }
+    if(dd){
+        dd.classList.toggle('open');
+        // Always position dropdown BELOW the sort button using fixed positioning
+        const btn = document.getElementById('sortBtn');
+        if(btn && dd.classList.contains('open')){
+            const rect = btn.getBoundingClientRect();
+            // On mobile: fixed positioning below button
+            if(window.innerWidth <= 767){
+                dd.style.top = (rect.bottom + 6) + 'px';
+                dd.style.bottom = 'auto';
+                dd.style.right = '8px';
+                dd.style.left = 'auto';
+                // If dropdown would go off-screen bottom, cap it
+                const maxH = window.innerHeight - rect.bottom - 16;
+                dd.style.maxHeight = Math.min(Math.max(maxH, 200), window.innerHeight * 0.65) + 'px';
+            } else {
+                // Desktop: absolute below button (top:46px from CSS is correct)
+                dd.style.top = '';
+                dd.style.bottom = '';
+            }
+        }
+        renderSortBrowsers(); updateSortChecks();
+    }
+}
+
+function renderSortBrowsers(){
+    const container = document.getElementById('sortDD-browsers');
+    if(!container) return;
+
+    const BROWSER_META = {
+        'Chrome':  { icon:'fa-brands fa-chrome',  color:'#4285f4', key:'browser-chrome'  },
+        'Firefox': { icon:'fa-brands fa-firefox',  color:'#ff7139', key:'browser-firefox' },
+        'Safari':  { icon:'fa-brands fa-safari',   color:'#006cff', key:'browser-safari'  },
+        'Edge':    { icon:'fa-brands fa-edge',     color:'#0078d4', key:'browser-edge'    },
+        'Opera':   { icon:'fa-brands fa-opera',    color:'#ff1b2d', key:'browser-opera'   },
+        'Brave':   { icon:'fa-solid fa-shield-halved', color:'#FB542B', key:'browser-brave' },
+    };
+
+    // Collect which browsers actually have imported bookmarks
+    const presentBrowsers = new Set();
+    S.links.forEach(l => {
+        if(l.importedFrom && BROWSER_META[l.importedFrom]) presentBrowsers.add(l.importedFrom);
+    });
+    // Also check folder-level browser tags
+    S.folders.forEach(f => {
+        if(f._importBrowser && BROWSER_META[f._importBrowser]){
+            const hasLinks = S.links.some(l => l.fId === f.id);
+            if(hasLinks) presentBrowsers.add(f._importBrowser);
+        }
+    });
+
+    if(presentBrowsers.size === 0){ container.innerHTML=''; return; }
+
+    const browserOrder = ['Chrome','Firefox','Safari','Edge','Opera','Brave'];
+    const present = browserOrder.filter(b => presentBrowsers.has(b));
+
+    container.innerHTML = `
+        <div style="padding:6px 14px 4px;font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;border-top:1px solid var(--border);margin-top:4px;">Browser</div>
+        ${present.map(b => {
+            const m = BROWSER_META[b];
+            return `<div class="vopt" id="sopt-${m.key}" onclick="setSortMode('${m.key}')">
+                <i class="${m.icon}" style="color:${m.color};"></i> ${b}
+                <span class="vchk" id="schk-${m.key}" style="margin-left:auto;color:var(--primary);display:${S._sortMode===m.key?'inline':'none'};"><i class="fa-solid fa-check"></i></span>
+            </div>`;
+        }).join('')}`;
 }
 function closeAllDropdowns(){
     ['sortDD','folderFilterDD','tagDD','viewDD'].forEach(id=>{
@@ -3088,21 +3295,36 @@ function closeAllDropdowns(){
 function setSortMode(mode){
     S._sortMode = mode;
     localStorage.setItem('ly_sortMode', mode);
+    // Reset active tab to 'all' when switching modes to avoid stale folder filter
+    S.activeTab = 'all';
     const icon = document.getElementById('sortDateIcon');
     const btn  = document.getElementById('sortBtn');
     const isDefault = (mode === 'date' || mode === 'name');
     const isManual = (mode === 'manual');
-    // Manual = orange indicator, others = primary/dim
-    if(icon) icon.style.color = isManual ? '#f97316' : (isDefault ? 'var(--text-dim)' : 'var(--primary)');
-    if(btn)  btn.style.borderColor = isManual ? '#f97316' : (isDefault ? 'var(--border)' : 'var(--primary)');
+    const isBrowser = mode.startsWith('browser-');
+    const isPersonal = (mode === 'personal');
+    const browserColors = {'browser-chrome':'#4285f4','browser-safari':'#006cff','browser-firefox':'#ff7139','browser-edge':'#0078d4','browser-opera':'#ff1b2d','browser-brave':'#FB542B'};
+    const browserIcons = {'browser-chrome':'fa-brands fa-chrome','browser-safari':'fa-brands fa-safari','browser-firefox':'fa-brands fa-firefox','browser-edge':'fa-brands fa-edge','browser-opera':'fa-brands fa-opera','browser-brave':'fa-solid fa-shield-halved'};
+    const activeColor = isBrowser ? browserColors[mode] : (isPersonal ? '#22c55e' : (isManual ? '#f97316' : (isDefault ? 'var(--text-dim)' : 'var(--primary)')));
+    if(icon){
+        if(isBrowser){ icon.className = browserIcons[mode]; }
+        else if(isPersonal){ icon.className = 'fa-solid fa-bookmark'; }
+        else { icon.className = 'fa-solid fa-arrow-down-wide-short'; }
+        icon.style.color = activeColor;
+    }
+    if(btn) btn.style.borderColor = (isDefault && !isBrowser && !isPersonal) ? 'var(--border)' : activeColor;
     updateSortChecks();
     document.getElementById('sortDD')?.classList.remove('open');
-    // Manual order = just show in saved order, NO edit mode, NO overlay
-    // Edit mode is controlled only by the pencil button
+    renderTabs();  // Instantly show/hide browser folders in tab bar
     renderLinks();
 }
 function updateSortChecks(){
-    ['manual','date','visits','last','folder','name'].forEach(m=>{
+    ['manual','date','visits','last','folder','name','personal'].forEach(m=>{
+        const el = document.getElementById('schk-'+m);
+        if(el) el.style.display = (S._sortMode===m) ? 'inline' : 'none';
+    });
+    // Dynamic browser entries
+    ['browser-chrome','browser-safari','browser-firefox','browser-edge','browser-opera','browser-brave'].forEach(m=>{
         const el = document.getElementById('schk-'+m);
         if(el) el.style.display = (S._sortMode===m) ? 'inline' : 'none';
     });
@@ -3157,7 +3379,7 @@ function renderTrashModal(){
         const ago = formatTrashDate(l.deletedAt);
         const thumb = l.logo ? `<img src="${esc(l.logo)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<i class="fa-solid fa-link" style="font-size:18px;color:var(--text-dim);"></i>`;
         return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
-            <div style="width:44px;height:44px;border-radius:10px;background:#000;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;">${thumb}</div>
+            <div style="width:44px;height:44px;border-radius:10px;background:var(--card2,#f4f4f5);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;">${thumb}</div>
             <div style="flex:1;min-width:0;">
                 <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(l.title||l.url||'Untitled')}</div>
                 <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Deleted ${ago}</div>
@@ -3856,6 +4078,28 @@ function clearAllData(){
     });
 }
 
+function deleteAllPersonalBookmarks(){
+    const personal = S.links.filter(l => !l.imported);
+    if(!personal.length){
+        showToast('No personal bookmarks to delete.','#f59e0b');
+        return;
+    }
+    requireDeletePassword(()=>{
+        if(!confirm('Delete all ' + personal.length + ' personal (non-imported) bookmarks?\n\nImported browser bookmarks will NOT be affected.\nThis cannot be undone.')) return;
+        // Move to trash before deleting
+        if(!S.trash) S.trash = [];
+        personal.forEach(l => {
+            S.trash.unshift({...l, deletedAt: Date.now()});
+        });
+        S.links = S.links.filter(l => l.imported);
+        // Remove personal-only folders (folders with no remaining links)
+        const usedFolderIds = new Set(S.links.map(l => l.fId));
+        S.folders = S.folders.filter(f => f._browserImport || usedFolderIds.has(f.id));
+        save(); init(); closeModal('settingsModal'); closePage && closePage();
+        showToast('Deleted ' + personal.length + ' personal bookmarks (moved to trash).', '#f97316');
+    });
+}
+
 // ── BROWSER BOOKMARK IMPORT ──
 async function importBrowserBookmarks(e){
     const file=e.target.files[0]; if(!file) return;
@@ -3875,6 +4119,7 @@ async function importBrowserBookmarks(e){
             Edge:     {icon:'fa-brands fa-edge',     color:'#0078d4'},
             Safari:   {icon:'fa-brands fa-safari',   color:'#006cff'},
             Opera:    {icon:'fa-brands fa-opera',    color:'#ff1b2d'},
+            Brave:    {icon:'fa-solid fa-shield-halved', color:'#FB542B'},
         };
         const bIcon = browserIconMap[browserName]||browserIconMap.Chrome;
         // Per-category folder map: category → folderId
@@ -3902,13 +4147,20 @@ async function importBrowserBookmarks(e){
             Web:           {icon:'fa-solid fa-globe', color:'#22c55e'},
         };
         // Helper: get or create a folder for a category
+        // Unique string key for folder identity: "Browser::Category"
+        function _folderKey(browser, cat){ return browser + '::' + (cat||'__fallback__'); }
         function getOrCreateFolder(category){
             if(categoryFolderMap[category]) return categoryFolderMap[category];
-            const existing = S.folders.find(f=>f._importCategory===category&&f._importBrowser===browserName);
+            const existing = S.folders.find(f=>f._folderKey===_folderKey(browserName,category));
             if(existing){ categoryFolderMap[category]=existing.id; return existing.id; }
             const ci = categoryIconMap[category]||{icon:'fa-solid fa-folder', color:'#8b5cf6'};
-            const fid = BASE_OLD_TS - 2000 - Object.keys(categoryFolderMap).length * 7;
-            S.folders.unshift({id:fid, name:`${category} (${browserName})`, icon:ci.icon, color:ci.color, _browserImport:true, _importBrowser:browserName, _importCategory:category});
+            // Use string key hashed to a unique negative integer — much less likely to collide
+            const keyStr = _folderKey(browserName, category);
+            let fid = 0; for(let ci2=0;ci2<keyStr.length;ci2++) fid = (fid*31 + keyStr.charCodeAt(ci2)) & 0x7FFFFFFF;
+            fid = -(fid + 1000000); // always negative, unique per key
+            // If collision with existing folder, offset
+            while(S.folders.find(f=>f.id===fid)) fid--;
+            S.folders.unshift({id:fid, name:`${category} (${browserName})`, icon:ci.icon, color:ci.color, _browserImport:true, _importBrowser:browserName, _importCategory:category, _folderKey:_folderKey(browserName,category)});
             categoryFolderMap[category]=fid;
             return fid;
         }
@@ -3916,10 +4168,13 @@ async function importBrowserBookmarks(e){
         let fallbackFolderId = null;
         function getFallbackFolder(){
             if(fallbackFolderId) return fallbackFolderId;
-            const existing = S.folders.find(f=>f._browserImport&&f._importBrowser===browserName&&!f._importCategory);
+            const existing = S.folders.find(f=>f._folderKey===_folderKey(browserName,'__fallback__'));
             if(existing){ fallbackFolderId=existing.id; return existing.id; }
-            const fid = BASE_OLD_TS - 1000;
-            S.folders.unshift({id:fid, name:`${browserName} Imports`, icon:bIcon.icon, color:bIcon.color, _browserImport:true, _importBrowser:browserName});
+            const keyStr = _folderKey(browserName, '__fallback__');
+            let fid = 0; for(let ci2=0;ci2<keyStr.length;ci2++) fid = (fid*31 + keyStr.charCodeAt(ci2)) & 0x7FFFFFFF;
+            fid = -(fid + 2000000);
+            while(S.folders.find(f=>f.id===fid)) fid--;
+            S.folders.unshift({id:fid, name:`${browserName} Imports`, icon:bIcon.icon, color:bIcon.color, _browserImport:true, _importBrowser:browserName, _folderKey:_folderKey(browserName,'__fallback__')});
             fallbackFolderId=fid;
             return fid;
         }
@@ -4043,7 +4298,46 @@ function setImportBrowser(name){
     S.settings.importBrowser = name;
     localStorage.setItem('ly_settings',JSON.stringify(S.settings));
     updateBrowserPills();
+    updateImportBMBrowserLabel();
     showToast('Import browser set to '+name,'#3b82f6');
+}
+
+function updateImportBMBrowserLabel(){
+    const lbl = document.getElementById('importBMBrowserLabel');
+    if(!lbl) return;
+    const name = (S.settings&&S.settings.importBrowser)||'Chrome';
+    const browserIconMap = {Chrome:'fa-brands fa-chrome',Firefox:'fa-brands fa-firefox',Edge:'fa-brands fa-edge',Safari:'fa-brands fa-safari',Opera:'fa-brands fa-opera',Brave:'fa-solid fa-shield-halved'};
+    const browserColors = {Chrome:'#4285f4',Firefox:'#ff7139',Edge:'#0078d4',Safari:'#006cff',Opera:'#ff1b2d',Brave:'#FB542B'};
+    lbl.innerHTML = `<i class="${browserIconMap[name]||'fa-solid fa-globe'}" style="color:${browserColors[name]||'#a1a1aa'};margin-right:6px;"></i>${name}`;
+}
+
+async function importBrowserJSON(e){
+    const file = e.target.files[0]; if(!file) return;
+    const r = new FileReader();
+    r.onload = async ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            const browserName = (S.settings&&S.settings.importBrowser)||'Chrome';
+            let links = [];
+            if(Array.isArray(data)) links = data;
+            else if(data.links && Array.isArray(data.links)) links = data.links;
+            else { showAlert('Import Error','Invalid JSON. Expected array of bookmarks or WebMark backup.'); return; }
+            let imported = 0;
+            links.forEach(l => {
+                if(!l.url) return;
+                if(S.links.find(x=>x.url===l.url)) return;
+                S.links.push({...l, id:l.id||(Date.now()-(imported*500)), imported:true, importedFrom:browserName, importedDate:new Date().toISOString()});
+                imported++;
+            });
+            save(); init();
+            const res=document.getElementById('importBMResult'); const okBtn=document.getElementById('importBMOkBtn'); const cancelBtn=document.getElementById('importBMCancelBtn');
+            if(res){ res.style.display='block'; res.innerHTML=`<i class="fa-solid fa-circle-check" style="color:var(--primary);font-size:18px;display:block;margin-bottom:8px;"></i><b>JSON Import Complete!</b><br>${imported} bookmarks imported${links.length-imported>0?' · '+(links.length-imported)+' duplicates skipped':''}`; }
+            if(okBtn) okBtn.style.display='block';
+            if(cancelBtn) cancelBtn.style.display='none';
+        } catch(err){ showAlert('Import Error','Could not read JSON file: '+err.message); }
+        e.target.value='';
+    };
+    r.readAsText(file,'UTF-8');
 }
 function updateBrowserPills(){
     const cur=(S.settings&&S.settings.importBrowser)||'Chrome';
@@ -4061,7 +4355,7 @@ function renderPerBrowserToggles(){
     S.links.filter(l=>l.imported&&l.importedFrom).forEach(l=>browserSet.add(l.importedFrom));
     if(!browserSet.size){ container.innerHTML='<div style="font-size:12px;color:var(--text-dim);padding:4px 0;">No imports yet</div>'; return; }
     const hidden = (S.settings&&S.settings.hiddenBrowsers)||[];
-    const bIcons = { Chrome:'fa-brands fa-chrome', Firefox:'fa-brands fa-firefox', Edge:'fa-brands fa-edge', Safari:'fa-brands fa-safari', Opera:'fa-brands fa-opera' };
+    const bIcons = { Chrome:'fa-brands fa-chrome', Firefox:'fa-brands fa-firefox', Edge:'fa-brands fa-edge', Safari:'fa-brands fa-safari', Opera:'fa-brands fa-opera', Brave:'fa-solid fa-shield-halved' };
     const bColors = { Chrome:'#4285f4', Firefox:'#ff7139', Edge:'#0078d4', Safari:'#006cff', Opera:'#ff1b2d' };
     let h = '';
     browserSet.forEach(bname=>{
@@ -4099,25 +4393,327 @@ function applyAnimEditMode(){
 }
 
 // ── EXPORT IMPORTED BOOKMARKS ──
-function exportImportedLinks(){
-    const links=S.links.filter(l=>l.imported);
-    if(!links.length){ showToast('No imported bookmarks found','#ef4444'); return; }
-    const data=JSON.stringify(links,null,2);
-    const blob=new Blob([data],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-    a.download='webmark_imported_bookmarks.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    showToast('Exported '+links.length+' imported bookmarks','#22c55e');
+// ── COLLAPSIBLE SETTINGS SECTIONS ──
+function toggleSettSection(bodyId, headerEl){
+    const body = document.getElementById(bodyId);
+    if(!body) return;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    headerEl.classList.toggle('open', !isOpen);
 }
 
-// ── CLEAR IMPORTED BOOKMARKS ──
+function resetCollapsibleSections(){
+    document.querySelectorAll('.collapsible-section-body').forEach(b=>{
+        b.classList.remove('open');
+    });
+    document.querySelectorAll('.sett-section-hdr.collapsible').forEach(h=>{
+        h.classList.remove('open');
+    });
+}
+
+// Patch openSettings to also reset collapsibles
+const _origOpenSettings2 = openSettings;
+openSettings = function(){
+    resetCollapsibleSections();
+    _origOpenSettings2();
+};
+
+// ── EXPORT BOOKMARKS (browser + personal picker + JSON/HTML format) ──
+// ── UNIFIED EXPORT PICKER ──
+const _BROWSER_META_EXPORT = {
+    'Chrome':  { icon:'fa-brands fa-chrome',  color:'#4285f4' },
+    'Firefox': { icon:'fa-brands fa-firefox',  color:'#ff7139' },
+    'Safari':  { icon:'fa-brands fa-safari',   color:'#006cff' },
+    'Edge':    { icon:'fa-brands fa-edge',     color:'#0078d4' },
+    'Opera':   { icon:'fa-brands fa-opera',    color:'#ff1b2d' },
+    'Brave':   { icon:'fa-solid fa-shield-halved', color:'#FB542B' },
+};
+
+function _getImportCounts(){
+    const counts = {};
+    S.links.forEach(l=>{
+        if(!l.imported) return;
+        const br = l.importedFrom || (() => { const f=S.folders.find(x=>x.id===l.fId); return f&&f._importBrowser||null; })();
+        if(br) counts[br] = (counts[br]||0)+1;
+    });
+    return counts;
+}
+
+function openExportPicker(){
+    const counts = _getImportCounts();
+    const browsers = Object.keys(counts).filter(b=>counts[b]>0);
+    const personalCount = S.links.filter(l=>!l.imported).length;
+    const totalCount = S.links.length;
+
+    const el = document.getElementById('deletePassContent');
+    document.getElementById('deletePassTitle').textContent = '📤 Export Bookmarks';
+
+    el.innerHTML = `
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;line-height:1.6;">Choose what to export:</p>
+
+        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Source</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+            <!-- All Bookmarks quick option -->
+            <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:2px solid var(--border);cursor:pointer;" class="exp-pick-row" id="exp-all-row">
+                <input type="checkbox" value="__all__" class="exp-pick-cb" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">
+                <i class="fa-solid fa-layer-group" style="color:#7c3aed;font-size:18px;width:22px;text-align:center;"></i>
+                <span style="font-size:13px;font-weight:700;flex:1;">All Bookmarks</span>
+                <span style="font-size:11px;color:var(--text-dim);font-weight:600;">${totalCount}</span>
+            </label>
+            ${personalCount ? `<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:2px solid var(--border);cursor:pointer;" class="exp-pick-row">
+                <input type="checkbox" value="__personal__" class="exp-pick-cb" style="width:16px;height:16px;accent-color:#22c55e;cursor:pointer;">
+                <i class="fa-solid fa-bookmark" style="color:#22c55e;font-size:18px;width:22px;text-align:center;"></i>
+                <span style="font-size:13px;font-weight:600;flex:1;">My Bookmarks <span style="font-size:11px;font-weight:400;color:var(--text-dim);">personal</span></span>
+                <span style="font-size:11px;color:var(--text-dim);font-weight:600;">${personalCount}</span>
+            </label>` : ''}
+            ${browsers.map(b=>{
+                const meta = _BROWSER_META_EXPORT[b] || { icon:'fa-solid fa-globe', color:'#a1a1aa' };
+                return `<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:2px solid var(--border);cursor:pointer;" class="exp-pick-row">
+                    <input type="checkbox" value="${b}" class="exp-pick-cb" style="width:16px;height:16px;accent-color:${meta.color};cursor:pointer;">
+                    <i class="${meta.icon}" style="color:${meta.color};font-size:18px;width:22px;text-align:center;"></i>
+                    <span style="font-size:13px;font-weight:600;flex:1;">${b}</span>
+                    <span style="font-size:11px;color:var(--text-dim);font-weight:600;">${counts[b]}</span>
+                </label>`;
+            }).join('')}
+        </div>
+
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+            <button onclick="toggleAllExportPicks(true)" style="background:rgba(34,197,94,.12);color:var(--primary);border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;">All</button>
+            <button onclick="toggleAllExportPicks(false)" style="background:var(--card);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;">None</button>
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Format</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+            <label style="display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:2px solid var(--border);cursor:pointer;font-size:12px;font-weight:600;">
+                <input type="radio" name="exp-fmt" value="json" checked style="accent-color:var(--primary);"> <i class="fa-solid fa-code" style="color:#eab308;"></i> JSON
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:2px solid var(--border);cursor:pointer;font-size:12px;font-weight:600;">
+                <input type="radio" name="exp-fmt" value="html" style="accent-color:var(--primary);"> <i class="fa-brands fa-html5" style="color:#e34c26;"></i> HTML
+            </label>
+        </div>
+
+        <p id="export-pick-err" style="color:#ef4444;font-size:12px;margin-bottom:8px;display:none;"></p>
+        <button class="btn-p" onclick="doExportSelected()"><i class="fa-solid fa-download"></i> Export Selected</button>
+        <button class="btn-s" onclick="closeModal('deletePassModal')">Cancel</button>
+    `;
+
+    // "All Bookmarks" checkbox selects/deselects all others
+    setTimeout(()=>{
+        const allCb = document.querySelector('.exp-pick-cb[value="__all__"]');
+        if(allCb) allCb.addEventListener('change', ()=>{ toggleAllExportPicks(allCb.checked, true); });
+        document.querySelectorAll('.exp-pick-row').forEach(row=>{
+            const cb = row.querySelector('.exp-pick-cb');
+            if(cb) cb.addEventListener('change', ()=>{
+                row.style.borderColor = cb.checked ? (cb.style.accentColor||'var(--primary)') : 'var(--border)';
+            });
+        });
+    }, 50);
+    openModal('deletePassModal');
+}
+
+// exportImportedLinks opens the same picker (backwards compat from settings buttons)
+function exportImportedLinks(){ openExportPicker(); }
+
+function toggleAllExportPicks(checked, skipAllCheckbox){
+    document.querySelectorAll('.exp-pick-cb').forEach(cb=>{
+        if(skipAllCheckbox && cb.value==='__all__') return;
+        cb.checked = checked;
+        const row = cb.closest('.exp-pick-row');
+        if(row) row.style.borderColor = checked ? (cb.style.accentColor||'var(--primary)') : 'var(--border)';
+    });
+}
+
+function doExportSelected(){
+    const selected = [...document.querySelectorAll('.exp-pick-cb:checked')].map(cb=>cb.value);
+    const fmt = document.querySelector('input[name="exp-fmt"]:checked')?.value || 'json';
+    const err = document.getElementById('export-pick-err');
+    if(!selected.length){ err.textContent='Please select at least one source.'; err.style.display='block'; return; }
+    err.style.display='none';
+
+    const includeAll = selected.includes('__all__');
+    const includePersonal = includeAll || selected.includes('__personal__');
+    const selectedBrowsers = includeAll
+        ? Object.keys(_getImportCounts())
+        : selected.filter(s=>s!=='__personal__'&&s!=='__all__');
+
+    const links = S.links.filter(l=>{
+        if(!l.imported && includePersonal) return true;
+        if(l.imported){
+            if(includeAll) return true;
+            if(l.importedFrom && selectedBrowsers.includes(l.importedFrom)) return true;
+            const f = S.folders.find(x=>x.id===l.fId);
+            if(f && f._importBrowser && selectedBrowsers.includes(f._importBrowser)) return true;
+        }
+        return false;
+    });
+
+    if(!links.length){ showToast('No bookmarks found for selection','#f59e0b'); closeModal('deletePassModal'); return; }
+
+    const nameTag = includeAll ? 'all' : selected.map(s=>s==='__personal__'?'personal':s==='__all__'?'all':s.toLowerCase()).join('_');
+    const dateTag = new Date().toISOString().slice(0,10);
+
+    if(fmt === 'html'){
+        const blob = new Blob([buildBookmarkHTML(links)], {type:'text/html;charset=utf-8'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `webmark_${nameTag}_${dateTag}.html`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } else {
+        const blob = new Blob([JSON.stringify(links,null,2)], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `webmark_${nameTag}_${dateTag}.json`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    closeModal('deletePassModal');
+    showToast(`Exported ${links.length} bookmarks as ${fmt.toUpperCase()}`, '#22c55e');
+}
+
+function buildBookmarkHTML(links){
+    // Group by folder
+    const folderMap = {};
+    links.forEach(l=>{
+        const f = S.folders.find(x=>x.id===l.fId);
+        const fname = f ? f.name : 'Unsorted';
+        if(!folderMap[fname]) folderMap[fname]=[];
+        folderMap[fname].push(l);
+    });
+    let inner = '';
+    Object.entries(folderMap).forEach(([fname, items])=>{
+        inner += `    <DT><H3>${esc(fname)}</H3>
+    <DL><p>
+`;
+        items.forEach(l=>{
+            const ts = Math.floor((l.id||Date.now())/1000);
+            inner += `        <DT><A HREF="${l.url}" ADD_DATE="${ts}">${esc(l.title||l.url)}</A>
+`;
+        });
+        inner += `    </DL><p>
+`;
+    });
+    return `<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<!-- This is an automatically generated file.
+     It will be read and overwritten.
+     DO NOT EDIT! -->
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks</H1>
+<DL><p>
+${inner}</DL>`;
+}
+
+// Keep old function name as alias for backward compat
+function doExportSelectedBrowsers(){ doExportSelected(); }
+function toggleAllBrowserPicks(c){ toggleAllExportPicks(c); }
+
+// ── CLEAR IMPORTED BOOKMARKS (browser picker + password) ──
 function clearImportedLinks(){
-    const cnt=S.links.filter(l=>l.imported).length;
-    if(!cnt){ showToast('No imported bookmarks to remove','#f59e0b'); return; }
-    if(!confirm('Remove all '+cnt+' imported bookmarks? This cannot be undone.')) return;
-    S.links=S.links.filter(l=>!l.imported);
-    S.folders=S.folders.filter(f=>!f._browserImport);
-    save(); init();
-    showToast('Removed '+cnt+' imported bookmarks','#ef4444');
+    // Collect which browsers have imported bookmarks
+    const browserMeta = {
+        'Chrome':  { icon:'fa-brands fa-chrome',  color:'#4285f4' },
+        'Firefox': { icon:'fa-brands fa-firefox',  color:'#ff7139' },
+        'Safari':  { icon:'fa-brands fa-safari',   color:'#006cff' },
+        'Edge':    { icon:'fa-brands fa-edge',     color:'#0078d4' },
+        'Opera':   { icon:'fa-brands fa-opera',    color:'#ff1b2d' },
+        'Brave':   { icon:'fa-solid fa-shield-halved', color:'#FB542B' },
+    };
+    const counts = {};
+    S.links.forEach(l => {
+        if(l.imported && l.importedFrom){
+            counts[l.importedFrom] = (counts[l.importedFrom]||0) + 1;
+        }
+    });
+    // Also count by folder._importBrowser for links without importedFrom
+    S.links.forEach(l => {
+        if(l.imported && !l.importedFrom){
+            const f = S.folders.find(x=>x.id===l.fId);
+            if(f && f._importBrowser){
+                counts[f._importBrowser] = (counts[f._importBrowser]||0) + 1;
+            }
+        }
+    });
+
+    const browsers = Object.keys(counts).filter(b => counts[b] > 0);
+    if(!browsers.length){ showToast('No imported bookmarks to remove','#f59e0b'); return; }
+
+    // Build modal content
+    const el = document.getElementById('deletePassContent');
+    const titleEl = document.getElementById('deletePassTitle');
+    titleEl.textContent = '🗑️ Remove Imported Bookmarks';
+
+    el.innerHTML = `
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.6;">
+            Choose which browser's imported bookmarks to remove:
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            ${browsers.map(b => {
+                const meta = browserMeta[b] || { icon:'fa-solid fa-globe', color:'#a1a1aa' };
+                return `<label style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:2px solid var(--border);cursor:pointer;transition:border-color .15s;" class="browser-pick-row" data-browser="${b}">
+                    <input type="checkbox" value="${b}" class="browser-pick-cb" style="width:18px;height:18px;accent-color:${meta.color};cursor:pointer;">
+                    <i class="${meta.icon}" style="color:${meta.color};font-size:20px;width:24px;text-align:center;"></i>
+                    <span style="font-size:14px;font-weight:600;flex:1;">${b}</span>
+                    <span style="font-size:12px;color:var(--text-dim);font-weight:600;">${counts[b]} bookmark${counts[b]!==1?'s':''}</span>
+                </label>`;
+            }).join('')}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+            <button onclick="toggleAllBrowserPicks(true)" style="background:var(--primary-light,rgba(34,197,94,.12));color:var(--primary);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">Select All</button>
+            <button onclick="toggleAllBrowserPicks(false)" style="background:var(--card);border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">Deselect All</button>
+        </div>
+        <p id="clear-browser-err" style="color:#ef4444;font-size:12px;margin-bottom:8px;display:none;"></p>
+        <button class="btn-p" onclick="confirmClearSelectedBrowsers()" style="background:#ef4444;"><i class="fa-solid fa-trash"></i> Remove Selected</button>
+        <button class="btn-s" onclick="closeModal('deletePassModal')">Cancel</button>
+    `;
+
+    // Highlight checked rows
+    setTimeout(()=>{
+        document.querySelectorAll('.browser-pick-row').forEach(row=>{
+            const cb = row.querySelector('.browser-pick-cb');
+            cb.addEventListener('change', ()=>{
+                row.style.borderColor = cb.checked ? cb.style.accentColor || 'var(--primary)' : 'var(--border)';
+            });
+        });
+    }, 50);
+
+    openModal('deletePassModal');
+}
+
+function toggleAllBrowserPicks(checked){
+    document.querySelectorAll('.browser-pick-cb').forEach(cb=>{
+        cb.checked = checked;
+        const row = cb.closest('.browser-pick-row');
+        if(row) row.style.borderColor = checked ? (cb.style.accentColor||'var(--primary)') : 'var(--border)';
+    });
+}
+
+function confirmClearSelectedBrowsers(){
+    const selected = [...document.querySelectorAll('.browser-pick-cb:checked')].map(cb=>cb.value);
+    const err = document.getElementById('clear-browser-err');
+    if(!selected.length){
+        err.textContent = 'Please select at least one browser.';
+        err.style.display = 'block';
+        return;
+    }
+    err.style.display = 'none';
+    closeModal('deletePassModal');
+
+    // Now require delete password
+    requireDeletePassword(()=>{
+        let removed = 0;
+        selected.forEach(browser=>{
+            const before = S.links.length;
+            S.links = S.links.filter(l=>{
+                if(!l.imported) return true;
+                if(l.importedFrom === browser) return false;
+                const f = S.folders.find(x=>x.id===l.fId);
+                if(f && f._importBrowser === browser) return false;
+                return true;
+            });
+            removed += before - S.links.length;
+            // Remove browser folders for selected browsers
+            S.folders = S.folders.filter(f=>!(f._browserImport && f._importBrowser===browser));
+        });
+        save(); init();
+        showToast(`Removed ${removed} imported bookmark${removed!==1?'s':''} from ${selected.join(', ')}`, '#ef4444');
+    });
 }
 
 // Close modal on backdrop tap
@@ -4484,7 +5080,7 @@ function maskUsername(u){ if(!u||u.length<=2) return u; return u[0]+'*'.repeat(M
 
 function requireDeletePassword(onSuccess){
     window._dpFromDeleteAction=true;
-    if(!getDeletePass()){ openSetDeletePassword(onSuccess); return; }
+    if(!getDeletePass()){ onSuccess(); return; }  // No password set — proceed directly
     openEnterDeletePassword(onSuccess);
 }
 
@@ -5054,9 +5650,9 @@ window.setLang = function(l){
 <div class="mc">
     <div class="mhandle"></div>
     <div class="mhdr"><span class="mtitle" id="importBMTitle">Import Browser Bookmarks</span></div>
-    <div style="background:#27272a;border-radius:12px;padding:16px;margin-bottom:16px;">
-        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;" id="importBMHelp">
-            <strong style="color:var(--text);">How to export bookmarks from your browser:</strong><br><br>
+    <div style="background:var(--card2,#f4f4f5);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;" id="importHelpBox">
+        <p style="font-size:13px;color:var(--text);line-height:1.6;" id="importBMHelp">
+            <strong style="font-weight:700;">How to export bookmarks from your browser:</strong><br><br>
             <strong>Chrome:</strong> Bookmarks → Bookmark Manager → ⋮ → Export bookmarks<br>
             <strong>Firefox:</strong> Bookmarks → Manage Bookmarks → Import/Export → Export to HTML<br>
             <strong>Edge:</strong> Favorites → ⋯ → Manage favorites → Export<br>
@@ -5065,7 +5661,16 @@ window.setLang = function(l){
         </p>
     </div>
     <input type="file" id="bmHtmlFile" accept=".html,.htm" onchange="importBrowserBookmarks(event)" style="display:none">
-    <button class="btn-p" onclick="document.getElementById('bmHtmlFile').click()"><i class="fa-solid fa-file-import"></i> <span id="importBMBtn">Select Bookmark HTML File</span></button>
+    <div id="importBMSelectedBrowser" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card2,#f4f4f5);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;">
+        <span style="font-size:13px;color:var(--text,#111);font-weight:600;">Importing as:</span>
+        <span id="importBMBrowserLabel" style="font-size:14px;font-weight:700;color:var(--primary);"></span>
+        <span style="font-size:11px;color:var(--text-dim,#6b7280);margin-left:auto;">⚙ Settings → Browser Import</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <button class="btn-p" style="flex:1;" onclick="document.getElementById('bmHtmlFile').click()"><i class="fa-solid fa-file-import"></i> <span id="importBMBtn">Import Browser HTML</span></button>
+        <button class="btn-p" style="flex:1;background:#8b5cf6;" onclick="document.getElementById('bmJsonFile').click()"><i class="fa-solid fa-bookmark"></i> Import Personal JSON</button>
+    </div>
+    <input type="file" id="bmJsonFile" accept=".json" style="display:none" onchange="importBrowserJSON(event)">
     <div id="importBMResult" style="margin-top:14px;padding:14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;font-size:13px;color:var(--primary);display:none;line-height:1.7;"></div>
     <button id="importBMOkBtn" class="btn-p" onclick="closeModal('importBMModal')" style="display:none;margin-top:10px;background:var(--primary);color:#000;font-weight:700;"><i class="fa-solid fa-check"></i> Done</button>
     <button class="btn-s" onclick="closeModal('importBMModal')" id="importBMCancelBtn">Cancel</button>
@@ -5089,6 +5694,10 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-tags"></i> <span id="settTags">Manage Tags</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
+
+    <!-- ── SORT & DISPLAY (collapsible) ── -->
+    <div class="sett-section-hdr collapsible" id="settSortLabel" data-c="sky" data-tk="sortDisplay" onclick="toggleSettSection('desk-sort-body', this)">🗂️ SORT & DISPLAY <i class="fa-solid fa-chevron-down coll-arrow"></i></div>
+    <div class="collapsible-section-body" id="desk-sort-body">
     <div class="erow" style="cursor:default;">
         <div class="erow-lbl"><i class="fa-regular fa-folder-open"></i> <span id="settShowFolders">Show folder badges on links</span></div>
         <div onclick="toggleSetting('showFolders')" id="tog-showFolders" class="tog-btn"><div id="togInner-showFolders" class="tog-knob"></div></div>
@@ -5097,9 +5706,6 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-tag"></i> <span id="settShowTags">Show tag badges on links</span></div>
         <div onclick="toggleSetting('showTags')" id="tog-showTags" class="tog-btn"><div id="togInner-showTags" class="tog-knob"></div></div>
     </div>
-
-    <!-- ── SORT & DISPLAY ── -->
-    <div class="sett-section-hdr" id="settSortLabel" data-c="sky" data-tk="sortDisplay">🗂️ SORT & DISPLAY</div>
     <div class="erow" style="cursor:default;">
         <div class="erow-lbl"><i class="fa-solid fa-arrow-down-wide-short"></i> <span id="settSortDate">Sort by date (newest first)</span></div>
         <div onclick="toggleSetting('sortByDate')" id="tog-sortByDate" class="tog-btn"><div id="togInner-sortByDate" class="tog-knob"></div></div>
@@ -5124,6 +5730,29 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-magic-wand-sparkles" style="color:#fbbf24;"></i> <span>Animate edit mode (sparkle)</span></div>
         <div onclick="toggleSetting('animEditMode');applyAnimEditMode()" id="tog-animEditMode" class="tog-btn" style="background:var(--primary);"><div id="togInner-animEditMode" class="tog-knob" style="right:2px;left:auto;"></div></div>
     </div>
+    <div class="erow" style="cursor:default;">
+        <div class="erow-lbl"><i class="fa-solid fa-font" style="color:#a78bfa;"></i> <span data-tk="fontFamily">Font Family</span></div>
+        <select class="sett-select" id="desk-fontSelect" onchange="setAppFont(this.value)">
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Lato">Lato</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Courier">Courier New</option>
+            <option value="System">System UI</option>
+        </select>
+    </div>
+    <div class="erow" style="cursor:default;">
+        <div class="erow-lbl"><i class="fa-solid fa-text-height" style="color:#22d3ee;"></i> <span data-tk="fontSize">Font Size</span></div>
+        <select class="sett-select" id="desk-fontSizeSelect" onchange="setFontSize(this.value)">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+        </select>
+    </div>
+    </div><!-- /desk-sort-body -->
 
     <!-- ── BROWSER IMPORT ── -->
     <div class="sett-section-hdr" data-c="teal" data-tk="browserImport">🌐 BROWSER IMPORT</div>
@@ -5150,23 +5779,22 @@ window.setLang = function(l){
             <button onclick="setImportBrowser('Edge')" class="browser-pill" data-b="Edge"><i class="fa-brands fa-edge"></i> Edge</button>
             <button onclick="setImportBrowser('Safari')" class="browser-pill" data-b="Safari"><i class="fa-brands fa-safari"></i> Safari</button>
             <button onclick="setImportBrowser('Opera')" class="browser-pill" data-b="Opera"><i class="fa-brands fa-opera"></i> Opera</button>
+            <button onclick="setImportBrowser('Brave')" class="browser-pill" data-b="Brave"><i class="fa-solid fa-shield-halved" style="color:#FB542B;"></i> Brave</button>
         </div>
     </div>
     <div class="erow" onclick="openModal('importBMModal');closeModal('settingsModal')">
         <div class="erow-lbl"><i class="fa-solid fa-file-import"></i> <span id="settImportBM">Import Browser Bookmarks (HTML)</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
+    <div class="erow" onclick="exportImportedLinks()">
+        <div class="erow-lbl"><i class="fa-solid fa-download" style="color:#4285f4;"></i> <span data-tk="exportImportedOnly">Export Imported Bookmarks</span></div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+    </div>
+    <div class="erow" onclick="clearImportedLinks()">
+        <div class="erow-lbl"><i class="fa-solid fa-trash" style="color:#f59e0b;"></i> <span data-tk="removeAllImported">Remove All Imported</span></div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+    </div>
 
-    <!-- ── DATA ── -->
-    <div class="sett-section-hdr" id="settDataLabel" data-c="emerald" data-tk="dataBackup">💾 DATA & BACKUP</div>
-    <div class="erow" onclick="document.getElementById('impFile').click();closeModal('settingsModal')">
-        <div class="erow-lbl"><i class="fa-solid fa-upload"></i> <span id="settImport">Import JSON Backup</span></div>
-        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-    </div>
-    <div class="erow" onclick="exportData();closeModal('settingsModal')">
-        <div class="erow-lbl"><i class="fa-solid fa-download"></i> <span id="settExport">Export JSON Backup</span></div>
-        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-    </div>
 
     <!-- ── LANGUAGE & APPEARANCE ── -->
     <div class="sett-section-hdr" id="settLangLabel" data-c="violet">🎨 LANGUAGE & APPEARANCE</div>
@@ -5197,29 +5825,6 @@ window.setLang = function(l){
         </div>
     </div>
 
-    <!-- FONT FAMILY + SIZE as erow selects -->
-    <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-font" style="color:#a78bfa;"></i> <span>Font Family</span></div>
-        <select class="sett-select" id="desk-fontSelect" onchange="setAppFont(this.value)">
-            <option value="Inter">Inter</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Poppins">Poppins</option>
-            <option value="Lato">Lato</option>
-            <option value="Nunito">Nunito</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Merriweather">Merriweather</option>
-            <option value="Courier">Courier New</option>
-            <option value="System">System UI</option>
-        </select>
-    </div>
-    <div class="erow" style="cursor:default;">
-        <div class="erow-lbl"><i class="fa-solid fa-text-height" style="color:#22d3ee;"></i> <span>Font Size</span></div>
-        <select class="sett-select" id="desk-fontSizeSelect" onchange="setFontSize(this.value)">
-            <option value="small">Small</option>
-            <option value="medium" selected>Medium</option>
-            <option value="large">Large</option>
-        </select>
-    </div>
 
     <!-- ── STATS & TOOLS ── -->
     <div class="sett-section-hdr" data-c="orange" data-tk="statsTools">📊 STATS & TOOLS</div>
@@ -5237,14 +5842,6 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-box-archive" style="color:#52525b;"></i> <span data-tk="archiveVisited">Archive All Visited</span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
     </div>
-    <div class="erow" onclick="exportImportedLinks()">
-        <div class="erow-lbl"><i class="fa-brands fa-chrome" style="color:#4285f4;"></i> <span>Export Imported Bookmarks Only</span></div>
-        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-    </div>
-    <div class="erow" onclick="clearImportedLinks()">
-        <div class="erow-lbl"><i class="fa-solid fa-eraser" style="color:#f59e0b;"></i> <span>Remove All Imported Bookmarks</span></div>
-        <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-    </div>
 
     <!-- ── DANGER ZONE ── -->
     <div class="sett-section-hdr" data-c="red" data-tk="dangerZone">⚠️ DANGER ZONE</div>
@@ -5256,6 +5853,10 @@ window.setLang = function(l){
         <div class="erow-lbl"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> <span data-tk="deletePassword">Delete Password</span></div>
         <div style="font-size:12px;font-weight:600;color:var(--primary);margin-right:6px;" id="delPassStatus"></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+    </div>
+    <div class="erow" onclick="deleteAllPersonalBookmarks()">
+        <div class="erow-lbl"><i class="fa-solid fa-bookmark" style="color:#f97316;"></i> <span style="color:#f97316;font-weight:600;" data-tk="deletePersonal">Delete Personal Bookmarks</span></div>
+        <i class="fa-solid fa-chevron-right" style="color:#f97316;font-size:12px;"></i>
     </div>
     <div class="erow" onclick="clearAllData()" style="color:#ef4444;">
         <div class="erow-lbl" style="color:#ef4444;"><i class="fa-solid fa-trash" style="color:#ef4444;"></i> <span>Clear All Data</span></div>
@@ -5366,30 +5967,6 @@ window.setLang = function(l){
         </div>
 
         <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><i class="fa-solid fa-font" style="color:#fff;font-size:15px;"></i></div> <span data-tk="fontFamily">Font Family</span></div>
-            <select class="sett-select" id="sp-fontSelect" onchange="setAppFont(this.value)">
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Poppins">Poppins</option>
-                <option value="Lato">Lato</option>
-                <option value="Nunito">Nunito</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Merriweather">Merriweather</option>
-                <option value="Courier">Courier New</option>
-                <option value="System">System UI</option>
-            </select>
-        </div>
-
-        <div class="erow" style="cursor:default;">
-            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22d3ee,#0891b2);"><i class="fa-solid fa-text-height" style="color:#fff;font-size:15px;"></i></div> <span data-tk="fontSize">Font Size</span></div>
-            <select class="sett-select" id="sp-fontSizeSelect" onchange="setFontSize(this.value)">
-                <option value="small">Small</option>
-                <option value="medium" selected>Medium</option>
-                <option value="large">Large</option>
-            </select>
-        </div>
-
-        <div class="erow" style="cursor:default;">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><i class="fa-solid fa-palette" style="color:#fff;font-size:15px;"></i></div> <span data-tk="accentColor">Accent Color</span></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
                 <div class="accent-dot" data-color="#22c55e" style="width:22px;height:22px;border-radius:50%;background:#22c55e;cursor:pointer;border:2px solid transparent;" onclick="setAccent('#22c55e')"></div>
@@ -5414,6 +5991,10 @@ window.setLang = function(l){
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#a78bfa,#6d28d9);"><i class="fa-solid fa-tags" style="color:#fff;font-size:15px;"></i></div> <span data-tk="manageTags">Manage Tags</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
+
+        <!-- ── SORT & DISPLAY (collapsible) ── -->
+        <div class="sett-section-hdr collapsible" data-c="sky" data-tk="sortDisplay" onclick="toggleSettSection('mob-sort-body', this)">🗂️ SORT & DISPLAY <i class="fa-solid fa-chevron-down coll-arrow"></i></div>
+        <div class="collapsible-section-body" id="mob-sort-body">
         <div class="erow" style="cursor:default;">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fb923c,#ea580c);"><i class="fa-solid fa-folder-open" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showFolderBadgesShort">Show folder badges on links</span></div>
             <div onclick="toggleSetting('showFolders')" id="sp-tog-showFolders" class="tog-btn"><div id="sp-togInner-showFolders" class="tog-knob"></div></div>
@@ -5422,10 +6003,6 @@ window.setLang = function(l){
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#34d399,#059669);"><i class="fa-solid fa-tag" style="color:#fff;font-size:15px;"></i></div> <span data-tk="showTagBadgesShort">Show tag badges</span></div>
             <div onclick="toggleSetting('showTags')" id="sp-tog-showTags" class="tog-btn"><div id="sp-togInner-showTags" class="tog-knob"></div></div>
         </div>
-
-        <!-- ── SORT & DISPLAY ── -->
-        <div class="sett-section-hdr" data-c="sky" data-tk="sortDisplay">🗂️ SORT & DISPLAY</div>
-
         <div class="erow" style="cursor:default;">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#60a5fa,#2563eb);"><i class="fa-solid fa-arrow-down-wide-short" style="color:#fff;font-size:15px;"></i></div> <span data-tk="sortByDateNewest">Sort by date newest first</span></div>
             <div onclick="toggleSetting('sortByDate')" id="sp-tog-sortByDate" class="tog-btn"><div id="sp-togInner-sortByDate" class="tog-knob"></div></div>
@@ -5450,6 +6027,29 @@ window.setLang = function(l){
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fbbf24,#b45309);"><i class="fa-solid fa-magic-wand-sparkles" style="color:#fff;font-size:15px;"></i></div> <span data-tk="animateEdit">Animate edit mode</span></div>
             <div onclick="toggleSetting('animEditMode');applyAnimEditMode()" id="sp-tog-animEditMode" class="tog-btn"><div id="sp-togInner-animEditMode" class="tog-knob"></div></div>
         </div>
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);"><i class="fa-solid fa-font" style="color:#fff;font-size:15px;"></i></div> <span data-tk="fontFamily">Font Family</span></div>
+            <select class="sett-select" id="sp-fontSelect" onchange="setAppFont(this.value)">
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Lato">Lato</option>
+                <option value="Nunito">Nunito</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="Courier">Courier New</option>
+                <option value="System">System UI</option>
+            </select>
+        </div>
+        <div class="erow" style="cursor:default;">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22d3ee,#0891b2);"><i class="fa-solid fa-text-height" style="color:#fff;font-size:15px;"></i></div> <span data-tk="fontSize">Font Size</span></div>
+            <select class="sett-select" id="sp-fontSizeSelect" onchange="setFontSize(this.value)">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+            </select>
+        </div>
+        </div><!-- /mob-sort-body -->
 
         <!-- ── LINKS ── -->
         <div class="sett-section-hdr" data-c="teal" data-tk-links="links">🔗 LINKS</div>
@@ -5485,22 +6085,19 @@ window.setLang = function(l){
                 <button onclick="setImportBrowser('Edge')" class="browser-pill" data-b="Edge"><i class="fa-brands fa-edge"></i> Edge</button>
                 <button onclick="setImportBrowser('Safari')" class="browser-pill" data-b="Safari"><i class="fa-brands fa-safari"></i> Safari</button>
                 <button onclick="setImportBrowser('Opera')" class="browser-pill" data-b="Opera"><i class="fa-brands fa-opera"></i> Opera</button>
+                <button onclick="setImportBrowser('Brave')" class="browser-pill" data-b="Brave"><i class="fa-solid fa-shield-halved" style="color:#FB542B;"></i> Brave</button>
             </div>
         </div>
         <div class="erow" onclick="openFromSettingsPage('importBMModal')">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#4285f4,#1a56db);"><i class="fa-solid fa-file-import" style="color:#fff;font-size:15px;"></i></div> <span data-tk="importBMHtml">Import from Browser (HTML)</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-
-        <!-- ── DATA & BACKUP ── -->
-        <div class="sett-section-hdr" data-c="emerald" data-tk="dataBackup">💾 DATA & BACKUP</div>
-
-        <div class="erow" onclick="document.getElementById('impFile').click()">
-            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#34d399,#059669);"><i class="fa-solid fa-upload" style="color:#fff;font-size:15px;"></i></div> <span data-tk="importJSON2">Import JSON Backup</span></div>
+        <div class="erow" onclick="exportImportedLinks()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#4285f4,#1a56db);"><i class="fa-solid fa-download" style="color:#fff;font-size:15px;"></i></div> <span data-tk="exportImportedOnly">Export Imported Only</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
-        <div class="erow" onclick="exportData()">
-            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#fbbf24,#d97706);"><i class="fa-solid fa-download" style="color:#fff;font-size:15px;"></i></div> <span data-tk="exportJSON3" style="color:#eab308;font-weight:700;">Export JSON Backup</span></div>
+        <div class="erow" onclick="clearImportedLinks()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f97316,#c2410c);"><i class="fa-solid fa-trash" style="color:#fff;font-size:15px;"></i></div> <span data-tk="removeAllImported">Remove All Imported</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
 
@@ -5517,14 +6114,6 @@ window.setLang = function(l){
         </div>
         <div class="erow" onclick="archiveAllRead()">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#94a3b8,#475569);"><i class="fa-solid fa-box-archive" style="color:#fff;font-size:15px;"></i></div> <span data-tk="archiveVisited">Archive All Visited</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-        </div>
-        <div class="erow" onclick="exportImportedLinks()">
-            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#4285f4,#1a56db);"><i class="fa-brands fa-chrome" style="color:#fff;font-size:15px;"></i></div> <span data-tk="exportImportedOnly">Export Imported Only</span></div>
-            <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
-        </div>
-        <div class="erow" onclick="clearImportedLinks()">
-            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f97316,#c2410c);"><i class="fa-solid fa-eraser" style="color:#fff;font-size:15px;"></i></div> <span data-tk="removeAllImported">Remove All Imported</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
         </div>
 
@@ -5547,6 +6136,10 @@ window.setLang = function(l){
         <div class="erow" onclick="openFromSettingsPage('deletePassModal',openManageDeletePassword)">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#22c55e,#15803d);"><i class="fa-solid fa-shield-halved" style="color:#fff;font-size:15px;"></i></div> <span data-tk="deletePassword">Delete Password</span></div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-dim);font-size:12px;"></i>
+        </div>
+        <div class="erow" onclick="deleteAllPersonalBookmarks()">
+            <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#f97316,#c2410c);"><i class="fa-solid fa-bookmark" style="color:#fff;font-size:15px;"></i></div> <span style="color:#f97316;font-weight:700;" data-tk="deletePersonal">Delete Personal Bookmarks</span></div>
+            <i class="fa-solid fa-chevron-right" style="color:#f97316;font-size:12px;"></i>
         </div>
         <div class="erow" onclick="clearAllData()">
             <div class="erow-lbl"><div class="sicon" style="background:linear-gradient(135deg,#ef4444,#b91c1c);"><i class="fa-solid fa-trash" style="color:#fff;font-size:15px;"></i></div> <span style="color:#ef4444;font-weight:700;" data-tk="clearAllData">Clear All Data</span></div>
@@ -5592,6 +6185,8 @@ function openFromSettingsPage(modalId, customFn) {
             if(res){ res.style.display='none'; res.innerHTML=''; }
             if(okBtn) okBtn.style.display='none';
             if(cancelBtn) cancelBtn.style.display='block';
+            // Update the selected browser label
+            setTimeout(updateImportBMBrowserLabel, 50);
         }
         openModal(modalId);
     }
@@ -5630,6 +6225,7 @@ function openPage(name) {
 
 function closePage() {
     document.querySelectorAll('.inline-page').forEach(p => p.classList.remove('active'));
+    resetCollapsibleSections();
     document.querySelectorAll('.nitem').forEach(n => n.classList.remove('active'));
     const map = { all:'nav-home', fav:'nav-fav', archive:'nav-arc' };
     const el = document.getElementById(map[S.activeTab] || 'nav-home');
