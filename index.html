@@ -3714,21 +3714,52 @@ function importData(e){
             const raw = ev.target.result.trim();
             const d = JSON.parse(raw);
             // Accept both {f,l} format (WebMark/Linkery) and plain array
-            let folders = [], links = [];
+            let importedFolders = [], importedLinks = [];
             if(d && Array.isArray(d.l) && Array.isArray(d.f)){
-                folders = d.f; links = d.l;
+                importedFolders = d.f; importedLinks = d.l;
             } else if(d && Array.isArray(d.links)){
-                links = d.links; folders = d.folders||[];
+                importedLinks = d.links; importedFolders = d.folders||[];
             } else if(Array.isArray(d)){
-                links = d;
+                importedLinks = d;
             } else {
                 alert('Invalid backup file. Please use a WebMark JSON backup.');
                 e.target.value=''; return;
             }
-            if(!links.length){ alert('No bookmarks found in this file.'); e.target.value=''; return; }
-            S.folders = folders; S.links = links;
+            if(!importedLinks.length){ alert('No bookmarks found in this file.'); e.target.value=''; return; }
+
+            // Merge folders: map old IDs → new IDs to avoid collisions with existing data
+            const existingIds = new Set(S.folders.map(f=>f.id));
+            const maxId = S.folders.reduce((m,f)=>Math.max(m,f.id||0), 0);
+            const idMap = {}; // oldId → newId
+            let nextId = maxId + 1;
+            importedFolders.forEach(f => {
+                const oldId = f.id;
+                // If same name already exists, reuse that folder's id
+                const existing = S.folders.find(x=>x.name===f.name);
+                if(existing){
+                    idMap[oldId] = existing.id;
+                } else {
+                    const newId = existingIds.has(oldId) ? nextId++ : oldId;
+                    idMap[oldId] = newId;
+                    existingIds.add(newId);
+                    S.folders.push(Object.assign({}, f, {id: newId}));
+                }
+            });
+
+            // Remap fId on imported links and merge
+            const remappedLinks = importedLinks.map(l => {
+                const newLink = Object.assign({}, l);
+                if(l.fId != null && idMap[l.fId] != null) newLink.fId = idMap[l.fId];
+                return newLink;
+            });
+
+            // Avoid duplicating links already present (match by url)
+            const existingUrls = new Set(S.links.map(l=>l.url));
+            const newLinks = remappedLinks.filter(l=>!existingUrls.has(l.url));
+            S.links = [...S.links, ...newLinks];
+
             save(); init();
-            alert('✅ Import successful! ' + links.length + ' bookmarks loaded.');
+            alert('✅ Import successful! ' + newLinks.length + ' new bookmarks loaded (folders preserved).');
         } catch(err) {
             alert('Could not read file. Make sure it is a valid WebMark JSON backup.');
         }
@@ -4820,7 +4851,11 @@ function doExportSelected(){
         a.download = `webmark_${nameTag}_${dateTag}.html`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
     } else {
-        const blob = new Blob([JSON.stringify(links,null,2)], {type:'application/json'});
+        // Collect only the folders actually referenced by the exported links
+        const usedFolderIds = new Set(links.map(l=>l.fId).filter(id=>id!=null));
+        const exportedFolders = S.folders.filter(f=>usedFolderIds.has(f.id));
+        const exportPayload = {f: exportedFolders, l: links};
+        const blob = new Blob([JSON.stringify(exportPayload,null,2)], {type:'application/json'});
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
         a.download = `webmark_${nameTag}_${dateTag}.json`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
