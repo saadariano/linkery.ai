@@ -3706,98 +3706,191 @@ function shareFormat(type){
         const {jsPDF}=window.jspdf;
         const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
 
-        // Helper: keep all Unicode chars (Arabic, emoji, etc.) — jsPDF encodes them as latin fallback
-        // We use a canvas-based text renderer for Arabic/RTL text
+        // ── Arabic / Unicode detection ──────────────────────────────────────
         function hasArabic(str){ return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(str||''); }
 
-        // Renders a string (possibly Arabic) as an image via canvas, places it in the PDF
-        function addTextLine(text, x, y, opts){
-            if(!text) return;
-            const fontSize = opts.fontSize||9;
-            const color = opts.color||[30,30,30];
-            const bold = opts.bold||false;
-            const maxW = opts.maxW||170; // mm
-            const pxPerMm = 3.78;
-            const canvasW = Math.round(maxW * pxPerMm);
-            const canvasH = Math.round((fontSize+4) * pxPerMm);
-            const cv = document.createElement('canvas');
-            cv.width = canvasW; cv.height = canvasH;
-            const ctx = cv.getContext('2d');
-            ctx.clearRect(0,0,canvasW,canvasH);
-            const pxSize = Math.round(fontSize * pxPerMm * 0.72);
-            ctx.font = (bold?'bold ':'')+pxSize+'px Inter,Arial,sans-serif';
-            ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
-            const isAr = hasArabic(text);
-            ctx.direction = isAr ? 'rtl' : 'ltr';
-            ctx.textAlign = isAr ? 'right' : 'left';
-            const drawX = isAr ? canvasW-2 : 2;
-            ctx.fillText(text, drawX, pxSize+2, canvasW-4);
-            const imgData = cv.toDataURL('image/png');
-            doc.addImage(imgData, 'PNG', x, y - fontSize*0.28, maxW, (fontSize+4)*0.35);
+        // ── High-quality canvas renderer (fixes stretched/blurry font) ──────
+        // DPI: render at 2× for sharpness, then place at real mm size in PDF.
+        const SCALE = 2;          // retina multiplier
+        const MM_TO_PT = 2.835;   // 1 mm ≈ 2.835 pt
+        const PT_TO_PX = 1.333;   // 1 pt ≈ 1.333 px at 96 dpi
+
+        // Measure text width in mm using a shared off-screen canvas
+        const _mCanvas = document.createElement('canvas');
+        const _mCtx = _mCanvas.getContext('2d');
+        function measureTextMm(text, fontCss){
+            _mCtx.font = fontCss;
+            return (_mCtx.measureText(text).width / (PT_TO_PX * MM_TO_PT));
         }
 
-        // Header
-        addTextLine('WebMark — Bookmarks', 14, 16, {fontSize:18, color:[34,197,94], bold:true, maxW:182});
-        addTextLine('Generated: '+new Date().toLocaleDateString(), 14, 24, {fontSize:9, color:[120,120,120], maxW:100});
+        // Word-wrap: split `text` into lines that fit within `maxW` mm
+        function wrapText(text, maxW, fontCss){
+            if(!text) return [];
+            const words = text.split(/\s+/);
+            const lines = [];
+            let cur = '';
+            for(const w of words){
+                const test = cur ? cur+' '+w : w;
+                if(measureTextMm(test, fontCss) > maxW && cur){
+                    lines.push(cur);
+                    cur = w;
+                } else {
+                    cur = test;
+                }
+            }
+            if(cur) lines.push(cur);
+            return lines.length ? lines : [text];
+        }
 
-        let y=30;
-        org.forEach(g=>{
+        // Render ONE line of text onto a canvas image and place it in the PDF.
+        // Returns the height consumed in mm.
+        function renderLine(text, x, y, opts){
+            if(!text || !text.trim()) return 0;
+            const fontSize = opts.fontSize || 9;          // in pt
+            const color    = opts.color    || [30,30,30];
+            const bold     = opts.bold     || false;
+            const maxW     = opts.maxW     || 172;        // mm available
+            const isAr     = hasArabic(text);
+
+            // Real pixel dimensions of the line image
+            const lineHmm  = fontSize * 0.45 + 1.2;      // mm height for one line
+            const canvasW  = Math.round(maxW  * MM_TO_PT * PT_TO_PX * SCALE);
+            const canvasH  = Math.round(lineHmm * MM_TO_PT * PT_TO_PX * SCALE);
+
+            const cv  = document.createElement('canvas');
+            cv.width  = canvasW;
+            cv.height = canvasH;
+            const ctx = cv.getContext('2d');
+            ctx.clearRect(0, 0, canvasW, canvasH);
+
+            const pxSize   = Math.round(fontSize * PT_TO_PX * SCALE);
+            const fontCss  = (bold ? 'bold ' : '') + pxSize + 'px "Segoe UI",Arial,sans-serif';
+            ctx.font       = fontCss;
+            ctx.fillStyle  = `rgb(${color[0]},${color[1]},${color[2]})`;
+            ctx.direction  = isAr ? 'rtl' : 'ltr';
+            ctx.textBaseline = 'middle';
+            const drawX    = isAr ? canvasW - 4 : 4;
+            ctx.fillText(text, drawX, canvasH / 2);
+
+            const imgData = cv.toDataURL('image/png');
+            // Place image at exact mm dimensions (no stretching)
+            doc.addImage(imgData, 'PNG', x, y, maxW, lineHmm);
+            return lineHmm;
+        }
+
+        // ── Page-break helper ────────────────────────────────────────────────
+        // Single source of truth: all y updates flow through here.
+        const PAGE_BOTTOM = 278;
+        const PAGE_TOP    = 14;
+        function checkY(curY, neededH){
+            if(curY + neededH > PAGE_BOTTOM){ doc.addPage(); return PAGE_TOP; }
+            return curY;
+        }
+
+        // Estimate block height (no drawing) for pre-flight page-break decisions.
+        function estimateH(text, opts){
+            if(!text || !text.trim()) return 0;
+            const fontSize = opts.fontSize || 9;
+            const bold     = opts.bold     || false;
+            const maxW     = opts.maxW     || 172;
+            const lineGap  = fontSize * 0.45 + 1.7;
+            const fontCss  = (bold?'bold ':'')+Math.round(fontSize * PT_TO_PX * SCALE)+'px "Segoe UI",Arial,sans-serif';
+            return wrapText(text, maxW - 2, fontCss).length * lineGap;
+        }
+
+        // Render wrapped multi-line block. Takes curY, returns updated y.
+        function addTextBlock(text, x, curY, opts){
+            if(!text || !text.trim()) return curY;
+            const fontSize = opts.fontSize || 9;
+            const bold     = opts.bold     || false;
+            const maxW     = opts.maxW     || 172;
+            const lineHmm  = fontSize * 0.45 + 1.2;
+            const lineGap  = lineHmm + 0.5;
+            const fontCss  = (bold?'bold ':'')+Math.round(fontSize * PT_TO_PX * SCALE)+'px "Segoe UI",Arial,sans-serif';
+            const lines    = wrapText(text, maxW - 2, fontCss);
+            for(const line of lines){
+                curY = checkY(curY, lineGap);
+                renderLine(line, x, curY, {...opts, maxW});
+                curY += lineGap;
+            }
+            return curY;
+        }
+
+        // ── PDF Header ───────────────────────────────────────────────────────
+        let y = 12;
+        y = addTextBlock('WebMark — Bookmarks', 13, y, {fontSize:18, color:[34,197,94], bold:true, maxW:184});
+        y = addTextBlock('Generated: '+new Date().toLocaleDateString(), 13, y + 1, {fontSize:9, color:[120,120,120], maxW:120});
+        y += 5;
+
+        org.forEach(g => {
             if(!g.links.length) return;
-            // Folder header bar
-            if(y>260){doc.addPage();y=14;}
-            doc.setFillColor(139,92,246);
-            doc.roundedRect(12,y,186,8,2,2,'F');
-            addTextLine(g.name+' ('+g.links.length+')', 15, y+6, {fontSize:10, color:[255,255,255], bold:true, maxW:178});
-            y+=11;
-            g.links.forEach(l=>{
-                if(y>268){doc.addPage();y=14;}
-                // Title (supports Arabic)
-                const title = (l.title||'(no title)');
-                addTextLine('• '+title, 15, y, {fontSize:9.5, color:[30,30,30], bold:true, maxW:175});
-                y+=5.5;
-                // Arabic title if present and different
-                if(l.titleAr && l.titleAr!==l.title){
-                    if(y>268){doc.addPage();y=14;}
-                    addTextLine(l.titleAr, 18, y, {fontSize:8.5, color:[100,150,220], maxW:170});
-                    y+=5;
+
+            // ── Folder header: keep with at least first bookmark (orphan guard) ──
+            y = checkY(y, 24);
+            doc.setFillColor(139, 92, 246);
+            doc.roundedRect(12, y, 186, 9, 2, 2, 'F');
+            y = addTextBlock(g.name + ' (' + g.links.length + ')', 15, y + 1.2,
+                {fontSize:10.5, color:[255,255,255], bold:true, maxW:178});
+            y += 3;
+
+            g.links.forEach(l => {
+                const title = (l.title || '(no title)');
+
+                // ── Pre-flight: ensure room for title + url before drawing anything ──
+                const titleH = estimateH('• ' + title, {fontSize:9.5, bold:true, maxW:176});
+                y = checkY(y, titleH + 6);
+
+                // ── Bookmark title ───────────────────────────────────────────
+                y = addTextBlock('• ' + title, 14, y,
+                    {fontSize:9.5, color:[20,20,20], bold:true, maxW:176});
+
+                // ── URL ──────────────────────────────────────────────────────
+                const safeUrl  = (l.url || '').slice(0, 120);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7.5);
+                doc.setTextColor(80, 100, 200);
+                const urlLines = doc.splitTextToSize(safeUrl, 166);
+                y = checkY(y, urlLines.length * 3.8 + 2);
+                doc.text(urlLines, 18, y + 2.5);
+                y += urlLines.length * 3.8 + 1.5;
+
+                // ── Description ──────────────────────────────────────────────
+                if(l.desc && l.desc.trim()){
+                    const dH = estimateH(l.desc.trim(), {fontSize:8, maxW:168});
+                    y = checkY(y, Math.min(dH, 8));
+                    y = addTextBlock(l.desc.trim(), 18, y, {fontSize:8, color:[80,80,80], maxW:168});
+                    y += 0.5;
                 }
-                // URL
-                if(y>272){doc.addPage();y=14;}
-                const safeUrl=(l.url||'').slice(0,100);
-                doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(100,100,180);
-                const urlLines=doc.splitTextToSize(safeUrl,162);
-                doc.text(urlLines,18,y);
-                y+=urlLines.length*3.8+1;
-                // Description
-                if(l.desc&&l.desc.trim()){
-                    if(y>268){doc.addPage();y=14;}
-                    const descText = l.desc.trim();
-                    addTextLine(descText, 18, y, {fontSize:8, color:[90,90,90], maxW:168});
-                    y+=4.5;
+
+                // ── Arabic description ───────────────────────────────────────
+                if(l.descAr && l.descAr.trim() && l.descAr !== l.desc){
+                    const dH = estimateH(l.descAr.trim(), {fontSize:8, maxW:168});
+                    y = checkY(y, Math.min(dH, 8));
+                    y = addTextBlock(l.descAr.trim(), 18, y, {fontSize:8, color:[80,100,80], maxW:168});
+                    y += 0.5;
                 }
-                // Arabic description
-                if(l.descAr && l.descAr.trim() && l.descAr!==l.desc){
-                    if(y>268){doc.addPage();y=14;}
-                    addTextLine(l.descAr.trim(), 18, y, {fontSize:8, color:[90,110,90], maxW:168});
-                    y+=4.5;
+
+                // ── Tags ─────────────────────────────────────────────────────
+                if(l.tags && l.tags.length){
+                    y = checkY(y, 6);
+                    y = addTextBlock('🏷 ' + l.tags.join(', '), 18, y,
+                        {fontSize:7.5, color:[140,70,200], maxW:168});
                 }
-                // Tags
-                if(l.tags&&l.tags.length){
-                    if(y>272){doc.addPage();y=14;}
-                    doc.setFontSize(7); doc.setTextColor(150,80,200);
-                    const safeTags=l.tags.join(', ');
-                    addTextLine('🏷 '+safeTags, 18, y, {fontSize:7, color:[150,80,200], maxW:168});
-                    y+=4.5;
-                }
-                y+=2;
+
+                y += 2.5; // gap between bookmarks
             });
-            y+=4;
+
+            y += 4; // gap between folders
         });
-        // Page numbers
-        const pageCount=doc.internal.getNumberOfPages();
-        for(let i=1;i<=pageCount;i++){
-            doc.setPage(i); doc.setFontSize(8); doc.setTextColor(150,150,150);
-            doc.text('WebMark  |  Page '+i+' / '+pageCount,14,290);
+
+        // ── Page numbers ─────────────────────────────────────────────────────
+        const pageCount = doc.internal.getNumberOfPages();
+        for(let i = 1; i <= pageCount; i++){
+            doc.setPage(i);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(160, 160, 160);
+            doc.text('WebMark  |  Page ' + i + ' / ' + pageCount, 14, 291);
         }
         doc.save('WebMark_Bookmarks.pdf');
     }
