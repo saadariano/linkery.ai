@@ -1305,10 +1305,36 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 /* Responsive corrections without changing the existing design. */
 :root{--wm-top:74px;--wm-bottom:62px;--wm-height:100dvh}
 html,body{height:100%;height:100dvh;overscroll-behavior-y:none}button,input,textarea,select{font-family:inherit}button:focus-visible,[onclick]:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--primary);outline-offset:3px}.link-card,.linfo{min-width:0}.modal{height:var(--wm-height);max-height:var(--wm-height);overscroll-behavior:contain}.modal .mc{min-height:0;max-height:calc(var(--wm-height) - 70px);overflow-y:auto!important;overscroll-behavior:contain}.modal input,.modal textarea{flex-shrink:0}input[type=password]{font:inherit;min-height:44px}.wm-install{flex-shrink:0}.wm-install i{font-size:15px}[dir=rtl] input[type=url]{direction:ltr!important;text-align:left!important}
-@media(min-width:768px){#mainWrap{top:var(--wm-top)!important}.view-imagetitle #linkList,.view-headlines #linkList,.view-list #linkList,.view-cards #linkList{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))!important}.desktop-nav{flex-wrap:wrap;min-height:60px;height:auto!important;gap:8px;padding-top:10px;padding-bottom:10px}.desktop-logo{margin-right:14px!important;margin-left:14px!important}.desktop-nav-right{gap:6px!important;flex-wrap:wrap}.desktop-nav-btns-wrap{flex-wrap:wrap}.mc{margin-top:0}.link-card{height:100%}}
-@media(min-width:768px) and (max-width:1023px){.desktop-nav{padding-inline:12px!important}.desktop-nav-btns-wrap .dnl{padding:8px!important}.desktop-nav-right{margin-left:auto!important;margin-right:0!important}}
+@media(min-width:768px){#mainWrap{top:var(--wm-top)!important}.view-imagetitle #linkList,.view-headlines #linkList,.view-list #linkList,.view-cards #linkList{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))!important}.desktop-nav{flex-wrap:nowrap;min-height:60px;height:auto!important;gap:8px;padding-top:10px;padding-bottom:10px}.desktop-logo{margin-right:14px!important;margin-left:14px!important}.desktop-nav-right{gap:6px!important;flex-wrap:nowrap;flex-shrink:0}.desktop-nav-btns-wrap{display:flex;min-width:0;flex-wrap:nowrap}.mc{margin-top:0}.link-card{height:100%}}
+@media (min-width:768px) {
+    .desktop-logo, .desktop-nav-right > * { flex-shrink:0; }
+    .desktop-nav-btns-wrap .dnl { min-width:0; }
+    .desktop-nav-btns-wrap .dnl > span:first-of-type { overflow:hidden; text-overflow:ellipsis; }
+    .desktop-nav-btns-wrap .dnl > i { flex-shrink:0; }
+    .desktop-nav-right .add-link-btn { white-space:nowrap; }
+}
+@media (min-width:768px) and (max-width:1259px) {
+    .desktop-nav { padding-inline:12px; gap:4px; }
+    .desktop-logo { margin-inline:4px!important; }
+    .desktop-nav-btns-wrap .dnl { padding-inline:8px; }
+    .desktop-nav-right .add-link-btn { padding-inline:12px; }
+}
+@media (min-width:768px) and (max-width:1023px) {
+    .desktop-nav-btns-wrap .dnl { justify-content:center; min-width:38px; }
+    .desktop-nav-btns-wrap .dnl > span:first-of-type,
+    .desktop-nav-right .add-link-btn > span,
+    .desktop-logo .app-name-protected {
+        position:absolute;
+        width:1px;
+        height:1px;
+        overflow:hidden;
+        clip-path:inset(50%);
+        white-space:nowrap;
+    }
+    .desktop-nav-right .add-link-btn { justify-content:center; min-width:40px; }
+}
 @media(max-width:767px){#mainWrap{top:var(--wm-top)!important;bottom:var(--wm-bottom)!important}.inline-page{top:var(--wm-top)!important;bottom:var(--wm-bottom)!important}.modal{padding-top:0!important}.modal .mc{height:var(--wm-height)!important;max-height:var(--wm-height)!important;padding-top:max(18px,env(safe-area-inset-top))!important;padding-bottom:calc(28px + env(safe-area-inset-bottom))!important;flex-shrink:0}.modal .mc>*{flex-shrink:0}.bnav{padding-bottom:max(10px,env(safe-area-inset-bottom))}.fab{bottom:calc(var(--wm-bottom)/2 - 23px + env(safe-area-inset-bottom)/2)}.header-right{gap:5px}.header .hbtn{width:36px;height:36px}.header{padding-inline:12px}.search-row{flex-wrap:wrap}.sw{min-width:110px}.nitem{padding:3px 8px}.nitem span{font-size:10px}input[type=password],input[type=text],input[type=url],textarea,select{font-size:16px!important}.inline-page-body{min-height:0;overflow:auto}.signup-box,#signup-step1,#signup-step2{max-width:100%}}
-/* Wide screens can wrap the fixed toolbar onto several rows. */
+/* Position dialogs below the desktop toolbar. */
 @media(min-width:768px) {
     .modal {
         --dialog-gap: 12px;
@@ -1499,11 +1525,10 @@ function jsArg(s){return esc(JSON.stringify(String(s??'')).replace(/</g,'\\u003c
         <button class="dnl active" id="dnl-home" onclick="deskNav('all','dnl-home')"><i class="fa-solid fa-house"></i> <span>Home</span></button>
         <button class="dnl" id="dnl-fav" onclick="deskNav('fav','dnl-fav')" style="color:#ef4444;position:relative;"><i class="fa-regular fa-heart"></i> <span>Favorite</span><span id="dnl-fav-cnt" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></button>
         <button class="dnl" id="dnl-arc" onclick="deskNav('archive','dnl-arc')" style="color:#3b82f6;position:relative;"><i class="fa-regular fa-file"></i> <span>Archive</span><span id="dnl-arc-cnt" style="display:none;position:absolute;top:4px;right:4px;background:#3b82f6;color:#fff;border-radius:8px;padding:1px 5px;font-size:9px;font-weight:800;min-width:16px;text-align:center;line-height:14px;"></span></button>
-        <button type="button" class="dnl" id="dnl-vip" onclick="deskNav('vip','dnl-vip')"><i class="fa-solid fa-star" aria-hidden="true"></i> <span>Top10</span><span class="vip-count" id="dnl-vip-cnt"></span></button>
+        <button type="button" class="dnl" id="dnl-vip" title="Top10" onclick="deskNav('vip','dnl-vip')"><i class="fa-solid fa-star" aria-hidden="true"></i> <span>Top10</span><span class="vip-count" id="dnl-vip-cnt"></span></button>
         <button class="dnl" id="dnl-fold" onclick="openManageFolders()" style="color:#ca8a04;"><i class="fa-solid fa-folder-open"></i> <span>Folders &amp; Tags</span></button>
     </div>
     <div class="desktop-nav-right">
-        <button class="lang-btn" id="langBtnDesktop" onclick="openLangModal()" style="font-size:22px;padding:4px 10px;letter-spacing:0;min-width:44px;"><span id="langLabel"></span> <i class="fa-solid fa-chevron-down" style="font-size:10px;vertical-align:middle;margin-left:2px;"></i></button>
         <button class="theme-toggle dark-mode-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
             <span class="theme-toggle-sun" id="toggleSunIcon"><i class="fa-solid fa-sun"></i></span>
             <span class="theme-toggle-moon" id="toggleMoonIcon"><i class="fa-solid fa-moon"></i></span>
@@ -1514,7 +1539,7 @@ function jsArg(s){return esc(JSON.stringify(String(s??'')).replace(/</g,'\\u003c
         <button type="button" onclick="openShareOptions()" class="lang-btn wm-header-action wm-share" title="Share and export" aria-label="Share and export"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i></button>
         <button onclick="openSettings()" class="lang-btn" title="Settings"><i class="fa-solid fa-gear"></i></button>
         <button type="button" onclick="openContact()" class="lang-btn wm-header-action wm-email" title="Contact" aria-label="Contact"><i class="fa-regular fa-envelope" aria-hidden="true"></i></button>
-        <button class="add-link-btn" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> <span>Add Link</span></button>
+        <button class="add-link-btn" title="Add Link" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> <span>Add Link</span></button>
     </div>
 </nav>
 <div id="mainWrap">
@@ -2211,18 +2236,16 @@ function applyTranslations(){
     // Search placeholder
     const srch=document.getElementById('search'); if(srch) srch.placeholder=T('search');
     // Add link btn
-    const alb=document.querySelector('.add-link-btn span'); if(alb) alb.textContent=T('addLink');
-    // Lang label
-    const lb=document.getElementById('langLabel'); if(lb) lb.innerHTML=getFlagImg(S.lang);
+    const alb=document.querySelector('.add-link-btn span'); if(alb) { alb.textContent=T('addLink'); alb.parentElement.title=alb.textContent; }
     // Bottom nav
     const navHome=document.querySelector('#nav-home span'); if(navHome) navHome.textContent=T('home');
     const navFav=document.querySelector('#nav-fav span'); if(navFav) navFav.textContent=T('fav');
     const navArc=document.querySelector('#nav-arc span'); if(navArc) navArc.textContent=T('archive');
     // Desktop nav buttons
-    const dnlHome=document.getElementById('dnl-home'); if(dnlHome) dnlHome.innerHTML=`<i class="fa-solid fa-house"></i> ${T('home')}`;
-    const dnlFav=document.getElementById('dnl-fav'); if(dnlFav) dnlFav.innerHTML=`<i class="fa-regular fa-heart"></i> ${T('fav')}`;
-    const dnlArc=document.getElementById('dnl-arc'); if(dnlArc) dnlArc.innerHTML=`<i class="fa-regular fa-file"></i> ${T('archive')}`;
-    const dnlFold=document.getElementById('dnl-fold'); if(dnlFold) dnlFold.innerHTML=`<i class="fa-solid fa-folder-open"></i> ${T('folders')}`;
+    const dnlHome=document.getElementById('dnl-home'); if(dnlHome) { const label=T('home'); dnlHome.querySelector('span').textContent=label; dnlHome.title=label; }
+    const dnlFav=document.getElementById('dnl-fav'); if(dnlFav) { const label=T('fav'); dnlFav.querySelector('span').textContent=label; dnlFav.title=label; }
+    const dnlArc=document.getElementById('dnl-arc'); if(dnlArc) { const label=T('archive'); dnlArc.querySelector('span').textContent=label; dnlArc.title=label; }
+    const dnlFold=document.getElementById('dnl-fold'); if(dnlFold) { const label=T('folders'); dnlFold.querySelector('span').textContent=label; dnlFold.title=label; }
     // Direction
     document.body.setAttribute('dir', S.lang==='ar'?'rtl':'ltr');
     document.documentElement.setAttribute('lang', S.lang);
@@ -2390,9 +2413,6 @@ function init() {
     // Update search placeholder
     const srch=document.getElementById('search');
     if(srch) srch.placeholder=T('search');
-    // Update lang button label
-    const lb=document.getElementById('langLabel');
-    if(lb) lb.innerHTML=getFlagImg(S.lang);
     // Schedule any saved reminders
     initReminders();
     // One-time cleanup: strip tags from imported bookmarks
@@ -5063,9 +5083,6 @@ function setLang(l){
     });
     applyTranslations();
     renderTabs(); renderLinks();
-    // Update lang button with flag image
-    const lb=document.getElementById('langLabel');
-    if(lb) lb.innerHTML=getFlagImg(l);
     // Update settings display
     const slc=document.getElementById('settLangCurrent');
     if(slc) slc.innerHTML=`${getFlagImg(l)} ${LANG_LABELS[l]||l}`;
@@ -5073,8 +5090,6 @@ function setLang(l){
 }
 // Apply saved lang on load
 (function(){
-    const lb=document.getElementById('langLabel');
-    if(lb) lb.innerHTML=getFlagImg(S.lang);
     if(S.lang!=='en') document.body.setAttribute('dir',S.lang==='ar'?'rtl':'ltr');
 })();
 
@@ -7146,7 +7161,6 @@ function applyTwemoji(){
     if(typeof twemoji==='undefined') return;
     // Only parse flag-containing elements to keep it fast
     const targets = [
-        document.getElementById('langLabel'),
         document.getElementById('settLangCurrent'),
         ...document.querySelectorAll('#langList .frow-icon, .lang-modal-flag')
     ].filter(Boolean);
