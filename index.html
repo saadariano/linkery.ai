@@ -1375,9 +1375,79 @@ body.light-mode #nav-arc > i, body.light-mode #dnl-arc > i { color:#2563eb; }
 
 /* WebMark compatibility layer: local-only data, validated imports, portable actions. */
 const wmStorage = (() => {
- const memory = new Map(); let usable = true;
- try {localStorage.setItem('__wm_probe','1');localStorage.removeItem('__wm_probe')} catch {usable=false}
- return {getItem(k){try{return usable?localStorage.getItem(k):(memory.get(k)??null)}catch{return memory.get(k)??null}},setItem(k,v){if(usable){try{localStorage.setItem(k,String(v));return}catch(e){alert('لم يتم حفظ التغييرات: مساحة التخزين ممتلئة أو غير متاحة. صدّر نسخة JSON قبل إغلاق التطبيق.\nChanges were not saved. Export a JSON backup before closing.');throw e}}memory.set(k,String(v))},removeItem(k){if(usable)localStorage.removeItem(k);else memory.delete(k)},get persistent(){return usable}};
+ const managed = new Set(['ly_state_v4','ly_f','ly_l','ly_trash','wm_before_google_login','wm_cloud_records_v1','wm_google_session_v1']);
+ const values = new Map();
+ const writes = new Map();
+ const backupMessage = 'Changes were not saved. Export a JSON backup before closing.';
+ let db = null;
+ let usable = true;
+ try{localStorage.getItem('ly_state_v4')}catch{usable=false}
+ function legacy(key){try{return localStorage.getItem(key)}catch{return null}}
+ function transaction(database, action) {
+  return new Promise((resolve,reject)=>{
+   const tx=database.transaction('values','readwrite');
+   tx.oncomplete=()=>resolve();
+   tx.onabort=()=>reject(tx.error||new Error(backupMessage));
+   action(tx.objectStore('values'));
+  });
+ }
+ const ready = (async()=>{
+  let database;
+  try {
+   database = await new Promise((resolve,reject)=>{
+    const request=indexedDB.open('webmark-storage',1);
+    request.onupgradeneeded=()=>request.result.createObjectStore('values');
+    request.onsuccess=()=>resolve(request.result);
+    request.onerror=()=>reject(request.error);
+    request.onblocked=()=>reject(new Error('Close other WebMark tabs and reload.'));
+   });
+   const migrated = new Map();
+   await transaction(database, store=>{
+    for(const key of managed){
+     const request=store.get(key);
+     request.onsuccess=()=>{
+      const old=legacy(key);
+      if(request.result!==undefined){values.set(key,request.result);return}
+      values.set(key,old);
+      if(old!==null){store.put(old,key);migrated.set(key,old)}
+     };
+    }
+   });
+   db=database;
+   for(const [key,old] of migrated){
+    try{if(localStorage.getItem(key)===old)localStorage.removeItem(key)}catch{}
+   }
+  } catch(error){
+   database?.close();
+   console.error('WebMark storage initialization failed',error);
+  }
+ })();
+ function write(key,value){
+  values.set(key,value);
+  const result=transaction(db,store=>store.put(value,key));
+  writes.set(key,result);
+  result.then(()=>{if(writes.get(key)===result)writes.delete(key)},()=>{
+   if(writes.get(key)===result)window.showToast?.(backupMessage,'#ef4444');
+  });
+ }
+ return {
+  ready,
+  get durable(){return !!db},
+  get persistent(){return !!db||usable},
+  flush(){return Promise.all(writes.values())},
+  getItem(key){return db&&managed.has(key)?values.get(key)??null:legacy(key)??values.get(key)??null},
+  setItem(key,value){
+   value=String(value);
+   if(db&&managed.has(key)){write(key,value);return}
+   if(usable){try{localStorage.setItem(key,value);return}catch(error){alert(backupMessage);throw error}}
+   values.set(key,value);
+  },
+  removeItem(key){
+   if(db&&managed.has(key)){if(values.get(key)!=null)write(key,null);return}
+   if(usable)localStorage.removeItem(key);
+   values.delete(key);
+  }
+ };
 })();
 function wmJSON(key,fallback){try{let x=JSON.parse(wmStorage.getItem(key));if(x===null)return fallback;if(Array.isArray(fallback))return Array.isArray(x)?x:fallback;return typeof x==='object'&&!Array.isArray(x)?x:fallback}catch{return fallback}}
 function wmEncode(s){try{return btoa(s)}catch{return 'u8:'+btoa(String.fromCharCode(...new TextEncoder().encode(s)))}}
@@ -1399,7 +1469,7 @@ function wmNormalize(data){
  return {f:outF,l:links.map(clean).filter(Boolean),trash:(Array.isArray(data.trash)?data.trash:[]).map(clean).filter(Boolean)};
 }
 function wmInitial(){let snap=wmJSON('ly_state_v4',{});let raw=Array.isArray(snap.l)&&Array.isArray(snap.f)?snap:{f:wmJSON('ly_f',[]),l:wmJSON('ly_l',[]),trash:wmJSON('ly_trash',[])};return wmNormalize(raw)}
-const wmInitialData=wmInitial();
+const wmInitialData={f:[],l:[],trash:[]};
 async function wmCopy(text){text=String(text);try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return}}catch{}const area=document.createElement('textarea');area.value=text;area.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.append(area);area.select();try{if(document.execCommand('copy'))return}finally{area.remove()}throw Error('clipboard unavailable')}
 function wmDownload(name,data,type='application/json'){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000)}
 function jsArg(s){return esc(JSON.stringify(String(s??'')).replace(/</g,'\\u003c').replace(/'/g,'\\u0027'))}
@@ -1407,7 +1477,7 @@ function jsArg(s){return esc(JSON.stringify(String(s??'')).replace(/</g,'\\u003c
 
 </script>
 </head>
-<body>
+<body inert aria-busy="true">
 
 
 <!-- FOCUS MODE BAR -->
@@ -6592,7 +6662,8 @@ openLink = function(url) {
 };
 
 // ── INIT new features ──
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
+    await wmStartup;
     // Update Delete Password label
     updateDelPassLabel();
     // Update source button state on load
@@ -7061,7 +7132,14 @@ document.addEventListener('DOMContentLoaded',wmReady);
 applyFontSettings();
 
 
-init();
+const wmStartup=wmStorage.ready.then(()=>{
+ const saved=wmInitial();
+ S.folders=saved.f;S.links=saved.l;S.trash=saved.trash;
+ try{init()}finally{
+  document.body.inert=false;
+  document.body.removeAttribute('aria-busy');
+ }
+});
 
 // ── TWEMOJI: Render flag emojis as images on all browsers (fixes Chrome on Windows/Android/iOS) ──
 function applyTwemoji(){
@@ -8077,22 +8155,22 @@ window.WebMarkLocale={language,text,status};
 (function(){'use strict';
 const C=WebMarkSyncCore,AUTH_KEY='wm_google_session_v1',META_KEY='wm_cloud_records_v1';let adapter=null,config=null,session=null,records={},device='',busy=false,again=false,timer=null,applying=false,pending=null,status='Local only',listeners=new Set();
 const enc=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');const dec=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
-const read=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}};
+const read=(k,f)=>{try{return JSON.parse(wmStorage.getItem(k))??f}catch{return f}};
 function emit(text){status=text;for(const fn of listeners)fn(info())}
 function info(){return {configured:!!config?.enabled,user:session?{uid:session.uid,email:session.email,name:session.name||'',photoURL:session.photoURL||''}:null,status,busy,ready:!!adapter}}
 async function request(url,options={}){const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(url,{...options,signal:controller.signal});const d=await r.json().catch(()=>({}));if(!r.ok){const e=Error(d.error?.message||'Cloud request failed');e.status=r.status;throw e}return d}finally{clearTimeout(timeout)}}
-async function token(){if(!session)throw Error('Sign in first');if(session.expiresAt>Date.now()+90000)return session.idToken;const d=await request('https://securetoken.googleapis.com/v1/token?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',refresh_token:session.refreshToken})});session={...session,idToken:d.id_token,refreshToken:d.refresh_token,uid:d.user_id,expiresAt:Date.now()+Number(d.expires_in)*1000};localStorage.setItem(AUTH_KEY,JSON.stringify(session));return session.idToken}
+async function token(){if(!session)throw Error('Sign in first');if(session.expiresAt>Date.now()+90000)return session.idToken;const d=await request('https://securetoken.googleapis.com/v1/token?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',refresh_token:session.refreshToken})});session={...session,idToken:d.id_token,refreshToken:d.refresh_token,uid:d.user_id,expiresAt:Date.now()+Number(d.expires_in)*1000};wmStorage.setItem(AUTH_KEY,JSON.stringify(session));return session.idToken}
 function base(){return 'https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(config.projectId)+'/databases/(default)/documents'}
 async function headers(){return {'Authorization':'Bearer '+await token(),'Content-Type':'application/json'}}
-function persist(){localStorage.setItem(META_KEY,JSON.stringify({owner:session?.uid||null,device,records}))}
+function persist(){wmStorage.setItem(META_KEY,JSON.stringify({owner:session?.uid||null,device,records}))}
 function changed(){if(!adapter||applying||!session)return;records=C.pack(adapter.snapshot(),records,device);adapter.persistKeys();persist();if(session){emit(navigator.onLine?'Changes waiting to sync':'Offline · changes saved on this device');clearTimeout(timer);timer=setTimeout(()=>sync(),1000)}}
 async function remote(){const map={},versions={};let page='';do{const u=base()+'/users/'+encodeURIComponent(session.uid)+'/records?pageSize=200'+(page?'&pageToken='+encodeURIComponent(page):'');const result=await request(u,{headers:await headers()});for(const doc of result.documents||[]){try{const r=JSON.parse(doc.fields.value.stringValue);if(C.valid(r,r.key)){map[r.key]=r;versions[r.key]=doc.updateTime}}catch{}}page=result.nextPageToken||''}while(page);return {map,versions}}
 async function sync(){
- if(!session||!config?.enabled)return;if(busy){again=true;return}if(!navigator.onLine){emit('Offline · changes saved on this device');return}busy=true;emit('Syncing…');const account=session.uid;
+ if(!session||!config?.enabled||!wmStorage.durable)return;if(busy){again=true;return}if(!navigator.onLine){emit('Offline · changes saved on this device');return}busy=true;emit('Syncing…');const account=session.uid;
  try{
   for(let retry=0;retry<4;retry++){
    const cloud=await remote();if(session?.uid!==account)return;
-   records=C.merge(cloud.map,records);persist();
+   records=C.merge(cloud.map,records);persist();await wmStorage.flush();
    const writes=Object.values(records).filter(r=>!cloud.map[r.key]||C.compare(r,cloud.map[r.key])>0).map(r=>{
     const value=JSON.stringify(r);if(new TextEncoder().encode(value).length>700000)throw Error('A bookmark is too large to sync. Use a smaller uploaded image.');
     return {update:{name:'projects/'+config.projectId+'/databases/(default)/documents/users/'+account+'/records/'+r.key,fields:{value:{stringValue:value}}},currentDocument:cloud.versions[r.key]?{updateTime:cloud.versions[r.key]}:{exists:false}};
@@ -8100,18 +8178,20 @@ async function sync(){
    for(let i=0;i<writes.length;i+=25){if(session?.uid!==account)return;try{await request(base()+':commit',{method:'POST',headers:await headers(),body:JSON.stringify({writes:writes.slice(i,i+25)})})}catch(e){if([409,412,400].includes(e.status)&&/ABORTED|FAILED_PRECONDITION|ALREADY_EXISTS|precondition|exists/i.test(e.message)){conflict=true;break}throw e}}
    if(conflict){if(retry===3)throw Error('Sync conflict. Your changes are safe; try Sync now again.');continue}
    if(session?.uid!==account)return;applying=true;try{adapter.apply(C.unpack(records,adapter.snapshot()));adapter.persistKeys();persist()}finally{applying=false}
+   await wmStorage.flush();
    emit('Synced · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));break;
   }
- }catch(e){if(e.status===401||e.status===403)emit('Sync needs attention: sign in again or check project permissions');else emit('Saved locally · '+(e.name==='AbortError'?'connection timed out':e.message))}finally{busy=false;if(again){again=false;setTimeout(sync,800)}else for(const fn of listeners)fn(info())}
+ }catch(e){if(e.status===401||e.status===403)emit('Sync needs attention: sign in again or check project permissions');else emit('Sync could not finish · '+(e.name==='AbortError'?'connection timed out':e.message))}finally{busy=false;if(again){again=false;setTimeout(sync,800)}else for(const fn of listeners)fn(info())}
 }
 async function loadConfig() {
  const settings = {"enabled": true, "apiKey": "AIzaSyDfB6g70u-gbrDi4YaYGlopPCtuoCvyTr8", "projectId": "webmark-529a9", "authDomain": "webmark-529a9.firebaseapp.com", "authPageUrl": "https://webmark-529a9.firebaseapp.com/webmark-auth.html"};
  const url = new URL(settings.authPageUrl);
  config = url.protocol === 'https:' && url.hostname === settings.authDomain ? settings : {enabled:false};
 }
-function language(){try{return ['en','ar','it','fr','es'].includes(localStorage.getItem('ly_lang'))?localStorage.getItem('ly_lang'):['en','ar','it','fr','es'].includes(document.documentElement.lang)?document.documentElement.lang:'en'}catch{return 'en'}}
+function language(){try{return ['en','ar','it','fr','es'].includes(wmStorage.getItem('ly_lang'))?wmStorage.getItem('ly_lang'):['en','ar','it','fr','es'].includes(document.documentElement.lang)?document.documentElement.lang:'en'}catch{return 'en'}}
 let openingLogin = false;
 async function signIn() {
+ if (!wmStorage.durable) { emit('Browser storage is unavailable. Open WebMark in a regular browser tab and try again.'); return; }
  if (!config?.enabled) { emit('Google sign-in is not activated yet.'); return; }
  if (session) { await sync(); return; }
  if (pending || openingLogin) return;
@@ -8152,23 +8232,24 @@ async function pollLogin(){const current=pending;if(!current||current.inFlight)r
  const auth=await request('https://securetoken.googleapis.com/v1/token?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',refresh_token:result.refreshToken})});if(pending!==current)return;
  const lookup=await request('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:auth.id_token})});const user=lookup.users?.[0];if(!user||user.localId!==auth.user_id||!user.providerUserInfo?.some(p=>p.providerId==='google.com'))throw Error('Google account could not be verified');
  if(!await acceptAccount(auth,user,current))return;
- persist();pending=null;try{await request(base()+'/authHandoffs/'+current.id,{method:'DELETE',headers:await headers()})}catch{}await sync();return;
+ pending=null;try{await request(base()+'/authHandoffs/'+current.id,{method:'DELETE',headers:await headers()})}catch{}await sync();return;
  }catch(e){if(e.status!==404&&e.status!==403&&e.name!=='AbortError'&&e.message!=='Missing or insufficient permissions.'){pending=null;emit('Sign-in could not finish: '+e.message);return}}
  current.inFlight=false;if(pending===current)setTimeout(pollLogin,1500);
 }
 async function acceptAccount(auth,user,current){
  const importLocal=await adapter.confirmUpload(user.email||'this Google account');if(pending!==current)return false;if(importLocal===null){pending=null;emit('Sign-in cancelled · your bookmarks are unchanged');return false;}
  // Keep a recoverable backup before changing the active account's local view.
- localStorage.setItem('wm_before_google_login',JSON.stringify(adapter.snapshot()));
- session={uid:auth.user_id,email:user.email||'',name:user.displayName||'',photoURL:profilePhoto(user.photoUrl),idToken:auth.id_token,refreshToken:auth.refresh_token,expiresAt:Date.now()+Number(auth.expires_in)*1000};localStorage.setItem(AUTH_KEY,JSON.stringify(session));
+ wmStorage.setItem('wm_before_google_login',JSON.stringify(adapter.snapshot()));
+ await wmStorage.flush();if(pending!==current)return false;
+ session={uid:auth.user_id,email:user.email||'',name:user.displayName||'',photoURL:profilePhoto(user.photoUrl),idToken:auth.id_token,refreshToken:auth.refresh_token,expiresAt:Date.now()+Number(auth.expires_in)*1000};wmStorage.setItem(AUTH_KEY,JSON.stringify(session));
  const oldMeta=read(META_KEY,{});records=oldMeta.owner===session.uid?oldMeta.records||{}:{};
  if(importLocal)records=C.pack(adapter.snapshot(),records,device);else{applying=true;try{adapter.apply({f:[],l:[]})}finally{applying=false}}
-  persist();pending=null;return true;
+  persist();await wmStorage.flush();return true;
 }
-function signOut(){pending=null;session=null;localStorage.removeItem(AUTH_KEY);emit('Signed out · bookmarks remain on this device')}
+function signOut(){pending=null;session=null;wmStorage.removeItem(AUTH_KEY);emit('Signed out · bookmarks remain on this device')}
 function profilePhoto(value){try{const url=new URL(value);return url.protocol==='https:'&&(/(^|\.)googleusercontent\.com$/i.test(url.hostname))?url.href:''}catch{return ''}}
-async function refreshProfile(){const account=session?.uid;if(!account)return;try{const result=await request('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:await token()})});const user=result.users?.[0];if(session?.uid!==account||user?.localId!==account)return;session={...session,name:user.displayName||'',photoURL:profilePhoto(user.photoUrl)};localStorage.setItem(AUTH_KEY,JSON.stringify(session));emit(status)}catch{}}
-async function attach(a){adapter=a;const meta=read(META_KEY,{});device=meta.device||C.uid();records=meta.records||{};session=read(AUTH_KEY,null);if(session&&meta.owner!==session.uid){session=null;localStorage.removeItem(AUTH_KEY);records={}}await loadConfig();if(session&&config?.enabled){sync();refreshProfile()}else emit('Local only · Google sign-in '+(config?.enabled?'available':'not activated'));window.addEventListener('online',sync);document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(pending)pollLogin();else sync()}});setInterval(()=>{if(!document.hidden&&session)sync()},30000)}
+async function refreshProfile(){const account=session?.uid;if(!account)return;try{const result=await request('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:await token()})});const user=result.users?.[0];if(session?.uid!==account||user?.localId!==account)return;session={...session,name:user.displayName||'',photoURL:profilePhoto(user.photoUrl)};wmStorage.setItem(AUTH_KEY,JSON.stringify(session));emit(status)}catch{}}
+async function attach(a){adapter=a;const meta=read(META_KEY,{});device=meta.device||C.uid();records=meta.records||{};session=read(AUTH_KEY,null);if(session&&meta.owner!==session.uid){session=null;wmStorage.removeItem(AUTH_KEY);records={}}await loadConfig();if(session&&config?.enabled){sync();refreshProfile()}else emit('Local only · Google sign-in '+(config?.enabled?'available':'not activated'));window.addEventListener('online',sync);document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(pending)pollLogin();else sync()}});setInterval(()=>{if(!document.hidden&&session)sync()},30000)}
 window.WebMarkCloud={attach,changed,signIn,signOut,sync,info,subscribe(fn){listeners.add(fn);fn(info());return()=>listeners.delete(fn)}};
 })();
 </script><script>
@@ -8219,6 +8300,7 @@ new MutationObserver(()=>{const el=document.getElementById('wm-cloud-dialog');if
 (function(){'use strict';
 let remote=false;const localSave=window.save;window.save=function(){localSave();if(!remote)try{WebMarkCloud.changed()}catch(error){showToast(error.message)}};
 async function attach(){
+ await wmStartup;
  document.querySelectorAll('.header-right,.desktop-nav-right').forEach(el=>{const button=document.createElement('button');button.className='hbtn wm-google-account';button.type='button';button.title='Google account & sync';button.setAttribute('aria-label','Google account and bookmark sync');button.textContent='G';button.style.fontWeight='800';button.onclick=()=>WebMarkCloudUI.open();el.prepend(button)});
  // The existing account/sync action now opens the configured Google option.
  window.openSyncModal=()=>WebMarkCloudUI.open();
