@@ -4395,6 +4395,7 @@ function renderSourceBrowsers(){
     menu.replaceChildren();
     for (const option of sourceOptions()) {
         const count = counts.get(option.key) || 0;
+        if(option.key.startsWith('browser-')&&count===0)continue;
         const button = document.createElement('button');
         button.type='button';
         button.className='vopt wm-source-option';

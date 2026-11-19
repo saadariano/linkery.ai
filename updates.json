@@ -1,7 +1,7 @@
 {
-  "versionCode": 25,
-  "versionName": "1.19.0",
+  "versionCode": 26,
+  "versionName": "1.20.0",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
-  "notes": "Improved public page titles, descriptions, icons and tags. Android Back navigation. Automatic password category folders and suggestions. Face unlock availability explained. Google sync remains manual.",
+  "notes": "Browser source list now shows only browsers with saved, non-archived bookmarks. New browsers appear after importing bookmarks from them.",
   "publishedAt": "2026-11-19"
 }
