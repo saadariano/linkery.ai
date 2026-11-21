@@ -1,7 +1,8 @@
 {
-  "versionCode": 26,
-  "versionName": "1.20.0",
+  "versionCode": 34,
+  "versionName": "1.27.0",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
-  "notes": "Browser source list now shows only browsers with saved, non-archived bookmarks. New browsers appear after importing bookmarks from them.",
-  "publishedAt": "2026-11-19"
+  "releasedAt": "2026-11-21",
+  "notes": "Restored Notes from 1.25.1, added Google quota countdowns, and improved password organization.",
+  "sha256": "0613e4730bceb7e6753f93e9b5bbfe6825cb1e86a5ed453e7e133408da7b22eb"
 }

@@ -1632,6 +1632,76 @@ function jsArg(s){return esc(JSON.stringify(String(s??'')).replace(/</g,'\\u003c
 .wm-note-card-preview{margin-top:5px;color:var(--text-dim);font-size:13px}
 
 </style>
+<style>
+#wm-notes-app{--primary:#526fff;--note-icon:#526fff;background:var(--bg)}
+#wm-notes-app .wm-notes-header{background:var(--bg);border:0;padding-block:18px}
+#wm-notes-app .wm-notes-primary{background:#526fff;color:#fff;border:0;border-radius:24px;padding:10px 18px}
+#wm-notes-app .wm-notes-icon{border:0;border-radius:50%;box-shadow:0 8px 25px #19264c0c}
+.wm-notes-sidebar{background:color-mix(in srgb,#7080b8 6%,var(--bg));border:0;padding:20px 14px}
+#wm-note-views button,#wm-note-folders button{border:0;background:transparent;border-radius:15px;padding:12px}
+#wm-note-views button[aria-pressed=true],#wm-note-folders button[aria-pressed=true]{background:color-mix(in srgb,#526fff 13%,var(--bg))}
+.wm-studio-hero{padding:22px 0 28px}.wm-studio-hero>i{color:#526fff;font-size:43px;margin:0 0 16px}.wm-studio-hero h2{font-size:clamp(25px,4vw,42px);font-weight:850;letter-spacing:-1.4px}.wm-studio-hero p{color:var(--text-dim)}
+#wm-note-list{gap:20px}.wm-note-card{border:1px solid color-mix(in srgb,var(--border) 50%,transparent);border-radius:22px;box-shadow:0 8px 28px #17214508;padding:18px;min-height:150px}
+#wm-note-editor{position:fixed;inset:0;width:100%;height:100%;max-height:none;max-width:none;margin:0;border:0;border-radius:0;background:var(--bg)}
+#wm-note-editor .wm-notes-header{position:sticky;top:0;z-index:3;border:0;background:var(--bg);padding:14px 20px}
+#wm-note-editor .wm-notes-header h2{font-size:14px;color:var(--text-dim)}
+#wm-note-editor .wm-notes-header button{border-radius:24px;padding:9px 15px}
+#wm-note-editor .wm-notes-fields{padding:clamp(16px,4vw,52px);max-width:1100px;margin:auto;gap:12px}
+#wm-note-editor label[for=wm-note-title],#wm-note-editor label[for=wm-note-body]{display:none}
+#wm-note-editor #wm-note-title{border:0;background:transparent;font-size:clamp(28px,4.5vw,48px);font-weight:850;letter-spacing:-1px;padding:8px 0;border-radius:0}
+#wm-studio-rich{outline:0;min-height:48dvh;line-height:1.8;font-size:18px;padding:26px 8px;white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px solid var(--border);user-select:text;-webkit-user-select:text}
+#wm-studio-rich:empty:before{content:attr(data-placeholder);color:var(--text-dim)}
+#wm-studio-rich[data-paper=lined]{background:repeating-linear-gradient(transparent 0px,transparent 31px,#8d9ab92b 32px,transparent 33px);line-height:33px}
+#wm-studio-rich[data-paper=grid]{background-image:linear-gradient(#8d9ab920 1px,transparent 1px),linear-gradient(90deg,#8d9ab920 1px,transparent 1px);background-size:24px 24px}
+#wm-studio-tools{display:flex;gap:6px;position:sticky;bottom:6px;padding:10px;border:1px solid var(--border);border-radius:24px;background:var(--card);box-shadow:0 8px 34px #17214515;z-index:2;overflow-x:auto;align-items:center}
+#wm-studio-tools button{border:0;border-radius:12px;min-width:40px;height:40px;background:transparent;color:var(--text);font-size:22px;flex-shrink:0}
+#wm-studio-tools select{min-width:120px;width:120px}#wm-studio-tools input[type=color]{min-width:40px;width:40px;height:38px;padding:3px}
+#wm-studio-ink{width:100%;height:auto;border:1px dashed var(--border);border-radius:10px;background:var(--card)}
+#wm-studio-options{margin:20px 0}#wm-studio-options summary{cursor:pointer;padding:14px;border-radius:16px;background:var(--card);font-weight:650}.wm-studio-options-inner{display:grid;gap:10px;padding:16px}.wm-studio-options-inner p{font-size:13px;color:var(--text-dim)}
+@media(max-width:620px){.wm-notes-shell{grid-template-rows:auto auto minmax(0,1fr)}.wm-notes-sidebar{max-height:23dvh;padding:8px 12px}.wm-studio-hero{padding:10px 0 20px}.wm-studio-hero h2{font-size:25px}#wm-notes-title{font-size:18px}#wm-note-editor .wm-notes-fields{padding-bottom:26px}}
+
+.wm-studio-home-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.wm-studio-home-actions button{padding:18px 24px;min-width:160px;border-radius:18px;background:color-mix(in srgb,#526fff 9%,var(--card));border-color:#526fff55;color:var(--text);font-weight:700}.wm-studio-home-actions button+button{background:color-mix(in srgb,#f6b74e 10%,var(--card));border-color:#f6b74e66}.wm-note-reminder-badge{display:block;margin-top:8px;color:#526fff;font-size:12px}
+
+
+#wm-notes-app .wm-studio-lists{display:none}
+#wm-studio-lists{padding:0;width:min(360px,calc(100% - 28px));max-height:85dvh;border:1px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text)}
+#wm-studio-lists::backdrop{background:#17214565}
+#wm-studio-lists .wm-notes-sidebar{max-height:none;padding:12px 16px}
+#wm-studio-lists #wm-note-views,#wm-studio-lists #wm-note-folders{display:grid;gap:4px}
+#wm-studio-lists .wm-note-count{margin-inline-start:auto}
+@media(max-width:620px){
+ #wm-notes-app .wm-studio-lists{display:inline-grid;place-items:center}
+ #wm-notes-app .wm-notes-shell{grid-template-rows:auto minmax(0,1fr)}
+ #wm-notes-app .wm-notes-header{gap:5px;padding-inline:10px}
+ #wm-notes-app .wm-workspace-logo{width:30px;height:30px}
+ #wm-notes-app .wm-notes-primary{padding:8px 10px;white-space:nowrap}
+ .wm-studio-hero>i,.wm-studio-home-actions [data-note-action=new]{display:none}
+ .wm-studio-hero{padding:4px 0 16px}
+ .wm-studio-home-actions{margin-top:10px;gap:8px}
+ .wm-studio-home-actions button{flex:1;min-width:0;padding:11px 8px}
+}
+
+</style>
+<style>
+#wm-cloud-dialog{background:#f5f8ff!important;color:#152743!important;border:1px solid #cfdbef!important;box-shadow:0 24px 80px #102b524a;line-height:1.45!important}
+#wm-cloud-dialog::backdrop,#wm-app-update::backdrop{background:#1423328c}
+#wm-cloud-account{background:#e6efff!important;color:#162d53}
+#wm-cloud-state{color:#455873!important}
+#wm-cloud-dialog [data-cloud=sync]{background:#245bc2!important;font-weight:700}
+.wm-sync-sections{display:grid;gap:8px;margin:12px 0}
+.wm-sync-sections article{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;border:1px solid #dbe5f5;border-radius:13px;padding:12px}
+.wm-sync-sections strong,.wm-sync-sections span,.wm-sync-sections small{display:block}
+.wm-sync-sections span{font-size:12px;color:#754620}
+.wm-sync-sections small{font-size:11px;color:#455873}
+.wm-sync-sections button{padding:8px 12px;border-radius:9px;border:1px solid #c4d5f6;background:#edf3ff;color:#174794;font-weight:650}
+.wm-sync-sections button:disabled{opacity:.5}
+.wm-sync-midnight{display:flex;gap:8px;align-items:center;font-size:13px;padding:8px 0}
+.wm-google-account:is(.wm-sync-pending,.wm-sync-ready){position:relative;border-radius:50%}
+.wm-google-account:is(.wm-sync-pending,.wm-sync-ready)::after{content:'';position:absolute;inset:0;border:3px solid #14854e;border-radius:50%;box-sizing:border-box;pointer-events:none}
+.wm-google-account.wm-sync-pending::after{border-color:#f59e0b}
+.wm-settings-cloud-state[data-sync-pending]:not([data-sync-pending=""])::after{content:attr(data-sync-pending);display:block;font-weight:700;color:#925a12;margin-top:4px}
+
+</style>
 </head>
 <body inert aria-busy="true">
 
@@ -2110,9 +2180,23 @@ const WebMarkCategories=(()=>{
         ['technology','Technology','fa-solid fa-laptop-code','#4f8cb8',/(github|gitlab|stackoverflow|openai|chatgpt|claude|developer|coding|technology|software|cloudflare)/i],
         ['email','Email','fa-solid fa-envelope','#d9653e',/(gmail|outlook|hotmail|proton|yahoo|mail\.com|email)/i],
     ];
+    function credentialCategory(item){
+        const label=[item.title,item.username,item.notes].filter(Boolean).join(' ');
+        if(item.type==='wifi')return 'wifi';
+        if(item.type==='pin'||item.type==='code')return 'codes';
+        if(item.type==='passkey')return 'passkeys';
+        if(!item.type || item.type==='password'){
+            if(/\bpass[ -]?keys?\b/i.test(label))return 'passkeys';
+            if(/\b(?:wi[ -]?fi|wlan|ssid)\b/i.test(label))return 'wifi';
+            if(/\b(?:pin(?:\s+code)?|totp|2fa|mfa|otp|authenticator|recovery codes?|backup codes?|(?:door|device|access|unlock|security|verification|entry) code)\b/i.test(label))return 'codes';
+        }
+        return '';
+    }
     function category(item){
-        if(item.type==='wifi')return {key:'wifi',name:'Wi-Fi',icon:'fa-solid fa-wifi',color:'#52a3ce'};
-        if(item.type==='pin'||item.type==='code')return {key:'codes',name:'Codes & devices',icon:'fa-solid fa-mobile-screen',color:'#d7a928'};
+        const credential=credentialCategory(item);
+        if(credential==='passkeys')return {key:'passkeys',name:'Passkeys',icon:'fa-solid fa-user-lock',color:'#57b844'};
+        if(credential==='wifi')return {key:'wifi',name:'Wi-Fi',icon:'fa-solid fa-wifi',color:'#52a3ce'};
+        if(credential==='codes')return {key:'codes',name:'Codes & devices',icon:'fa-solid fa-mobile-screen',color:'#d7a928'};
         const content=[item.title,...(item.websites||[]),item.desc||''].join(' ');
         const row=groups.find(row=>row[4].test(content));return row?{key:row[0],name:row[1],icon:row[2],color:row[3]}:{key:'other',name:'Other',icon:'fa-solid fa-folder',color:'#7957dc'};
     }
@@ -2129,7 +2213,7 @@ const WebMarkCategories=(()=>{
         for(const word of (title+' '+description).match(/[\p{L}\p{N}][\p{L}\p{N}-]{3,24}/gu)||[]){if(!stop.has(word.toLowerCase()))add(word);if(result.length>=5)break;}
         return result.slice(0,5);
     }
-    return {category,folder,tags};
+    return {category,folder,tags,credentialCategory};
 })();
 
 /* Fetch only the public page URL; no account tokens, cookies or saved passwords. */
@@ -7113,7 +7197,7 @@ function applyFontSettings(){
 }
 // Progressive enhancement: these overrides retain the original UI and data keys.
 function save(){
- const snapshot=JSON.stringify({f:S.folders,l:S.links,trash:S.trash||[]});
+ const snapshot=JSON.stringify({format:'webmark-v4',f:S.folders,l:S.links,trash:S.trash||[]});
  wmStorage.setItem('ly_state_v4',snapshot);
  for(const key of ['ly_f','ly_l','ly_trash'])wmStorage.removeItem(key);
  // Single authoritative snapshot avoids partially saved parallel collections.
@@ -8308,28 +8392,63 @@ window.WebMarkLocale={language,text,status};
 <script>
 /* Optional Firebase Auth + Firestore REST sync. Local use never requires an account. */
 (function(){'use strict';
-const C=WebMarkSyncCore,AUTH_KEY='wm_google_session_v1',META_KEY='wm_cloud_records_v1';let adapter=null,config=null,session=null,records={},device='',busy=false,again=false,timer=null,applying=false,pending=null,status='Local only',listeners=new Set(),remoteCache=null,quotaUntil=0,quotaFailures=0,lastManualAttempt=0;
+const C=WebMarkSyncCore,AUTH_KEY='wm_google_session_v1',META_KEY='wm_cloud_records_v1';let adapter=null,config=null,session=null,records={},device='',busy=false,again=false,timer=null,applying=false,pending=null,status='Local only',listeners=new Set(),remoteCache=null,quotaUntil=0,quotaFailures=0,quotaTimer=null;
 const enc=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');const dec=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
 const storage=()=>typeof wmStorage!=='undefined'?wmStorage:localStorage;
 const read=(k,f)=>{try{return JSON.parse(storage().getItem(k))??f}catch{return f}};
 function emit(text){status=text;for(const fn of listeners)fn(info())}
-function info(){return {configured:!!config?.enabled,user:session?{uid:session.uid,email:session.email,name:session.name||'',photoURL:session.photoURL||''}:null,status,busy,ready:!!adapter}}
-function quotaError(){const e=Error('Google quota reached. Changes are pending upload. Tap Sync now after the quota resets.');e.quota=true;return e}
+function info(){return {quotaUntil,status:session&&quotaFailures?quotaDescription():status,configured:!!config?.enabled,user:session?{uid:session.uid,email:session.email,name:session.name||'',photoURL:session.photoURL||''}:null,busy,ready:!!adapter}}
+const pacificClock=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'});
+function pacificWallTime(time){
+ const parts=Object.fromEntries(pacificClock.formatToParts(time).map(({type,value})=>[type,Number(value)]));
+ return Date.UTC(parts.year,parts.month-1,parts.day,parts.hour,parts.minute,parts.second);
+}
+function nextPacificMidnight(now){
+ const day=86400000,wall=pacificWallTime(now),midnight=(Math.floor(wall/day)+1)*day;
+ const guess=midnight+8*3600000;
+ return midnight+guess-pacificWallTime(guess);
+}
+function remaining(ms){
+ const seconds=Math.max(0,Math.ceil(ms/1000));
+ const hours=Math.floor(seconds/3600),minutes=Math.floor(seconds%3600/60);
+ return hours?hours+'h '+minutes+'m':minutes?minutes+'m '+seconds%60+'s':seconds+'s';
+}
+function quotaDescription(){
+ const now=Date.now();
+ const retry=quotaUntil>now?'Retry in '+remaining(quotaUntil-now)+'.':'You can retry now.';
+ return 'Google quota reached. '+retry+' If the daily free quota was exhausted, its next estimated reset is in '+remaining(nextPacificMidnight(now)-now)+' (midnight Pacific). Changes are saved locally.';
+}
+function notifyQuota(){
+ clearTimeout(quotaTimer);
+ emit(quotaDescription());
+ if(quotaFailures)quotaTimer=setTimeout(notifyQuota,1000);
+}
+function clearQuota(){
+ clearTimeout(quotaTimer);quotaFailures=0;quotaUntil=0;
+ try{storage().removeItem('wm_cloud_quota_pause_v1')}catch{}
+}
+function quotaError(){const e=Error(quotaDescription());e.quota=true;return e}
 async function request(url,options={}){
  const firestore=url.startsWith('https://firestore.googleapis.com/');
  if(firestore&&Date.now()<quotaUntil)throw quotaError();
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
  try{const r=await fetch(url,{...options,signal:controller.signal});const d=await r.json().catch(()=>({}));
   if(!r.ok){if(firestore&&(r.status===429||d.error?.status==='RESOURCE_EXHAUSTED'||/quota exceeded|quota.*exhausted/i.test(d.error?.message||''))){
-   quotaFailures++;quotaUntil=Date.now()+Math.min(3600000,300000*2**Math.min(quotaFailures-1,4));try{storage().setItem('wm_cloud_quota_pause_v1',JSON.stringify({until:quotaUntil,failures:quotaFailures}))}catch{}throw quotaError();
-  }const e=Error(d.error?.message||'Cloud request failed');e.status=r.status;throw e}return d;
+   quotaFailures++;
+   const hint=r.headers?.get('Retry-After'),now=Date.now();
+   const retryAfter=hint&&/^\d+$/.test(hint)?Number(hint)*1000:Date.parse(hint)-now;
+   const retryInfo=Array.isArray(d.error?.details)?d.error.details.find(detail=>detail['@type']==='type.googleapis.com/google.rpc.RetryInfo'):null;
+   const seconds=/^\d+(?:\.\d+)?s$/.test(retryInfo?.retryDelay||'')?parseFloat(retryInfo.retryDelay):0;
+   quotaUntil=now+Math.max(1000,Number.isFinite(retryAfter)&&retryAfter>0?retryAfter:seconds>0?seconds*1000:Math.min(3600000,300000*2**Math.min(quotaFailures-1,4)));
+   notifyQuota();try{storage().setItem('wm_cloud_quota_pause_v1',JSON.stringify({until:quotaUntil,failures:quotaFailures}))}catch{}throw quotaError();
+  }const e=Error(d.error?.message||(typeof d.error==='string'?d.error:'Cloud request failed'));e.status=r.status;throw e}if(firestore&&quotaFailures){clearQuota();emit('Syncing…');}return d;
  }finally{clearTimeout(timeout)}
 }
 async function token(){if(!session)throw Error('Sign in first');if(session.expiresAt>Date.now()+90000)return session.idToken;const d=await request('https://securetoken.googleapis.com/v1/token?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',refresh_token:session.refreshToken})});session={...session,idToken:d.id_token,refreshToken:d.refresh_token,uid:d.user_id,expiresAt:Date.now()+Number(d.expires_in)*1000};storage().setItem(AUTH_KEY,JSON.stringify(session));return session.idToken}
 function base(){return 'https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(config.projectId)+'/databases/(default)/documents'}
 async function headers(){return {'Authorization':'Bearer '+await token(),'Content-Type':'application/json'}}
 function persist(){storage().setItem(META_KEY,JSON.stringify({owner:session?.uid||null,device,records}))}
-function changed(){if(!adapter||applying)return;records=C.pack(adapter.snapshot(),records,device);adapter.persistKeys();persist();if(session)emit('Pending changes · tap Sync now to upload');}
+function changed(){if(!adapter||applying)return;const before=records;records=C.pack(adapter.snapshot(),records,device);if(JSON.stringify(before)!==JSON.stringify(records))globalThis.WebMarkSyncCenter?.pending('bookmarks');adapter.persistKeys();persist();if(session)emit('Pending changes · tap Sync now to upload');}
 // A one-document change marker avoids rereading every bookmark on each poll.
 // Periodic full scans also discover updates made by older WebMark versions.
 async function remote(){
@@ -8344,10 +8463,9 @@ async function remote(){
  return remoteCache={account,head,map,versions,at:Date.now()};
 }
 
-function manualRetry(){if(Date.now()-lastManualAttempt>=15000){quotaUntil=0;lastManualAttempt=Date.now();}}
-async function sync(){
- manualRetry();
- if(!session||!config?.enabled)return;if(busy)return;if(!navigator.onLine){emit('Offline · changes saved on this device');return}busy=true;emit('Syncing…');const account=session.uid;
+async function sync(manual=true){
+
+ if(!session||!config?.enabled)return;if(busy)return;if(!navigator.onLine){emit('Offline · changes saved on this device');return}busy=true;emit('Syncing…');const account=session.uid;const revision=globalThis.WebMarkSyncCenter?.revision('bookmarks');
  if(globalThis.browser?.runtime?.getManifest?.().browser_specific_settings?.gecko?.data_collection_permissions){try{const p=await browser.permissions.getAll();if(!['authenticationInfo','bookmarksInfo','personallyIdentifyingInfo'].every(x=>p.data_collection?.includes(x))){busy=false;emit('Sync paused · optional data sharing permission is off');return}}catch{busy=false;emit('Sync paused · unable to check data sharing permission');return}}
  try{
   for(let retry=0;retry<4;retry++){
@@ -8360,10 +8478,15 @@ async function sync(){
    for(let i=0;i<writes.length;i+=25){if(session?.uid!==account)return;try{const batch=writes.slice(i,i+25),head=C.uid(),marker={update:{name:'projects/'+config.projectId+'/databases/(default)/documents/users/'+account+'/records/webmark-bookmark-index-v1',fields:{value:{stringValue:head}}}},result=await request(base()+':commit',{method:'POST',headers:await headers(),body:JSON.stringify({writes:[...batch,marker]})});cloud.head=head;for(let j=0;j<batch.length;j++){const key=batch[j].update.name.split('/').pop();cloud.map[key]=merged[key];cloud.versions[key]=result.writeResults?.[j]?.updateTime}}catch(e){if([409,412,400].includes(e.status)&&/ABORTED|FAILED_PRECONDITION|ALREADY_EXISTS|precondition|exists/i.test(e.message)){conflict=true;break}throw e}}
    if(conflict){remoteCache=null;if(retry===3)throw Error('Sync conflict. Your changes are safe; try Sync now again.');continue}
    if(session?.uid!==account)return;
-   const changedView=JSON.stringify(records)!==JSON.stringify(C.merge(merged,records));
-   records=C.merge(merged,records);applying=true;try{if(changedView)adapter.apply(C.unpack(records,adapter.snapshot()));adapter.persistKeys();persist()}finally{applying=false}
-   quotaFailures=0;quotaUntil=0;try{storage().removeItem('wm_cloud_quota_pause_v1')}catch{}
-   emit('Synced · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));break;
+   const current=adapter.snapshot();
+   records=C.merge(merged,records);
+   const materialized=C.unpack(records,current);
+   const changedView=JSON.stringify({f:current.f||[],l:current.l||[]})!==JSON.stringify(materialized);
+   applying=true;try{if(changedView)adapter.apply(materialized);adapter.persistKeys();persist()}finally{applying=false}
+   clearQuota();
+   await storage().flush?.();
+   globalThis.WebMarkSyncCenter?.complete('bookmarks',account,revision);
+   emit('Synced · '+new Date().toLocaleString());return true;
   }
  }catch(e){remoteCache=null;if(e.quota)emit(e.message);else if(e.status===401||e.status===403)emit('Sync needs attention: sign in again or check project permissions');else emit('Saved locally · '+(e.name==='AbortError'?'connection timed out':e.message))}finally{busy=false;for(const fn of listeners)fn(info())}
 }
@@ -8423,9 +8546,9 @@ async function nativeResult(id,idToken,error){
 function signOut(){remoteCache=null;window.WebMarkAndroid?.clearGoogle?.();pending=null;session=null;storage().removeItem(AUTH_KEY);emit('Signed out · bookmarks remain on this device')}
 function profilePhoto(value){try{const url=new URL(value);return url.protocol==='https:'&&(/(^|\.)googleusercontent\.com$/i.test(url.hostname))?url.href:''}catch{return ''}}
 async function refreshProfile(){const account=session?.uid;if(!account)return;try{const result=await request('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:await token()})});const user=result.users?.[0];if(session?.uid!==account||user?.localId!==account)return;session={...session,name:user.displayName||'',photoURL:profilePhoto(user.photoUrl)};storage().setItem(AUTH_KEY,JSON.stringify(session));emit(status)}catch{}}
-async function attach(a){if(typeof wmStorage!=='undefined')await wmStorage.ready;adapter=a;const pause=read('wm_cloud_quota_pause_v1',{});quotaUntil=Number(pause.until)||0;quotaFailures=Number(pause.failures)||0;const meta=read(META_KEY,{});device=meta.device||C.uid();records=meta.records||{};session=read(AUTH_KEY,null);if(session&&meta.owner!==session.uid){session=null;storage().removeItem(AUTH_KEY);records={}}await loadConfig();if(session&&config?.enabled){emit('Manual sync · tap Sync now');refreshProfile()}else emit('Local only · Google sign-in '+(config?.enabled?'available':'not activated'));document.addEventListener('visibilitychange',()=>{if(!document.hidden&&pending)pollLogin()})}
-async function syncNotes(account,merge,manual) {
-    if(!manual)return;manualRetry();
+async function attach(a){if(typeof wmStorage!=='undefined')await wmStorage.ready;adapter=a;const pause=read('wm_cloud_quota_pause_v1',{});quotaUntil=Number(pause.until)||0;quotaFailures=Number(pause.failures)||0;const meta=read(META_KEY,{});device=meta.device||C.uid();records=meta.records||{};session=read(AUTH_KEY,null);if(session&&meta.owner!==session.uid){session=null;storage().removeItem(AUTH_KEY);records={}}await loadConfig();if(session&&config?.enabled){if(quotaFailures)notifyQuota();else emit('Manual sync · tap Sync now');refreshProfile()}else emit('Local only · Google sign-in '+(config?.enabled?'available':'not activated'));document.addEventListener('visibilitychange',()=>{if(!document.hidden&&pending)pollLogin()})}
+async function syncNotes(account,merge,manual,automatic=false) {
+    if(!manual)return;
     const requireAccount=()=>{
         if(!config?.enabled || session?.uid!==account) throw Error('Sign in again to sync notes.');
     };
@@ -8476,8 +8599,8 @@ async function syncNotes(account,merge,manual) {
     throw Error('Notes changed on another device. Try syncing again.');
 }
 
-async function syncPasswordVault(account,merge,manual=false){
-    if(!manual)return;manualRetry();
+async function syncPasswordVault(account,merge,manual=false,automatic=false){
+    if(!manual)return;
     const requireAccount=()=>{if(!config?.enabled||session?.uid!==account)throw Error('Sign in with the same Google account to sync passwords.');};
     requireAccount();
     if(globalThis.browser?.runtime?.getManifest?.().browser_specific_settings?.gecko?.data_collection_permissions){
@@ -8516,9 +8639,9 @@ window.WebMarkCloud={syncPasswordVault,syncNotes,attach,changed,signIn,signOut,s
 (function(){'use strict';
 const t=key=>WebMarkLocale.text(key);
 function localize(el){el.lang=WebMarkLocale.language();el.dir=el.lang==='ar'?'rtl':'ltr';el.querySelectorAll('[data-cloud-text]').forEach(n=>n.textContent=t(n.dataset.cloudText));el.setAttribute('aria-label',t('account'));}
-function modal(){let el=document.getElementById('wm-cloud-dialog');if(el)return el;el=document.createElement('dialog');el.id='wm-cloud-dialog';el.setAttribute('aria-label','Google account and bookmark sync');el.style.cssText='width:min(440px,calc(100% - 28px));border:1px solid #d6e2da;border-radius:20px;padding:26px;color:#142b1e;background:#fff;font:14px/1.7 system-ui,sans-serif;max-height:90dvh;overflow:auto';el.innerHTML='<button type="button" data-cloud="close" aria-label="Close" style="float:right;background:transparent;border:0;font-size:26px;cursor:pointer">×</button><p style="color:#16834b;font-size:12px;font-weight:700" data-cloud-text="account">WEBMARK ACCOUNT</p><h2 style="font-size:23px;margin:8px 0" data-cloud-text="title">Your bookmarks, together.</h2><p data-cloud-text="intro">Use the same Google account on Android and your browser to sync saved websites, folders and changes.</p><p style="font-size:12px;color:#63776b" data-cloud-text="privacy">Google sign-in uses your account identity only. WebMark does not read your Gmail messages.</p><div id="wm-cloud-account" style="margin:18px 0;padding:13px;background:#f0f7f2;border-radius:12px;overflow-wrap:anywhere"></div><p id="wm-cloud-state" role="status" style="font-size:12px;color:#63776b;min-height:36px"></p><button type="button" data-cloud="login" style="width:100%;padding:13px;border:1px solid #d6e2da;border-radius:11px;background:#fff;color:#182c21;font-size:14px;cursor:pointer">G &nbsp; Continue with Google</button><button type="button" data-cloud="sync" style="width:100%;margin-top:9px;padding:12px;border:0;border-radius:11px;background:#198a50;color:#fff;cursor:pointer" data-cloud-text="sync">Sync now</button><button type="button" data-cloud="logout" style="width:100%;padding:12px;border:0;background:transparent;color:#65766b;cursor:pointer" data-cloud-text="logout">Sign out</button><p style="font-size:11px;color:#7c8c82;margin:12px 0 0" data-cloud-text="offline">Offline edits stay on this device and sync after you reconnect. Manual sync only. Tap Sync now to upload or download your changes.</p>';
-el.addEventListener('click',e=>{const a=e.target.closest('[data-cloud]')?.dataset.cloud;if(a==='close')el.close();if(a==='login')WebMarkCloud.signIn().catch(err=>{document.getElementById('wm-cloud-state').textContent=err.message});if(a==='sync'){WebMarkCloud.sync().then(async()=>{await window.WebMarkPasswords?.sync?.(true);await window.WebMarkNotesSync?.();});}if(a==='logout')WebMarkCloud.signOut()});document.body.append(el);WebMarkCloud.subscribe(update);return el}
-function update(info){const el=document.getElementById('wm-cloud-dialog');if(!el)return;localize(el);document.getElementById('wm-cloud-account').textContent=info.user?info.user.email:t('local');document.getElementById('wm-cloud-state').textContent=WebMarkLocale.status(info.status);el.querySelector('[data-cloud="login"]').hidden=!!info.user;el.querySelector('[data-cloud="sync"]').hidden=!info.user;el.querySelector('[data-cloud="logout"]').hidden=!info.user;el.querySelector('[data-cloud="sync"]').disabled=info.busy;el.querySelector('[data-cloud="login"]').textContent=info.configured?t('login'):t('setup')}
+function modal(){let el=document.getElementById('wm-cloud-dialog');if(el)return el;el=document.createElement('dialog');el.id='wm-cloud-dialog';el.setAttribute('aria-label','Google account and bookmark sync');el.style.cssText='width:min(440px,calc(100% - 28px));border:1px solid #d6e2da;border-radius:20px;padding:26px;color:#142b1e;background:#fff;font:14px/1.7 system-ui,sans-serif;max-height:90dvh;overflow:auto';el.innerHTML='<button type="button" data-cloud="close" aria-label="Close" style="float:right;background:transparent;border:0;font-size:26px;cursor:pointer">×</button><p style="color:#16834b;font-size:12px;font-weight:700" data-cloud-text="account">WEBMARK ACCOUNT</p><h2 style="font-size:23px;margin:8px 0" >Sync center</h2><p >Sync bookmarks, notes, and encrypted passwords with your Google account.</p><p style="font-size:12px;color:#63776b" data-cloud-text="privacy">Google sign-in uses your account identity only. WebMark does not read your Gmail messages.</p><div id="wm-cloud-account" style="margin:18px 0;padding:13px;background:#f0f7f2;border-radius:12px;overflow-wrap:anywhere"></div><p id="wm-cloud-state" role="status" style="font-size:12px;color:#63776b;min-height:36px"></p><button type="button" data-cloud="login" style="width:100%;padding:13px;border:1px solid #d6e2da;border-radius:11px;background:#fff;color:#182c21;font-size:14px;cursor:pointer">G &nbsp; Continue with Google</button><button type="button" data-cloud="sync" style="width:100%;margin-top:9px;padding:12px;border:0;border-radius:11px;background:#198a50;color:#fff;cursor:pointer" >Sync all now</button><button type="button" data-cloud="logout" style="width:100%;padding:12px;border:0;background:transparent;color:#65766b;cursor:pointer" data-cloud-text="logout">Sign out</button><p style="font-size:11px;color:#7c8c82;margin:12px 0 0" >Offline edits stay on this device and sync after you reconnect. Sync manually at any time. Daily sync runs while WebMark is active or catches up when you reopen it.</p>';
+el.addEventListener('click',e=>{const a=e.target.closest('[data-cloud]')?.dataset.cloud;if(a==='close')el.close();if(a==='login')WebMarkCloud.signIn().catch(err=>{document.getElementById('wm-cloud-state').textContent=err.message});if(a==='sync'){if(window.WebMarkSyncCenter)window.WebMarkSyncCenter.run();else WebMarkCloud.sync();}if(a==='logout')WebMarkCloud.signOut()});document.body.append(el);WebMarkCloud.subscribe(update);return el}
+function update(info){const el=document.getElementById('wm-cloud-dialog');if(!el)return;localize(el);document.getElementById('wm-cloud-account').textContent=info.user?info.user.email:t('local');document.getElementById('wm-cloud-state').textContent=WebMarkLocale.status(info.status);el.querySelector('[data-cloud="login"]').hidden=!!info.user;el.querySelector('[data-cloud="sync"]').hidden=!info.user;el.querySelector('[data-cloud="logout"]').hidden=!info.user;el.querySelector('[data-cloud="sync"]').disabled=info.busy||info.quotaUntil>Date.now();el.querySelector('[data-cloud="login"]').textContent=info.configured?t('login'):t('setup')}
 function avatar(button,user,label){
  const initial=(user?.name||user?.email||'G').charAt(0).toUpperCase();
  button.title=user?.name||user?.email||label;
@@ -8551,7 +8674,7 @@ function chooseImport(email){return new Promise(resolve=>{
  for(const [label,value] of [[t('merge'),true],[t('load'),false],[t('cancel'),null]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='display:block;width:100%;padding:13px;margin-top:10px;border:1px solid #cfe0d4;border-radius:10px;background:#f2f8f4;color:#172f21;cursor:pointer';b.onclick=()=>done(value);d.append(b)}
  d.addEventListener('cancel',e=>{e.preventDefault();done(null)});d.lang=WebMarkLocale.language();d.dir=d.lang==='ar'?'rtl':'ltr';document.body.append(d);d.showModal();
 })}
-window.WebMarkCloudUI={avatar,chooseImport,open(){const el=modal();update(WebMarkCloud.info());el.showModal()}};
+window.WebMarkCloudUI={avatar,chooseImport,open(){const el=modal();update(WebMarkCloud.info());window.WebMarkSyncCenter?.mount(el);if(!el.open)el.showModal()}};
 new MutationObserver(()=>{const el=document.getElementById('wm-cloud-dialog');if(el)update(WebMarkCloud.info())}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 })();
 
@@ -8565,7 +8688,7 @@ async function attach(){
  // The existing account/sync action now opens the configured Google option.
  window.openSyncModal=()=>WebMarkCloudUI.open();
  const settingsTargets=[document.getElementById('settingsPageBody'),document.querySelector('#settingsModal .mc')];
- for(const target of settingsTargets){if(!target)continue;const section=document.createElement('section');section.style.cssText='padding:14px;border:1px solid var(--border);border-radius:14px;margin:12px 0';const button=document.createElement('button');button.type='button';button.className='erow';button.style.width='100%';button.textContent='Google account & sync';button.onclick=()=>WebMarkCloudUI.open();const state=document.createElement('p');state.className='wm-settings-cloud-state';state.style.cssText='font-size:12px;color:var(--text-dim);margin:8px';state.textContent='Bookmarks save on this device offline. Google sync runs only when you tap Sync now.';section.append(button,state);if(target.id==='settingsPageBody')target.prepend(section);else target.querySelector('.mhdr')?.after(section)}
+ for(const target of settingsTargets){if(!target)continue;const section=document.createElement('section');section.style.cssText='padding:14px;border:1px solid var(--border);border-radius:14px;margin:12px 0';const button=document.createElement('button');button.type='button';button.className='erow wm-setting-action';button.textContent='Google account & sync';button.onclick=()=>WebMarkCloudUI.open();const state=document.createElement('p');state.className='wm-settings-cloud-state';state.style.cssText='font-size:12px;color:var(--text-dim);margin:8px';state.textContent='Bookmarks save on this device offline. Google sync runs only when you tap Sync now.';section.append(button,state);if(target.id==='settingsPageBody')target.prepend(section);else target.querySelector('.mhdr')?.after(section)}
  WebMarkCloud.subscribe(info=>{document.querySelectorAll('.wm-google-account').forEach(b=>WebMarkCloudUI.avatar(b,info.user,'Google account & sync'));document.querySelectorAll('.wm-settings-cloud-state').forEach(p=>p.textContent=(info.user?info.user.email+' · ':'')+info.status+' · Tap Sync now to upload pending changes.');});
  await WebMarkCloud.attach({snapshot:()=>({f:S.folders,l:S.links}),persistKeys:()=>localSave(),apply(data){remote=true;try{S.folders=data.f;S.links=data.l;if(S.activeTab!=='all'&&S.activeTab!=='fav'&&S.activeTab!=='vip'&&S.activeTab!=='archive'&&!S.folders.some(f=>f.id===S.activeTab))S.activeTab='all';localSave();init()}finally{remote=false}},confirmUpload:email=>WebMarkCloudUI.chooseImport(email)});
 }
@@ -8680,7 +8803,7 @@ dialog.wm-pw-window:not([open]),dialog#wm-passwords:not([open]){display:none!imp
   <header class="wm-pw-header">
     <button type="button" class="wm-pw-button" data-pw-action="back" aria-label="Back" id="wm-pw-back"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
     <div class="wm-pw-header-title"><h1 id="wm-pw-title">Passwords</h1><span id="wm-pw-count" hidden></span></div><button type="button" class="wm-pw-button" data-pw-action="select" id="wm-pw-select" hidden>Select</button>
-    <button type="button" class="wm-pw-button" id="wm-pw-settings-button" data-pw-action="settings" aria-label="Password settings" title="Password settings"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></button>
+    <button type="button" class="wm-pw-button" id="wm-pw-settings-button" data-pw-action="settings" aria-label="Password settings" title="Password settings"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
     <button type="button" class="wm-pw-button" id="wm-pw-lock-button" data-pw-action="lock" aria-label="Lock vault" title="Lock vault"><i class="fa-solid fa-lock" aria-hidden="true"></i></button>
   </header>
   <section id="wm-pw-locked" class="wm-pw-locked">
@@ -8906,7 +9029,7 @@ dialog.wm-pw-window:not([open]),dialog#wm-passwords:not([open]){display:none!imp
         </section>
         <section class="wm-note-settings-group">
             <h3>Google sync</h3>
-            <p>Manual sync only. Tap Sync now to upload or download notes.</p><input type="checkbox" id="wm-note-auto-sync" hidden disabled>
+            <p>Sync notes here or in the Sync center.</p><input type="checkbox" id="wm-note-auto-sync" hidden disabled>
             <p id="wm-note-last-sync" class="wm-note-settings-message"></p>
             <button type="button" class="wm-notes-button" data-note-action="sync">Sync notes now</button>
         </section>
@@ -9017,7 +9140,7 @@ const WebMarkNoteVault = (() => {
         },
         async lock(vault,password,note) {
             const key = await aesKey(await unwrap(vault,'password',password));
-            return seal(key,bytes(JSON.stringify({title:note.title,body:note.body})),note.id);
+            return seal(key,bytes(JSON.stringify({title:note.title,body:note.body,rich:note.rich||'',ink:note.ink||[],paper:note.paper||'plain'})),note.id);
         },
         async unlock(vault,password,note) {
             const key = await aesKey(await unwrap(vault,'password',password));
@@ -9145,8 +9268,8 @@ const WebMarkNotesExport = (() => {
     const app = $('wm-notes-app');
     const editor = $('wm-note-editor');
     const folderEditor = $('wm-note-folder-editor');
-    const labels = {all:'All notes',favorites:'Favorites',top:'Top 10',archive:'Archive',trash:'Trash'};
-    const icons = {all:'note-sticky',favorites:'heart',top:'star',archive:'box-archive',trash:'trash'};
+    const labels = {all:'All notes',favorites:'Favorites',top:'Top 10',archive:'Archive',reminders:'Reminders',trash:'Trash'};
+    const icons = {all:'note-sticky',favorites:'heart',top:'star',archive:'box-archive',reminders:'bell',trash:'trash'};
     const settings = $('wm-note-settings');
     const reader = $('wm-note-reader');
     const manager = $('wm-note-folder-manager');
@@ -9156,7 +9279,7 @@ const WebMarkNotesExport = (() => {
     let syncPoll;
     let sort='newest';
     const passwordDialog = $('wm-note-password');
-    const tint = {all:'#15803d',favorites:'#dc2626',top:'#a16207',archive:'#2563eb',trash:'#c2410c'};
+    const tint = {all:'#15803d',favorites:'#dc2626',top:'#a16207',archive:'#2563eb',reminders:'#7c3aed',trash:'#c2410c'};
     const folderIcons = typeof FA_ICONS !== 'undefined' ? [...new Set(FA_ICONS)] :
         ['folder','briefcase','house','book','lightbulb','heart','plane'].map(icon=>'fa-solid fa-'+icon);
     const colors = typeof COLORS !== 'undefined' ? [...new Set(COLORS)] : ['#22c55e','#3b82f6','#ef4444'];
@@ -9201,7 +9324,7 @@ const WebMarkNotesExport = (() => {
 
     function scheduleSync(){clearTimeout(syncTimer);}
 
-    async function syncNotes(manual) {
+    async function syncNotes(manual,automatic=false) {
         if(!manual || syncing || editor.open || folderEditor.open || passwordDialog.open) return;
         const cloud=globalThis.WebMarkCloud;
         const user=cloud?.info().user;
@@ -9215,23 +9338,27 @@ const WebMarkNotesExport = (() => {
             return;
         }
         if (!manual && (!library.owner || library.autoSync===false || navigator.onLine===false)) return;
+        if (!library.owner && automatic) return false;
         if (!library.owner && !confirm('Sync these notes with '+user.email+'?')) return;
+        const revision=globalThis.WebMarkSyncCenter?.revision('notes');
         syncing=true;
         status.textContent='Syncing notes…';
         try {
             if(manual) clearTimeout(syncTimer);
-            const merged=await cloud.syncNotes(user.uid,remote=>mergeNotes(library,remote),manual);
+            const merged=await cloud.syncNotes(user.uid,remote=>mergeNotes(library,remote),manual,automatic);
             await saveQueue;
             if (cloud.info().user?.uid!==user.uid) return;
             const latest=mergeNotes(library,merged);
             const changed=JSON.stringify(latest)!==JSON.stringify(merged);
             // Keep the local account binding out of the cloud document.
             Object.assign(library,latest,{owner:user.uid,lastSyncAt:Date.now()});
-            if(await persistNotes(status,false)) status.textContent='Notes synced';
+            const saved=await persistNotes(status,false);
+            if(saved){status.textContent='Notes synced';globalThis.WebMarkSyncCenter?.complete('notes',user.uid,revision);}
             renderCards();
             updateSyncSettings();
             if(manager.open) renderFolders();
             if(changed) scheduleSync();
+            return saved;
         } catch(error) {
             status.textContent='Notes sync failed. '+error.message;
         } finally { syncing=false; }
@@ -9246,7 +9373,8 @@ const WebMarkNotesExport = (() => {
         });
         return saveQueue.then(()=>{
             status.textContent='Saved';
-            if(sync) scheduleSync();
+            globalThis.WebMarkNoteStudio?.reschedule();
+            if(sync){scheduleSync();globalThis.WebMarkSyncCenter?.pending('notes');}
             return true;
         },()=>{
             status.textContent='Could not save. Keep WebMark open and try again.';
@@ -9284,6 +9412,7 @@ const WebMarkNotesExport = (() => {
         if(note.deletedAt) return false;
         if(list==='archive') return !!note.archived;
         if(note.archived) return false;
+        if(list==='reminders') return Number(note.reminderAt)>Date.now();
         if(list==='favorites') return !!note.favorite;
         if(list==='top') return !!note.top;
         return list==='all' || list===note.folderId;
@@ -9336,6 +9465,7 @@ const WebMarkNotesExport = (() => {
         if(noteDate(note)) time.dateTime=new Date(noteDate(note)).toISOString();
         open.append(time);
         card.append(open);
+        if(note.reminderAt&&!note.deletedAt){const reminder=element('small','◷ '+dateLabel(note.reminderAt,true));reminder.className='wm-note-reminder-badge';card.append(reminder);}
         const actions=element('div');
         actions.className='wm-note-actions';
         const add=(label,action,icon,color,pressed)=>actions.append(iconButton(label,action,note.id,icon,color,pressed));
@@ -9455,12 +9585,13 @@ const WebMarkNotesExport = (() => {
         if(editor.open){editContent().then(ok=>{if(ok)editor.close();});return true;}
         for(const dialog of [manager,settings,reader])if(dialog.open){dialog.close();return true;}
         if(menu.open){menu.close();return true;}
+        if(globalThis.WebMarkNoteStudio?.closeLists())return true;
         if(viewHistory.length){view=viewHistory.pop();selected.clear();selecting=false;renderCards();return true;}
         if(view!=='all'){view='all';renderCards();return true;}
         app.close();return true;
     }};
 
-    globalThis.WebMarkNotesSync=async()=>{await wmStorage.ready;initNotes();return syncNotes(true);};
+    globalThis.WebMarkNotesSync=async(automatic=false)=>{await wmStorage.ready;initNotes();return syncNotes(true,automatic);};
     async function openNotes() {
         await wmStorage.ready;
         initNotes();
@@ -9484,7 +9615,8 @@ const WebMarkNotesExport = (() => {
         $('wm-note-editor-heading').textContent=note?'Edit note':'New note';
         $('wm-note-editor-message').textContent='';
         editor.showModal();
-        $('wm-note-body').focus();
+        globalThis.WebMarkNoteStudio?.open(note);
+        (document.getElementById('wm-studio-rich')||$('wm-note-body')).focus();
     }
     function folderOptions(value) {
         const select=$('wm-note-folder');
@@ -9496,17 +9628,19 @@ const WebMarkNotesExport = (() => {
         const title=$('wm-note-title').value;
         const body=$('wm-note-body').value;
         const folderId=$('wm-note-folder').value;
-        if (title===draft.title && body===draft.body && folderId===draft.folderId && noteColor===draft.color &&
+        const extras=globalThis.WebMarkNoteStudio?.extras()||{};
+        if (title===draft.title && body===draft.body && folderId===draft.folderId && noteColor===draft.color && JSON.stringify(extras)===JSON.stringify(draft.extras||{}) &&
             (editingId || (!title.trim() && !body.trim()))) return saveQueue.then(()=>true,()=>persistNotes($('wm-note-editor-message')));
         if (!editingId && !title.trim() && !body.trim()) return Promise.resolve(true);
-        draft={title,body,folderId,color:noteColor};
+        draft={title,body,folderId,color:noteColor,extras};
         let note=library.notes.find(item=>item.id===editingId);
         if (!note) {
             editingId=newId('note');
             note={id:editingId,createdAt:Date.now()};
             library.notes.push(note);
         }
-        Object.assign(note,draft,{updatedAt:stamp(note)});
+        const {extras:details,...plain}=draft;
+        Object.assign(note,plain,details,{updatedAt:stamp(note)});
         return persistNotes($('wm-note-editor-message'));
     }
     function openFolder(folder) {
@@ -9638,6 +9772,7 @@ const WebMarkNotesExport = (() => {
             note.vaultId=vault.id;
             delete note.title;
             delete note.body;
+            delete note.rich;delete note.ink;delete note.paper;
         }
         note.updatedAt=stamp(note);
         await persistNotes($('wm-note-message'));
@@ -9683,6 +9818,7 @@ const WebMarkNotesExport = (() => {
         $('wm-note-reader-text').textContent=content.body||'';
         $('wm-note-reader-edit').hidden=!!note.locked || !!note.deletedAt;
         $('wm-note-reader-status').textContent='';
+        globalThis.WebMarkNoteStudio?.reader(note,content);
         reader.showModal();
     }
     async function readNote(note) {
@@ -9839,6 +9975,9 @@ const WebMarkNotesExport = (() => {
         renderCards();
     }
 
+    globalThis.WebMarkNotesData=()=>library;
+    globalThis.WebMarkNotesImportText=async(title,body)=>{await openNotes();openNote();$('wm-note-title').value=String(title).slice(0,180);$('wm-note-body').value=String(body).slice(0,100000);globalThis.WebMarkNoteStudio?.open({title,body});await editContent();};
+    globalThis.WebMarkOpenNotes=openNotes;
     document.addEventListener('click',handleNoteAction);
     for(const id of ['wm-note-title','wm-note-body','wm-note-folder']){
         $(id).addEventListener(id==='wm-note-folder'?'change':'input',editContent);
@@ -9846,7 +9985,7 @@ const WebMarkNotesExport = (() => {
     reader.addEventListener('close',()=>{
         reading=null;$('wm-note-reader-title').textContent='';$('wm-note-reader-text').textContent='';
     });
-    app.addEventListener('close',()=>clearInterval(syncPoll));
+    app.addEventListener('close',()=>{clearInterval(syncPoll);globalThis.WebMarkNoteStudio?.closeLists(false);globalThis.WebMarkAndroid?.stopNoteAlarm?.();});
     $('wm-note-sort').addEventListener('change',()=>{
         library.sort=sort=$('wm-note-sort').value;
         persistNotes($('wm-note-message'),false);
@@ -10344,7 +10483,7 @@ const WebMarkPasswordSyncCore=(()=>{
             (last?' · Last sync: '+new Date(Number(last)).toLocaleString():'');
     }
     function scheduleVaultSync(){clearTimeout(syncTimer);syncStatus='Manual sync · changes wait until you tap Sync now.';updateSyncStatus();}
-    async function syncVault(manual=false){
+    async function syncVault(manual=false,automatic=false){
         if(!manual||syncBusy)return;
         if(!manual&&(!autoSync()||editor.open||folderEditor.open||promptDialog.open||nativeTask||deviceBusy))return;
         const cloud=globalThis.WebMarkCloud,user=cloud?.info().user;
@@ -10352,6 +10491,7 @@ const WebMarkPasswordSyncCore=(()=>{
         const binding=owner();
         if(binding&&binding.uid!==user.uid){syncStatus='This vault belongs to '+(binding.email||'another Google account')+'. Sign in with that account.';updateSyncStatus();return;}
         if(!navigator.onLine){syncStatus='Offline · encrypted changes saved on this device.';updateSyncStatus();return;}
+        const revision=globalThis.WebMarkSyncCenter?.revision('passwords');
         syncBusy=true;syncStatus='Syncing encrypted vault…';updateSyncStatus();
         const version=epoch;let key=null,adoptedKey=null;
         const guard=()=>{if(epoch!==version||cloud.info().user?.uid!==user.uid)throw Error('Sync paused because the vault or account changed.');};
@@ -10373,7 +10513,7 @@ const WebMarkPasswordSyncCore=(()=>{
                 if(!remote){return C.save(local,key,syncCore.portable(snapshot));}
                 let source=remote,cloudKey=key;
                 if(remote.id!==local.id){
-                    if(!manual)throw Error('Another vault is linked to Google. Use Sync now to merge with its vault password.');
+                    if(automatic)throw Error('Another vault is linked to Google. Use Sync now to merge with its vault password.');
                     const password=await ask('Link Google vault','Enter the vault password used on your other device',true);
                     if(!password)throw Error('Vault linking cancelled.');
                     const opened=await C.unlock(remote,password);adoptedKey?.fill(0);adoptedKey=opened.raw;cloudKey=adoptedKey;remoteData=opened.data;
@@ -10382,10 +10522,10 @@ const WebMarkPasswordSyncCore=(()=>{
                 const merged=syncCore.merge(snapshot,remoteData);
                 if(syncCore.stable(merged)===syncCore.stable(syncCore.portable(remoteData))&&source===remote)return remote;
                 const result=await C.save(source,cloudKey,merged);unchanged();return result;
-            },manual);
+            },manual,automatic);
             unchanged();
             if(!snapshot){
-                if(!local&&next){await writePacket(next);packet=next;wmStorage.setItem(syncOwnerKey,JSON.stringify({uid:user.uid,email:user.email}));showLocked();syncStatus='Cloud vault ready. Unlock with your existing vault password.';}
+                if(!local&&next){await writePacket(next,false);packet=next;wmStorage.setItem(syncOwnerKey,JSON.stringify({uid:user.uid,email:user.email}));showLocked();syncStatus='Cloud vault ready. Unlock with your existing vault password.';}
                 else syncStatus=local?'Unlock your vault to sync.':'No cloud vault yet. Create a vault to begin.';
             }else{
                 const result=await C.read(next,adoptedKey||key);unchanged();
@@ -10393,7 +10533,7 @@ const WebMarkPasswordSyncCore=(()=>{
                 if(changed){
                     result.autoLock=snapshot.autoLock||120;
                     const localNext=await C.save(next,adoptedKey||key,result);unchanged();
-                    await writePacket(localNext);guard();packet=localNext;vault=result;
+                    await writePacket(localNext,false);guard();packet=localNext;vault=result;
                     if(adoptedKey){raw?.fill(0);raw=adoptedKey.slice();}
                     render();
                 }
@@ -10401,7 +10541,9 @@ const WebMarkPasswordSyncCore=(()=>{
                 wmStorage.setItem(syncOwnerKey,JSON.stringify({uid:user.uid,email:user.email}));
                 wmStorage.setItem('wm_password_last_sync_v1',String(Date.now()));
                 await wmStorage.flush?.();syncStatus='Encrypted passwords, folders and bookmark protection synced.';
+                globalThis.WebMarkSyncCenter?.complete('passwords',user.uid,revision);
                 if(adoptedKey)await offerDeviceUnlock();
+                return true;
             }
         }catch(error){syncStatus=error.quota?error.message:'Saved on this device · '+error.message;}
         finally{key?.fill(0);adoptedKey?.fill(0);syncBusy=false;updateSyncStatus();}
@@ -10444,12 +10586,13 @@ const WebMarkPasswordSyncCore=(()=>{
         try{packet=readPacket();showLocked();if(!packet&&globalThis.WebMarkCloud?.info().user)message('Existing Google vault? Open Password settings and tap Sync now to load it.');}catch{message('The vault could not be read. Open an encrypted backup to recover it.');}
         if(vault)render();else showLocked();
     }
-    async function writePacket(next) {
+    async function writePacket(next,localChange=true) {
         const previous=wmStorage.getItem(storageKey);
         try {
             wmStorage.setItem(storageKey,JSON.stringify(next));
             if(!wmStorage.persistent)throw Error('Storage unavailable');
             await wmStorage.flush?.();
+            if(localChange)globalThis.WebMarkSyncCenter?.pending('passwords');
         } catch(error) {
             try{if(previous)wmStorage.setItem(storageKey,previous);else wmStorage.removeItem(storageKey);}catch{}
             throw error;
@@ -10508,9 +10651,9 @@ const WebMarkPasswordSyncCore=(()=>{
         if(item.deletedAt)return false;
         if(mode==='all')return true;
         if(mode==='security'){const issue=flags.get(item.id);return !!(issue?.short||issue?.reused);}
-        if(mode==='code')return item.type==='code'||item.type==='pin';
-        if(mode==='wifi')return item.type==='wifi';
-        if(mode==='passkeys')return false;
+        if(mode==='code')return WebMarkCategories.credentialCategory(item)==='codes';
+        if(mode==='wifi')return WebMarkCategories.credentialCategory(item)==='wifi';
+        if(mode==='passkeys')return WebMarkCategories.credentialCategory(item)==='passkeys';
         return item.folderId===mode;
     }
     function itemsForView() {
@@ -10627,7 +10770,7 @@ const WebMarkPasswordSyncCore=(()=>{
             return node;
         }));
         if(page==='list'&&!rows.length)$('wm-pw-list').append(element('p',list==='passkeys'
-            ?'Passkeys are managed by your phone or browser.':'No passwords here.'));
+            ?'No saved passkey references. Your phone or browser manages actual passkeys.':'No passwords here.'));
     }
     function showDetail(item) {
         currentId=item.id;clearDetail();
@@ -10685,7 +10828,8 @@ const WebMarkPasswordSyncCore=(()=>{
         for(const item of vault.items)if(!item.deletedAt&&!vault.folders.some(folder=>folder.id===item.folderId)){
             item.folderId=WebMarkCategories.folder(vault,item).id;item.updatedAt=Math.max(Date.now(),item.updatedAt+1);count++;
         }
-        await persist();render();renderFolders();message(count+' entries organized. Existing folder assignments were kept.','wm-pw-settings-status');
+        if(count)await persist();
+        render();renderFolders();message(count+' unfiled entries organized.','wm-pw-settings-status');
     }
 
     function edit(item) {
@@ -11018,7 +11162,7 @@ const WebMarkPasswordSyncCore=(()=>{
         if(event.key===storageKey&&vault){lock();message('Vault changed in another tab. Unlock to reload.');}
     });
     window.WebMarkPasswords={
-        lock,back:navigateBack,sync:syncVault,
+        lock,back:navigateBack,sync:syncVault,unlocked:()=>!!vault,open:openApp,
         nativeResult(request,value,error){
             const pending=nativeTask;
             if(!pending||pending.request!==request)return;
@@ -11085,7 +11229,7 @@ const WebMarkPasswordSyncCore=(()=>{
     let current;try{current=JSON.parse(native.appVersion());}catch{return;}
     let pending=null,release=null,dialog=null;
     const words={
-        en:['App updates','Check for updates','Checking…','Update available','Update now','Later','You have the latest version.','Updates have not been published yet.','Could not check. Check your connection and try again.','Android will download the APK. Open it and approve the update. Your saved data stays in the app.'],
+        en:['App updates','Check for updates','Checking…','Update available','Update now','Later','You have the latest version.','Updates have not been published yet.','Could not check. Check your connection and try again.','Continue to the download page to get the update. Android will check the APK before installation.'],
         it:['Aggiornamenti app','Controlla aggiornamenti','Controllo…','Aggiornamento disponibile','Aggiorna ora','Più tardi','Hai la versione più recente.','Gli aggiornamenti non sono ancora stati pubblicati.','Controllo non riuscito. Verifica la connessione e riprova.','Android scaricherà il file APK. Aprilo e conferma l’aggiornamento. I dati salvati restano nell’app.'],
         fr:['Mises à jour','Vérifier les mises à jour','Vérification…','Mise à jour disponible','Mettre à jour','Plus tard','Vous avez la dernière version.','Les mises à jour ne sont pas encore publiées.','Échec de la vérification. Vérifiez votre connexion.','Android téléchargera le fichier APK. Ouvrez-le et confirmez la mise à jour. Vos données restent dans l’application.'],
         es:['Actualizaciones','Buscar actualizaciones','Comprobando…','Actualización disponible','Actualizar ahora','Más tarde','Tienes la última versión.','Las actualizaciones aún no se han publicado.','No se pudo comprobar. Revisa tu conexión.','Android descargará el APK. Ábrelo y confirma la actualización. Tus datos se conservan.'],
@@ -11096,11 +11240,11 @@ const WebMarkPasswordSyncCore=(()=>{
     function status(text){document.querySelectorAll('.wm-update-status').forEach(el=>el.textContent=text);}
     function show(){
         if(!release)return;
-        if(!dialog){dialog=node('dialog');dialog.id='wm-app-update';dialog.setAttribute('aria-label',t(3));dialog.style.cssText='width:min(440px,calc(100% - 32px));max-height:80dvh;overflow:auto;padding:24px;border:1px solid var(--border);border-radius:22px;background:var(--card,#fff);color:var(--text,#172f21);font:inherit';document.body.append(dialog);}
+        if(!dialog){dialog=node('dialog');dialog.id='wm-app-update';dialog.setAttribute('aria-label',t(3));dialog.style.cssText='width:min(440px,calc(100% - 32px));max-height:80dvh;overflow:auto;padding:24px;border:1px solid var(--border);border-radius:22px;background:#f5f8ff;color:#152743;font:inherit';document.body.append(dialog);}
         const title=node('h2',t(3)),version=node('p','WebMark '+release.versionName+' · '+current.versionName+' → '+release.versionName);
         const notes=node('p',release.notes||'');notes.style.whiteSpace='pre-wrap';
         const help=node('p',t(9));help.style.cssText='font-size:13px;line-height:1.6;opacity:.8';
-        const update=node('button',t(4));update.type='button';update.style.cssText='padding:12px 18px;border:0;border-radius:12px;background:#16a56b;color:white;font:inherit;font-weight:700';
+        const update=node('button',t(4));update.type='button';update.style.cssText='padding:12px 18px;border:0;border-radius:12px;background:#245bc2;color:white;font:inherit;font-weight:700';
         update.addEventListener('click',()=>{native.openAppUpdate();dialog.close();});
         const later=node('button',t(5));later.type='button';later.style.cssText='padding:12px 18px;margin:8px;border:1px solid var(--border);border-radius:12px;background:transparent;color:inherit;font:inherit';later.addEventListener('click',()=>dialog.close());
         dialog.replaceChildren(title,version,notes,help,update,later);if(!dialog.open)dialog.showModal();
@@ -11124,7 +11268,7 @@ const WebMarkPasswordSyncCore=(()=>{
         for(const target of [document.getElementById('settingsPageBody'),document.querySelector('#settingsModal .mc')]){
             if(!target||target.querySelector('.wm-app-updates'))continue;
             const box=node('section');box.className='wm-app-updates';box.style.cssText='padding:14px;margin:12px 0;border:1px solid var(--border);border-radius:14px';
-            box.append(node('h3',t(0)),node('p','WebMark '+current.versionName));const button=node('button',t(1));button.type='button';button.className='erow';button.addEventListener('click',()=>check(true));
+            box.append(node('h3',t(0)),node('p','WebMark '+current.versionName));const button=node('button',t(1));button.type='button';button.className='erow wm-setting-action wm-update-action';button.addEventListener('click',()=>check(true));
             const state=node('p',t(1));state.className='wm-update-status';state.style.cssText='font-size:12px;opacity:.8';box.append(button,state);target.append(box);
         }
         check(false);
@@ -11158,5 +11302,355 @@ const WebMarkPasswordSyncCore=(()=>{
     window.WebMarkNavigation={back};
 })();
 </script>
+
+<script>
+/* Notes workspace tools. Plain text stays portable; formatted text and ink are optional. */
+(()=>{'use strict';
+ const $=id=>document.getElementById(id),native=()=>window.WebMarkAndroid;
+ let rich,canvas,ink=[],stroke=null,tool='pen',color='#4f6fff',paper='plain',undo=[],ready=false,active=null;
+ const allowed=new Set(['B','STRONG','I','EM','U','S','P','DIV','BR','UL','OL','LI','H2','H3','BLOCKQUOTE','MARK','SPAN','FONT']);
+ function sanitize(html){
+  const root=document.createElement('div'),parsed=new DOMParser().parseFromString(String(html||'').slice(0,200000),'text/html');
+  const copy=(from,to)=>{for(const node of from.childNodes){if(node.nodeType===3){to.append(document.createTextNode(node.textContent));continue;}if(node.nodeType!==1||['SCRIPT','STYLE','IFRAME','OBJECT','SVG','IMG','AUDIO','VIDEO'].includes(node.tagName))continue;
+   const target=allowed.has(node.tagName)?document.createElement(node.tagName):document.createElement('span');
+   for(const property of ['color','background-color','font-weight','font-style','text-decoration','text-align']){const value=node.style.getPropertyValue(property);if(value&&/^[#a-zA-Z0-9(),.% -]{1,60}$/.test(value))target.style.setProperty(property,value);}
+   if(node.tagName==='FONT'&&/^#[a-f0-9]{6}$/i.test(node.getAttribute('color')||''))target.style.color=node.getAttribute('color');
+   copy(node,target);to.append(target);
+  }};copy(parsed.body,root);return root.innerHTML;
+ }
+ function cleanInk(rows){return (Array.isArray(rows)?rows:[]).slice(0,120).map(row=>({tool:['pen','pencil','highlighter','calligraphy','rectangle','ellipse','tape'].includes(row.tool)?row.tool:'pen',color:/^#[a-f0-9]{6}$/i.test(row.color)?row.color:'#4f6fff',points:(Array.isArray(row.points)?row.points:[]).slice(0,400).filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite)).map(p=>p.map(n=>Math.round(Math.max(0,Math.min(1,n))*1000)/1000))})).filter(row=>row.points.length);
+ }
+ function paint(target=canvas,rows=ink){if(!target)return;const c=target.getContext('2d'),w=target.width,h=target.height;c.clearRect(0,0,w,h);
+  for(const row of rows){if(!row.points.length)continue;c.save();c.strokeStyle=row.color;c.fillStyle=row.color;c.lineCap='round';c.lineJoin='round';c.lineWidth=row.tool==='highlighter'?18:row.tool==='calligraphy'?5:row.tool==='pencil'?1.5:3;c.globalAlpha=row.tool==='highlighter'?.3:1;
+   const [x,y]=row.points[0],last=row.points.at(-1);c.beginPath();
+   if(row.tool==='rectangle'||row.tool==='tape'){c.rect(x*w,y*h,(last[0]-x)*w,(last[1]-y)*h);if(row.tool==='tape'){c.fillStyle='#c6b5ff';c.fill();}else c.stroke();}
+   else if(row.tool==='ellipse'){c.ellipse((x+last[0])*w/2,(y+last[1])*h/2,Math.abs(last[0]-x)*w/2,Math.abs(last[1]-y)*h/2,0,0,Math.PI*2);c.stroke();}
+   else{c.moveTo(x*w,y*h);for(const p of row.points)c.lineTo(p[0]*w,p[1]*h);if(row.points.length===1)c.lineTo(x*w+.5,y*h+.5);c.stroke();}c.restore();
+  }
+ }
+ function changed(){if(!ready)return;$('wm-note-body').value=rich.innerText.slice(0,100000);$('wm-note-body').dispatchEvent(new Event('input',{bubbles:true}));}
+ function noteExtras(){return {rich:rich?sanitize(rich.innerHTML):'',ink:cleanInk(ink),paper,reminderAt:Date.parse($('wm-studio-date')?.value||'')||null};}
+ function open(note){ready=false;active=note;ink=cleanInk(note?.ink);undo=[];paper=['plain','lined','grid'].includes(note?.paper)?note.paper:'plain';rich.innerHTML=note?.rich?sanitize(note.rich):'';if(!note?.rich)rich.textContent=note?.body||'';
+  $('wm-studio-paper').value=paper;rich.dataset.paper=paper;$('wm-studio-date').value=note?.reminderAt?localDate(note.reminderAt):'';canvas.hidden=!ink.length;paint();ready=true;updateReminderLabel();}
+ function localDate(at){const d=new Date(at);return new Date(at-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
+ function updateReminderLabel(){const el=$('wm-studio-reminder-status');if(el)el.textContent=$('wm-studio-date').value?'Reminder set for '+new Date($('wm-studio-date').value).toLocaleString(): 'Choose a date and time. Android reminders ring until Stop or Snooze.';}
+ function reschedule(){const library=window.WebMarkNotesData?.();if(!library)return 'not-loaded';const rows=library.notes||[];if(native()?.noteReminders){const status=native().noteReminders(JSON.stringify(rows.filter(n=>!n.deletedAt&&!n.archived&&Number.isFinite(n.reminderAt)&&n.reminderAt>0).map(n=>({id:n.id,at:n.reminderAt}))));
+  const el=$('wm-studio-alarm-status');if(el)el.textContent=status==='permission'?'Allow Alarms & reminders, then return here.':status==='notifications'?'Allow notifications so you can Stop or Snooze.':status==='ok'?'Reminder schedule saved on this Android device.':'Could not schedule reminders. Check permissions and try again.';
+  return status;}
+  return 'browser';
+ }
+ function reader(note,content){const holder=$('wm-note-reader-text');if(content.rich)holder.innerHTML=sanitize(content.rich);if(content.ink?.length){const image=document.createElement('canvas');image.width=900;image.height=600;image.style.cssText='width:100%;height:auto';paint(image,cleanInk(content.ink));holder.append(image);}}
+ function calendar(){const at=Date.parse($('wm-studio-date').value)||Date.now()+3600000,title=$('wm-note-title').value||'WebMark Note',body=$('wm-note-body').value;
+  if(native()?.noteCalendar){native().noteCalendar(title,body,at);return;}
+  const stamp=n=>new Date(n).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');const q=new URLSearchParams({action:'TEMPLATE',text:title,details:body.slice(0,10000),dates:stamp(at)+'/'+stamp(at+3600000)});window.open('https://calendar.google.com/calendar/render?'+q,'_blank','noopener');
+ }
+ let listsDialog, listsButton;
+ function closeLists(restoreFocus=true){
+  if(!listsDialog?.open)return false;
+  listsDialog.close();
+  if(restoreFocus)listsButton.focus();
+  return true;
+ }
+ function setupLists(){
+  const app=$('wm-notes-app'), sidebar=app.querySelector('.wm-notes-sidebar');
+  const compact=matchMedia('(max-width:620px)');
+  const marker=document.createComment('Notes list location');
+  sidebar.before(marker);
+  listsButton=document.createElement('button');
+  listsButton.type='button';
+  listsButton.className='wm-notes-button wm-notes-icon wm-studio-lists';
+  listsButton.setAttribute('aria-label','Note lists and folders');
+  listsButton.setAttribute('aria-haspopup','dialog');
+  listsButton.innerHTML='<i class="fa-solid fa-list" aria-hidden="true"></i>';
+  $('wm-notes-title').after(listsButton);
+  listsDialog=document.createElement('dialog');
+  listsDialog.id='wm-studio-lists';
+  listsDialog.setAttribute('aria-label','Note lists and folders');
+  const heading=document.createElement('header');
+  heading.className='wm-notes-header';
+  heading.innerHTML='<strong>Lists & folders</strong><button type="button" class="wm-notes-button" aria-label="Close lists">×</button>';
+  heading.querySelector('button').onclick=()=>closeLists();
+  listsDialog.append(heading);
+  app.append(listsDialog);
+  listsButton.onclick=()=>listsDialog.showModal();
+  listsDialog.addEventListener('click',event=>{
+   if(event.target===listsDialog||event.target.closest('[data-note-action="view"],[data-note-action="add-folder"]'))closeLists();
+  });
+  const resize=()=>{
+   if(compact.matches)listsDialog.append(sidebar);
+   else {closeLists(false);marker.after(sidebar);}
+  };
+  compact.addEventListener('change',resize);
+  resize();
+ }
+ function setup(){
+  if(!$('wm-note-editor'))return;
+  setupLists();
+  const header=$('wm-note-editor').querySelector('header');header.insertAdjacentHTML('beforeend','<button type="button" class="wm-notes-button" id="wm-studio-share" aria-label="Share note"><i class="fa-solid fa-arrow-up-from-bracket"></i></button><button type="button" class="wm-notes-button" id="wm-studio-more" aria-label="Note options"><i class="fa-solid fa-ellipsis-vertical"></i></button>');
+  $('wm-note-body').hidden=true;$('wm-note-body').insertAdjacentHTML('afterend','<div id="wm-studio-rich" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Note text" dir="auto" data-placeholder="Start writing…"></div><canvas id="wm-studio-ink" width="900" height="600" aria-label="Drawing page" hidden></canvas><div id="wm-studio-tools" role="toolbar" aria-label="Note tools"><button type="button" data-format="undo" title="Undo">↶</button><button type="button" data-format="bold" title="Bold"><b>B</b></button><button type="button" data-format="italic" title="Italic"><i>I</i></button><button type="button" data-format="underline" title="Underline"><u>U</u></button><button type="button" data-format="insertUnorderedList" title="Bullet list">☷</button><button type="button" id="wm-studio-checklist" title="Insert checklist item">☐</button><button type="button" data-format="hiliteColor" title="Highlight">▰</button><button type="button" id="wm-studio-type" title="Type"><i class="fa-solid fa-keyboard"></i></button><select id="wm-studio-tool" aria-label="Drawing tool"><option value="pen">Pen</option><option value="pencil">Pencil</option><option value="calligraphy">Calligraphy</option><option value="highlighter">Highlighter</option><option value="eraser">Eraser</option><option value="rectangle">Rectangle</option><option value="ellipse">Ellipse</option><option value="tape">Tape</option></select><input id="wm-studio-ink-color" type="color" value="#4f6fff" aria-label="Ink color"><button type="button" id="wm-studio-undo-ink" title="Undo drawing">↶ Ink</button></div>');
+  const options=document.createElement('details');options.id='wm-studio-options';options.innerHTML='<summary>Note options · Folder, color & reminder</summary><div class="wm-studio-options-inner"><label>Paper <select id="wm-studio-paper"><option value="plain">Plain</option><option value="lined">Lined</option><option value="grid">Grid</option></select></label><label>Reminder <input id="wm-studio-date" type="datetime-local"></label><p id="wm-studio-reminder-status"></p><div class="wm-note-toolbar"><button type="button" class="wm-notes-button" id="wm-studio-clear-reminder">Remove reminder</button><button type="button" class="wm-notes-button" id="wm-studio-ring">Choose ringtone</button><button type="button" class="wm-notes-button" id="wm-studio-permission">Enable alarms</button><button type="button" class="wm-notes-button" id="wm-studio-calendar">Add to calendar</button><button type="button" class="wm-notes-button" id="wm-studio-print">Print / PDF</button></div><p id="wm-studio-alarm-status" role="status"></p><p>Reminders ring on Android. Calendar opens your calendar app to review and save an event. Browser pages cannot ring reliably after closing.</p></div>';
+  $('wm-note-editor').querySelector('.wm-notes-fields').append(options);const inner=options.querySelector('.wm-studio-options-inner');
+  for(const id of ['wm-note-folder','wm-note-colors-label','wm-note-colors']){const el=$(id);if(id==='wm-note-folder'){const label=document.querySelector('label[for="wm-note-folder"]');inner.append(label,el.parentElement);}else inner.append(el);}
+  rich=$('wm-studio-rich');canvas=$('wm-studio-ink');rich.addEventListener('input',changed);
+  rich.addEventListener('paste',event=>{event.preventDefault();document.execCommand('insertText',false,(event.clipboardData?.getData('text/plain')||'').slice(0,100000));changed();});
+  rich.addEventListener('drop',event=>event.preventDefault());
+  $('wm-studio-tools').addEventListener('pointerdown',e=>{if(e.target.closest('[data-format]'))e.preventDefault();});
+  $('wm-studio-tools').addEventListener('click',e=>{const format=e.target.closest('[data-format]')?.dataset.format;if(format){rich.focus();document.execCommand(format,false,format==='hiliteColor'?'#fff49a':null);changed();}});
+  $('wm-studio-checklist').onpointerdown=event=>event.preventDefault();
+  $('wm-studio-checklist').onclick=()=>{rich.focus();document.execCommand('insertText',false,'☐ ');changed();};
+  $('wm-studio-more').onclick=()=>{options.open=!options.open;if(options.open)options.scrollIntoView({behavior:'smooth',block:'nearest'});};
+  $('wm-studio-tool').onchange=e=>{tool=e.target.value;canvas.hidden=false;canvas.style.touchAction='none';canvas.scrollIntoView({block:'nearest'});};
+  $('wm-studio-ink-color').oninput=e=>color=e.target.value;
+  $('wm-studio-type').onclick=()=>{canvas.style.touchAction='auto';rich.focus();};
+  $('wm-studio-undo-ink').onclick=()=>{if(undo.length)ink=undo.pop();paint();changed();};
+  const point=e=>{const r=canvas.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];};
+  canvas.onpointerdown=e=>{if(canvas.style.touchAction!=='none')return;e.preventDefault();undo.push(JSON.parse(JSON.stringify(ink)));if(undo.length>20)undo.shift();canvas.setPointerCapture(e.pointerId);const p=point(e);if(tool==='eraser'){ink=ink.filter(s=>!s.points.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<.045));paint();changed();return;}if(ink.length>=120){alert('Drawing page is full. Erase or undo a stroke first.');return;}stroke={tool,color,points:[p]};ink.push(stroke);paint();};
+  canvas.onpointermove=e=>{if(!stroke)return;if(stroke.points.length<400&&ink.reduce((total,row)=>total+row.points.length,0)<4000)stroke.points.push(point(e));paint();};
+  canvas.onpointerup=canvas.onpointercancel=()=>{if(stroke){stroke=null;changed();}};
+  $('wm-studio-paper').onchange=e=>{paper=e.target.value;rich.dataset.paper=paper;changed();};
+  $('wm-studio-date').onchange=async()=>{const at=Date.parse($('wm-studio-date').value);if(at&&at<=Date.now()){alert('Choose a future date and time.');$('wm-studio-date').value='';}updateReminderLabel();changed();reschedule();};
+  $('wm-studio-clear-reminder').onclick=()=>{$('wm-studio-date').value='';updateReminderLabel();changed();reschedule();};
+  $('wm-studio-ring').onclick=()=>{if(native()?.chooseReminderRingtone)native().chooseReminderRingtone();else alert('Ringtone selection is available in the Android APK.');};
+  $('wm-studio-permission').onclick=()=>{if(native()?.reminderPermissions)native().reminderPermissions();else alert('Install the Android APK for background ringing reminders.');};
+  $('wm-studio-calendar').onclick=calendar;
+  $('wm-studio-share').onclick=async()=>{const text=$('wm-note-title').value+'\n\n'+$('wm-note-body').value;if(native()?.shareText)native().shareText(text);else if(navigator.share)await navigator.share({title:$('wm-note-title').value,text});else await wmCopy(text);};
+  $('wm-studio-print').onclick=()=>{const title=document.createElement('h1');title.textContent=$('wm-note-title').value||'WebMark Note';const image=document.createElement('canvas');image.width=900;image.height=600;paint(image);const drawing=ink.length?'<img style="width:100%" src="'+image.toDataURL()+'">':'';const html='<!doctype html><meta charset="utf-8"><title>WebMark Note</title><style>body{font:16px sans-serif;margin:24px;white-space:pre-wrap}img{break-inside:avoid}</style>'+title.outerHTML+sanitize(rich.innerHTML)+drawing;if(native()?.printNoteDocument)native().printNoteDocument(html);else{const frame=document.createElement('iframe');frame.style.cssText='position:fixed;width:0;height:0;border:0';frame.srcdoc=html;frame.onload=()=>{frame.contentWindow.print();setTimeout(()=>frame.remove(),60000);};document.body.append(frame);}};
+
+  const hero=document.createElement('div');hero.className='wm-studio-hero';const emblem=document.createElement('i');emblem.className='fa-solid fa-pen-nib';const heading=document.createElement('h2');heading.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});hero.append(emblem,heading);const homeActions=document.createElement('div');homeActions.className='wm-studio-home-actions';homeActions.innerHTML='<button type="button" class="wm-notes-button" data-note-action="new"><i class="fa-solid fa-plus"></i> New note</button><button type="button" class="wm-notes-button" id="wm-studio-import"><i class="fa-solid fa-file-import"></i> Import text</button><input type="file" accept=".txt,.md,text/plain,text/markdown" id="wm-studio-import-file" hidden>';if(native()?.openPdfMarkup){
+   const pdf=document.createElement('button');pdf.type='button';pdf.className='wm-notes-button';
+   pdf.innerHTML='<i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Mark up PDF';
+   pdf.onclick=()=>native().openPdfMarkup();
+   homeActions.prepend(pdf);
+  }
+  hero.append(homeActions);$('wm-note-view').before(hero);$('wm-studio-import').onclick=()=>$('wm-studio-import-file').click();$('wm-studio-import-file').onchange=async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;if(file.size>100000){alert('Choose a text file smaller than 100 KB.');return;}await window.WebMarkNotesImportText?.(file.name.replace(/\.[^.]+$/,''),await file.text());};
+  const settings=$('wm-note-settings').querySelector('.wm-notes-fields')||$('wm-note-settings').querySelector('div');if(settings){const row=document.createElement('section');row.className='wm-note-settings-group';row.innerHTML='<h3>Reminders & calendar</h3><p>Set the reminder in each note’s options. Choose a phone ringtone; it repeats until Stop or Snooze. Alarms use the phone’s alarm volume and system settings.</p><button type="button" class="wm-notes-button" id="wm-studio-stop">Stop ringing</button>';settings.append(row);$('wm-studio-stop').onclick=()=>native()?.stopNoteAlarm?.();}
+  window.addEventListener('focus',reschedule);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reschedule();});
+ }
+ window.WebMarkNoteStudio={open,extras:noteExtras,reschedule,reader,sanitize,cleanInk,closeLists};setup();
+})();
+
+</script>
+
+
+<script>
+(() => {
+    const names = {bookmarks:'Bookmarks', notes:'Notes', passwords:'Passwords'};
+    const key = 'wm_sync_center_v1';
+    const dayKey = date => [date.getFullYear(), date.getMonth()+1, date.getDate()].join('-');
+    let working = false;
+    let timer;
+    let dialog;
+    const errors = {};
+    function read(){
+        try{return JSON.parse(localStorage.getItem(key)) || {};}catch{return {};}
+    }
+    function change(fn){
+        const data=read();
+        fn(data);
+        try{localStorage.setItem(key,JSON.stringify(data));}catch{}
+        paint();
+    }
+    function uid(){return globalThis.WebMarkCloud?.info().user?.uid;}
+    function pending(section){
+        change(data=>{data.revision ||= {};data.revision[section]=(data.revision[section]||0)+1;});
+    }
+    function revision(section){return read().revision?.[section]||0;}
+    function complete(section, account, syncedRevision){
+        if(!account||account!==uid())return;
+        change(data=>{
+            data.accounts ||= {};
+            const rows=data.accounts[account] ||= {};
+            rows[section]={time:Date.now(),revision:syncedRevision};
+        });
+    }
+    function waiting(section,data=read()){
+        const current=data.revision?.[section]||0;
+        return current>(data.accounts?.[uid()]?.[section]?.revision||0);
+    }
+    function paint(){
+        const data=read();
+        const cloud=globalThis.WebMarkCloud?.info();
+        const list=Object.keys(names).filter(section=>waiting(section,data));
+        for(const toolbar of document.querySelectorAll('.wm-settings-cloud-state')){
+            const next=list.length?'Changes to sync: '+list.map(section=>names[section]).join(', '):'';
+            if(toolbar.dataset.syncPending!==next)toolbar.dataset.syncPending=next;
+        }
+        document.querySelectorAll('.wm-google-account').forEach(button=>{
+            const pending=list.length>0||cloud?.quotaUntil>0;
+            button.classList.toggle('wm-sync-pending',!!cloud?.user&&pending);
+            button.classList.toggle('wm-sync-ready',!!cloud?.user&&!pending);
+            if(list.length)button.title='Changes to sync: '+list.map(section=>names[section]).join(', ');
+        });
+        if(!dialog)return;
+        for(const section of Object.keys(names)){
+            const last=data.accounts?.[uid()]?.[section]?.time;
+            dialog.querySelector('[data-sync-state="'+section+'"]').textContent=
+                (waiting(section,data)?'Changes waiting to sync':'No new local changes')+
+                (errors[section]?' · '+errors[section]:'');
+            dialog.querySelector('[data-sync-run="'+section+'"]').textContent=
+                section==='passwords'&&waiting(section,data)&&globalThis.WebMarkPasswords?.unlocked()===false?'Unlock':'Sync';
+            dialog.querySelector('[data-sync-time="'+section+'"]').textContent=
+                last?'Last synced '+new Date(last).toLocaleString():'No successful sync recorded';
+        }
+        dialog.querySelectorAll('[data-sync-run]').forEach(button=>button.disabled=working||!uid()||cloud?.quotaUntil>Date.now());
+    }
+    async function run(section='all',automatic=false){
+        if(working||!uid()||!navigator.onLine||WebMarkCloud.info().quotaUntil>Date.now())return false;
+        working=true;paint();
+        const account=uid();
+        try{
+            for(const target of section==='all'?Object.keys(names):[section]){
+                if(uid()!==account||WebMarkCloud.info().quotaUntil>Date.now())break;
+                if(automatic&&target==='passwords'&&!globalThis.WebMarkPasswords?.unlocked()){
+                    errors[target]='Unlock to sync';continue;
+                }
+                let ok=false;
+                try{
+                    if(target==='bookmarks')ok=await WebMarkCloud.sync(!automatic);
+                    if(target==='notes')ok=await globalThis.WebMarkNotesSync?.(automatic);
+                    if(target==='passwords')ok=await globalThis.WebMarkPasswords?.sync(true,automatic);
+                }catch{}
+                errors[target]=ok?'':target==='passwords'&&!globalThis.WebMarkPasswords?.unlocked()?'Unlock to sync':
+                    'Sync incomplete. Review '+names[target]+' settings.';
+                paint();
+            }
+            return true;
+        }finally{working=false;paint();}
+    }
+    async function tick(){
+        clearTimeout(timer);
+        const now=new Date(), next=new Date(now);
+        next.setHours(24,0,0,0);
+        timer=setTimeout(tick,Math.max(1000,next-now));
+        const data=read(), account=uid(), today=dayKey(now);
+        if(!account||!navigator.onLine||working||data.midnight===false)return;
+        if(data.lastRun?.[account]===today)return;
+        if(!data.lastRun?.[account]&&now.getHours()!==0){
+            change(value=>{(value.lastRun ||= {})[account]=today;});
+            return;
+        }
+        change(value=>{(value.lastRun ||= {})[account]=today;});
+        await run('all',true);
+    }
+    function mount(el){
+        dialog=el;
+        const main=el.querySelector('[data-cloud="sync"]');
+        if(!main||el.querySelector('.wm-sync-sections'))return;
+        const panel=document.createElement('section');
+        panel.setAttribute('aria-live','polite');
+        panel.className='wm-sync-sections';
+        for(const [section,name] of Object.entries(names)){
+            const row=document.createElement('article');
+            row.innerHTML='<div><strong>'+name+'</strong><span data-sync-state="'+section+'"></span><small data-sync-time="'+section+'"></small></div><button type="button" data-sync-run="'+section+'">Sync</button>';
+            row.lastElementChild.onclick=()=>{
+                if(section==='passwords'&&globalThis.WebMarkPasswords?.unlocked()===false&&waiting('passwords')){
+                    el.close();
+                    globalThis.WebMarkPasswords.open();
+                    return;
+                }
+                run(section);
+            };
+            panel.append(row);
+        }
+        const label=document.createElement('label');
+        label.className='wm-sync-midnight';
+        label.innerHTML='<input type="checkbox"> Daily sync at midnight';
+        label.firstElementChild.checked=read().midnight!==false;
+        label.firstElementChild.onchange=()=>{change(data=>{data.midnight=label.firstElementChild.checked;});tick();};
+        main.before(panel,label);
+        main.textContent='Sync all now';
+        paint();
+    }
+    globalThis.WebMarkSyncCenter={pending,revision,complete,run,mount};
+    const start=()=>{
+        globalThis.WebMarkCloud?.subscribe(paint);
+        setTimeout(tick,6000);
+        addEventListener('online',tick);
+        addEventListener('focus',tick);
+        document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+    else start();
+})();
+
+</script>
+<script>
+(() => {
+    const encoder = new TextEncoder();
+    const crcTable = Uint32Array.from({length:256}, (_, byte) => {
+        for(let bit=0;bit<8;bit++) byte=(byte>>>1)^((byte&1)?0xedb88320:0);
+        return byte;
+    });
+
+    function zip(entries,type='application/zip') {
+        const files=[], directory=[];
+        let offset=0, directorySize=0;
+        for(const [path,value] of entries) {
+            const name=encoder.encode(path), data=typeof value==='string'?encoder.encode(value):value;
+            let crc=0xffffffff;
+            for(const byte of data) crc=(crc>>>8)^crcTable[(crc^byte)&255];
+            crc=(crc^0xffffffff)>>>0;
+            const local=new Uint8Array(30), central=new Uint8Array(46);
+            const l=new DataView(local.buffer), c=new DataView(central.buffer);
+            l.setUint32(0,0x04034b50,true);
+            l.setUint16(4,20,true);
+            l.setUint16(12,33,true);
+            l.setUint32(14,crc,true);
+            l.setUint32(18,data.length,true);
+            l.setUint32(22,data.length,true);
+            l.setUint16(26,name.length,true);
+            c.setUint32(0,0x02014b50,true);
+            c.setUint16(4,20,true);
+            central.set(local.subarray(4,30),6);
+            c.setUint32(42,offset,true);
+            files.push(local,name,data);
+            directory.push(central,name);
+            offset+=local.length+name.length+data.length;
+            directorySize+=central.length+name.length;
+        }
+        const end=new Uint8Array(22), record=new DataView(end.buffer);
+        record.setUint32(0,0x06054b50,true);
+        record.setUint16(8,entries.length,true);
+        record.setUint16(10,entries.length,true);
+        record.setUint32(12,directorySize,true);
+        record.setUint32(16,offset,true);
+        return new Blob([...files,...directory,end],{type});
+    }
+
+    async function backup() {
+        await wmStorage.ready;
+        const notes=wmJSON('wm_notes_v1',{notes:[],folders:[]});
+        const vault=wmStorage.getItem('wm_password_vault_v1');
+        const entries=[
+            ['bookmarks.json',JSON.stringify({format:'webmark-v4',f:S.folders,l:S.links,trash:S.trash||[]})],
+            ['notes.json',JSON.stringify({format:'webmark-notes-v2',...mergeNotes(notes,{})})]
+        ];
+        if(vault) entries.push(['passwords-encrypted.webmark',vault]);
+        const file=zip(entries);
+        wmDownload('WebMark-Backup-'+new Date().toISOString().slice(0,10)+'.zip',file,file.type);
+    }
+
+    if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',()=>{
+        for(const container of document.querySelectorAll('#settingsPageBody,#settingsModal .mc')){
+            const button=document.createElement('button');
+            button.type='button';button.className='erow wm-setting-action wm-backup-action';
+            button.textContent='Export everything';
+            button.onclick=async()=>{
+                if(!confirm('Export bookmarks, notes, and the encrypted password vault in one ZIP? Keep the ZIP private.'))return;
+                try{await backup();}catch(error){alert('Backup failed. '+error.message);}
+            };
+            container.append(button);
+        }
+    });
+})();
+</script>
+<style>
+.wm-setting-action.erow{display:flex;align-items:center;justify-content:center;gap:10px;min-height:46px;width:100%;border:0;border-radius:13px;padding:12px 16px;font-weight:700;color:#fff;background:linear-gradient(110deg,#5143b9,#2c65ce);box-shadow:0 4px 12px #333a842f;cursor:pointer}
+.wm-setting-action::before{font-family:"Font Awesome 6 Free";font-weight:900;content:"\f021"}
+.wm-update-action.erow{background:linear-gradient(110deg,#0d6969,#186eac)}
+.wm-update-action::before{content:"\f019"}
+.wm-backup-action.erow{background:linear-gradient(110deg,#83448b,#5733a8)}
+.wm-backup-action::before{content:"\f187"}
+</style>
 </body>
 </html>
