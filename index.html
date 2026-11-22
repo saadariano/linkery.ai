@@ -9078,6 +9078,425 @@ dialog.wm-pw-window:not([open]),dialog#wm-passwords:not([open]){display:none!imp
 <section id="wm-note-print" aria-hidden="true"></section>
 
 <script>
+(() => {
+    const messages = new Map([
+        ["1 minute", ["1 minute", "1 minuto", "1 minuto", "دقيقة واحدة"]],
+        ["2 minutes", ["2 minutes", "2 minutos", "2 minuti", "دقيقتان"]],
+        ["5 minutes", ["5 minutes", "5 minutos", "5 minuti", "٥ دقائق"]],
+        ["A note folder already has this name.", ["Un dossier de notes porte déjà ce nom.", "Ya existe una carpeta de notas con ese nombre.", "Una cartella delle note ha già questo nome.", "يوجد مجلد ملاحظات بهذا الاسم بالفعل."]],
+        ["Accent Color", ["Couleur d’accentuation", "Color de énfasis", "Colore di accento", "اللون المميز"]],
+        ["Add to calendar", ["Ajouter au calendrier", "Añadir al calendario", "Aggiungi al calendario", "إضافة إلى التقويم"]],
+        ["Added to calendar", ["Ajouté au calendrier", "Añadido al calendario", "Aggiunto al calendario", "تمت الإضافة إلى التقويم"]],
+        ["Admin password", ["Mot de passe administrateur", "Contraseña de administrador", "Password amministratore", "كلمة مرور المسؤول"]],
+        ["Alarm enabled", ["Alarme activée", "Alarma activada", "Sveglia attivata", "المنبّه مفعّل"]],
+        ["Alarms enabled", ["Alarmes activées", "Alarmas activadas", "Sveglie attive", "المنبّهات مفعّلة"]],
+        ["Alarms on Android", ["Alarmes sur Android", "Alarmas en Android", "Sveglie su Android", "المنبّهات على Android"]],
+        ["All", ["Tout", "Todo", "Tutto", "الكل"]],
+        ["All notes", ["Toutes les notes", "Todas las notas", "Tutte le note", "كل الملاحظات"]],
+        ["Allow Alarms & reminders, then return here.", ["Autorisez les alarmes et rappels, puis revenez ici.", "Permite alarmas y recordatorios y vuelve aquí.", "Consenti sveglie e promemoria, quindi torna qui.", "اسمح بالمنبّهات والتذكيرات ثم ارجع إلى هنا."]],
+        ["Allow notifications so you can Stop or Snooze.", ["Autorisez les notifications pour arrêter ou reporter la sonnerie.", "Permite notificaciones para detener o posponer el aviso.", "Consenti le notifiche per interrompere o rimandare la suoneria.", "اسمح بالإشعارات لإيقاف الرنين أو تأجيله."]],
+        ["App updates", ["Mises à jour de l’application", "Actualizaciones de la aplicación", "Aggiornamenti app", "تحديثات التطبيق"]],
+        ["Appearance", ["Apparence", "Apariencia", "Aspetto", "المظهر"]],
+        ["Apple Passwords", ["Mots de passe Apple", "Contraseñas de Apple", "Password di Apple", "كلمات مرور Apple"]],
+        ["Archive", ["Archives", "Archivo", "Archivio", "الأرشيف"]],
+        ["Archived", ["Archivés", "Archivados", "Archiviati", "المؤرشفة"]],
+        ["Authenticator Base32 secret", ["Clé secrète Base32", "Clave secreta Base32", "Chiave segreta Base32", "مفتاح المصادقة السري Base32"]],
+        ["Authenticator code", ["Code d’authentification", "Código de autenticación", "Codice di autenticazione", "رمز المصادقة"]],
+        ["Authenticator code (TOTP)", ["Code d’authentification (TOTP)", "Código de autenticación (TOTP)", "Codice di autenticazione (TOTP)", "رمز المصادقة (TOTP)"]],
+        ["Auto-lock after inactivity", ["Verrouillage automatique après inactivité", "Bloqueo automático por inactividad", "Blocco automatico per inattività", "القفل التلقائي بعد الخمول"]],
+        ["Back", ["Retour", "Atrás", "Indietro", "رجوع"]],
+        ["Back to password categories", ["Revenir aux catégories", "Volver a las categorías", "Torna alle categorie password", "العودة إلى فئات كلمات المرور"]],
+        ["Bold", ["Gras", "Negrita", "Grassetto", "خط عريض"]],
+        ["Bookmarks", ["Favoris web", "Marcadores", "Segnalibri", "الإشارات المرجعية"]],
+        ["Brands", ["Marques", "Marcas", "Marchi", "العلامات التجارية"]],
+        ["Bulleted list", ["Liste à puces", "Lista con viñetas", "Elenco puntato", "قائمة نقطية"]],
+        ["Calligraphy", ["Calligraphie", "Caligrafía", "Calligrafia", "خط يدوي"]],
+        ["Cancel", ["Annuler", "Cancelar", "Annulla", "إلغاء"]],
+        ["Cancel selection", ["Annuler la sélection", "Cancelar selección", "Annulla selezione", "إلغاء التحديد"]],
+        ["Change vault password", ["Changer le mot de passe du coffre", "Cambiar contraseña de la bóveda", "Cambia la password della cassaforte", "تغيير كلمة مرور الخزنة"]],
+        ["Changes to sync:", ["Modifications à synchroniser :", "Cambios por sincronizar:", "Modifiche da sincronizzare:", "تغييرات للمزامنة:"]],
+        ["Changes waiting to sync", ["Modifications en attente de synchronisation", "Cambios pendientes de sincronizar", "Modifiche in attesa di sincronizzazione", "تغييرات بانتظار المزامنة"]],
+        ["Check for updates", ["Rechercher les mises à jour", "Buscar actualizaciones", "Controlla aggiornamenti", "التحقق من التحديثات"]],
+        ["Checking…", ["Vérification…", "Comprobando…", "Verifica…", "جارٍ التحقق…"]],
+        ["Checklist", ["Liste de tâches", "Lista de tareas", "Lista di controllo", "قائمة مهام"]],
+        ["Choose a date and time. Android reminders ring until Stop or Snooze.", ["Choisissez la date et l’heure. Sur Android, la sonnerie continue jusqu’à l’arrêt ou au report.", "Elige fecha y hora. En Android sonará hasta detener o posponer el recordatorio.", "Scegli data e ora. Su Android la suoneria continua fino all’interruzione o al rinvio.", "اختر التاريخ والوقت. يستمر الرنين على Android حتى الإيقاف أو التأجيل."]],
+        ["Choose an exported CSV file. Extract it first if your browser exports a ZIP. Imported CSV files contain readable passwords. Remove your exported file after importing it.", ["Choisissez le CSV exporté. Si le navigateur fournit un ZIP, extrayez-le d’abord. Le CSV contient des mots de passe lisibles. Supprimez-le après l’importation.", "Elige el CSV exportado. Si el navegador genera un ZIP, extráelo primero. El CSV contiene contraseñas legibles. Elimínalo tras importarlo.", "Scegli il CSV esportato. Se il browser crea uno ZIP, estrailo prima. Il CSV contiene password leggibili. Eliminalo dopo averlo importato.", "اختر ملف CSV المصدّر. إذا صدّر المتصفح ملف ZIP فاستخرجه أولًا. يحتوي CSV على كلمات مرور مقروءة. احذف الملف بعد استيراده."]],
+        ["Choose ringtone", ["Choisir une sonnerie", "Elegir tono", "Scegli suoneria", "اختيار نغمة الرنين"]],
+        ["Clear All Data", ["Effacer toutes les données", "Borrar todos los datos", "Cancella tutti i dati", "مسح كل البيانات"]],
+        ["Clear everything", ["Tout effacer", "Borrar todo", "Cancella tutto", "مسح الكل"]],
+        ["Close", ["Fermer", "Cerrar", "Chiudi", "إغلاق"]],
+        ["Close lists", ["Fermer les listes", "Cerrar listas", "Chiudi elenchi", "إغلاق القوائم"]],
+        ["Cloud vault ready. Unlock with your existing vault password.", ["Le coffre en ligne est prêt. Déverrouillez-le avec votre mot de passe habituel.", "La bóveda en la nube está lista. Desbloquéala con tu contraseña actual.", "La cassaforte cloud è pronta. Sbloccala con la password esistente.", "الخزنة السحابية جاهزة. افتحها باستخدام كلمة مرور الخزنة الحالية."]],
+        ["Code / PIN", ["Code / PIN", "Código/PIN", "Codice/PIN", "رمز أو PIN"]],
+        ["Code / PIN — device, card, app", ["Code / PIN — appareil, carte, application", "Código/PIN de dispositivo, tarjeta o aplicación", "Codice/PIN di dispositivo, carta o app", "رمز أو PIN للجهاز أو البطاقة أو التطبيق"]],
+        ["Codes", ["Codes", "Códigos", "Codici", "الرموز"]],
+        ["Confirm password", ["Confirmer le mot de passe", "Confirmar contraseña", "Conferma password", "تأكيد كلمة المرور"]],
+        ["Confirm vault password", ["Confirmer le mot de passe du coffre", "Confirmar contraseña de la bóveda", "Conferma la password della cassaforte", "تأكيد كلمة مرور الخزنة"]],
+        ["Continue", ["Continuer", "Continuar", "Continua", "متابعة"]],
+        ["Copied.", ["Copié.", "Copiado.", "Copiato.", "تم النسخ."]],
+        ["Copied. Paste wherever you want to share.", ["Copié. Collez le contenu où vous souhaitez le partager.", "Copiado. Pega el contenido donde quieras compartirlo.", "Copiato. Incolla il contenuto dove vuoi condividerlo.", "تم النسخ. ألصق المحتوى حيث تريد مشاركته."]],
+        ["Copy", ["Copier", "Copiar", "Copia", "نسخ"]],
+        ["Copy all notes", ["Copier toutes les notes", "Copiar todas las notas", "Copia tutte le note", "نسخ كل الملاحظات"]],
+        ["Copy login", ["Copier les identifiants", "Copiar credenciales", "Copia credenziali", "نسخ بيانات الدخول"]],
+        ["Copy password", ["Copier le mot de passe", "Copiar contraseña", "Copia password", "نسخ كلمة المرور"]],
+        ["Copy recovery code", ["Copier le code de récupération", "Copiar código de recuperación", "Copia codice di recupero", "نسخ رمز الاسترداد"]],
+        ["Copy username / email", ["Copier l’identifiant / e-mail", "Copiar usuario o correo", "Copia nome utente o email", "نسخ اسم المستخدم أو البريد"]],
+        ["Could not copy.", ["Impossible de copier.", "No se pudo copiar.", "Impossibile copiare.", "تعذر النسخ."]],
+        ["Could not export notes.", ["Impossible d’exporter les notes.", "No se pudieron exportar las notas.", "Impossibile esportare le note.", "تعذر تصدير الملاحظات."]],
+        ["Could not import PDF.", ["Impossible d’importer le PDF.", "No se pudo importar el PDF.", "Impossibile importare il PDF.", "تعذر استيراد PDF."]],
+        ["Could not save. Keep WebMark open and try again.", ["Impossible d’enregistrer. Gardez WebMark ouvert et réessayez.", "No se pudo guardar. Mantén WebMark abierto e inténtalo de nuevo.", "Salvataggio non riuscito. Tieni WebMark aperto e riprova.", "تعذر الحفظ. أبقِ WebMark مفتوحًا وحاول مجددًا."]],
+        ["Could not schedule reminders. Check permissions and try again.", ["Impossible de programmer les rappels. Vérifiez les autorisations et réessayez.", "No se pudieron programar los recordatorios. Comprueba los permisos e inténtalo de nuevo.", "Impossibile programmare i promemoria. Controlla le autorizzazioni e riprova.", "تعذرت جدولة التذكيرات. تحقق من الأذونات وحاول مجددًا."]],
+        ["Could not share. Try exporting a file.", ["Impossible de partager. Essayez d’exporter un fichier.", "No se pudo compartir. Prueba a exportar un archivo.", "Condivisione non riuscita. Prova a esportare un file.", "تعذرت المشاركة. جرّب تصدير ملف."]],
+        ["Could not unlock. Check your vault password or backup.", ["Impossible de déverrouiller. Vérifiez le mot de passe ou la sauvegarde du coffre.", "No se pudo desbloquear. Comprueba la contraseña o la copia de la bóveda.", "Sblocco non riuscito. Controlla la password o il backup della cassaforte.", "تعذر فتح القفل. تحقق من كلمة مرور الخزنة أو نسختها الاحتياطية."]],
+        ["Could not verify that password or recovery code.", ["Impossible de vérifier le mot de passe ou le code de récupération.", "No se pudo verificar la contraseña o el código de recuperación.", "Impossibile verificare la password o il codice di recupero.", "تعذر التحقق من كلمة المرور أو رمز الاسترداد."]],
+        ["Create Username & Password", ["Créer un identifiant et un mot de passe", "Crear usuario y contraseña", "Crea nome utente e password", "إنشاء اسم مستخدم وكلمة مرور"]],
+        ["Create folder while adding a password", ["Créer un dossier en ajoutant un mot de passe", "Crear carpeta al añadir una contraseña", "Crea una cartella mentre aggiungi una password", "إنشاء مجلد أثناء إضافة كلمة مرور"]],
+        ["Create vault", ["Créer un coffre", "Crear bóveda", "Crea cassaforte", "إنشاء خزنة"]],
+        ["Create your password vault", ["Créer votre coffre de mots de passe", "Crea tu bóveda de contraseñas", "Crea la tua cassaforte di password", "أنشئ خزنة كلمات المرور"]],
+        ["Current Tab", ["Onglet actuel", "Pestaña actual", "Scheda corrente", "علامة التبويب الحالية"]],
+        ["Daily sync at midnight", ["Synchronisation quotidienne à minuit", "Sincronización diaria a medianoche", "Sincronizzazione giornaliera a mezzanotte", "مزامنة يومية عند منتصف الليل"]],
+        ["Dark mode", ["Mode sombre", "Modo oscuro", "Modalità scura", "الوضع الداكن"]],
+        ["Data", ["Données", "Datos", "Dati", "البيانات"]],
+        ["Date unavailable", ["Date indisponible", "Fecha no disponible", "Data non disponibile", "التاريخ غير متاح"]],
+        ["Default color", ["Couleur par défaut", "Color predeterminado", "Colore predefinito", "اللون الافتراضي"]],
+        ["Delete", ["Supprimer", "Eliminar", "Elimina", "حذف"]],
+        ["Delete folder", ["Supprimer le dossier", "Eliminar carpeta", "Elimina cartella", "حذف المجلد"]],
+        ["Delete notes and folders", ["Supprimer les notes et dossiers", "Eliminar notas y carpetas", "Elimina note e cartelle", "حذف الملاحظات والمجلدات"]],
+        ["Delete permanently", ["Supprimer définitivement", "Eliminar definitivamente", "Elimina definitivamente", "حذف نهائي"]],
+        ["Delete selected", ["Supprimer la sélection", "Eliminar selección", "Elimina selezione", "حذف المحدد"]],
+        ["Delete this note folder? Its notes will stay in All notes.", ["Supprimer ce dossier ? Ses notes resteront dans Toutes les notes.", "¿Eliminar esta carpeta? Sus notas seguirán en Todas las notas.", "Eliminare questa cartella? Le note resteranno in Tutte le note.", "حذف هذا المجلد؟ ستبقى ملاحظاته في كل الملاحظات."]],
+        ["Deleted", ["Supprimés", "Eliminadas", "Eliminate", "المحذوفة"]],
+        ["Deselect note", ["Désélectionner la note", "Deseleccionar nota", "Deseleziona nota", "إلغاء تحديد الملاحظة"]],
+        ["Device setup cancelled. Tap Device unlock to try again.", ["Configuration annulée. Touchez Déverrouillage par l’appareil pour réessayer.", "Configuración cancelada. Pulsa Desbloqueo con el dispositivo para reintentar.", "Configurazione annullata. Tocca Sblocco tramite dispositivo per riprovare.", "أُلغي الإعداد. اضغط على فتح القفل باستخدام الجهاز للمحاولة مجددًا."]],
+        ["Device unlock", ["Déverrouillage par l’appareil", "Desbloqueo con el dispositivo", "Sblocco tramite dispositivo", "فتح القفل باستخدام الجهاز"]],
+        ["Device unlock is offered during setup. Tap Face unlock to check device support. Android controls which secure biometric is available; some devices offer only fingerprint or device PIN for vault access.", ["Le déverrouillage par l’appareil est proposé à la configuration. Touchez Reconnaissance faciale pour vérifier sa disponibilité. Selon l’appareil, Android peut proposer uniquement l’empreinte ou le code PIN.", "El desbloqueo con el dispositivo se ofrece durante la configuración. Pulsa Reconocimiento facial para ver si es compatible. En algunos dispositivos, Android solo permite la huella o el PIN.", "Lo sblocco tramite dispositivo è proposto durante la configurazione. Tocca Riconoscimento facciale per verificarne la disponibilità. Alcuni dispositivi Android consentono solo l’impronta o il PIN.", "يتوفر فتح القفل باستخدام الجهاز أثناء الإعداد. اضغط على التعرف على الوجه للتحقق من الدعم. قد يتيح Android البصمة أو رمز الجهاز فقط."]],
+        ["Device unlock linked. You can use the icons next time.", ["Déverrouillage par l’appareil activé. Vous pourrez utiliser les icônes la prochaine fois.", "Desbloqueo con el dispositivo vinculado. Podrás usar los iconos la próxima vez.", "Sblocco tramite dispositivo collegato. La prossima volta puoi usare le icone.", "تم ربط فتح القفل بالجهاز. يمكنك استخدام الأيقونات في المرة القادمة."]],
+        ["Device, app, card or phone code", ["Code d’appareil, d’application, de carte ou de téléphone", "Código de dispositivo, aplicación, tarjeta o teléfono", "Codice del dispositivo, app, carta o telefono", "رمز الجهاز أو التطبيق أو البطاقة أو الهاتف"]],
+        ["Discard changes to this note?", ["Abandonner les modifications de cette note ?", "¿Descartar los cambios de esta nota?", "Scartare le modifiche a questa nota?", "تجاهل تغييرات هذه الملاحظة؟"]],
+        ["Discard this new note?", ["Abandonner cette nouvelle note ?", "¿Descartar esta nota nueva?", "Scartare questa nuova nota?", "تجاهل هذه الملاحظة الجديدة؟"]],
+        ["Done", ["Terminé", "Listo", "Fine", "تم"]],
+        ["Draw or type", ["Dessiner ou écrire", "Dibujar o escribir", "Disegna o scrivi", "الرسم أو الكتابة"]],
+        ["Drawing page", ["Page de dessin", "Página de dibujo", "Pagina di disegno", "صفحة الرسم"]],
+        ["Drawing tool", ["Outil de dessin", "Herramienta de dibujo", "Strumento di disegno", "أداة الرسم"]],
+        ["Edit", ["Modifier", "Editar", "Modifica", "تعديل"]],
+        ["Edit folder", ["Modifier le dossier", "Editar carpeta", "Modifica cartella", "تعديل المجلد"]],
+        ["Edit note", ["Modifier la note", "Editar nota", "Modifica nota", "تعديل الملاحظة"]],
+        ["Edit password", ["Modifier le mot de passe", "Editar contraseña", "Modifica password", "تعديل كلمة المرور"]],
+        ["Ellipse", ["Ellipse", "Elipse", "Ellisse", "شكل بيضاوي"]],
+        ["Enable alarms", ["Activer les alarmes", "Activar alarmas", "Attiva sveglie", "تفعيل المنبّهات"]],
+        ["Enable face / fingerprint / device PIN", ["Activer la reconnaissance faciale, l’empreinte ou le PIN", "Activar rostro, huella o PIN", "Attiva volto, impronta o PIN", "تفعيل الوجه أو البصمة أو رمز الجهاز"]],
+        ["Encrypted entries imported.", ["Entrées chiffrées importées.", "Entradas cifradas importadas.", "Voci cifrate importate.", "تم استيراد العناصر المشفّرة."]],
+        ["Encrypted file ready. Send the sharing password separately.", ["Le fichier chiffré est prêt. Envoyez le mot de passe de partage séparément.", "El archivo cifrado está listo. Envía la contraseña por separado.", "Il file cifrato è pronto. Invia la password di condivisione separatamente.", "الملف المشفّر جاهز. أرسل كلمة مرور المشاركة بشكل منفصل."]],
+        ["Encrypted passwords, folders and bookmark protection synced.", ["Mots de passe chiffrés, dossiers et protection des favoris synchronisés.", "Contraseñas cifradas, carpetas y protección de marcadores sincronizadas.", "Password cifrate, cartelle e protezione dei segnalibri sincronizzate.", "تمت مزامنة كلمات المرور المشفّرة والمجلدات وحماية الإشارات المرجعية."]],
+        ["Enter the vault password used on your other device", ["Saisissez le mot de passe du coffre de votre autre appareil", "Introduce la contraseña de la bóveda del otro dispositivo", "Inserisci la password della cassaforte usata sull’altro dispositivo", "أدخل كلمة مرور الخزنة المستخدمة على جهازك الآخر"]],
+        ["Eraser", ["Gomme", "Goma", "Gomma", "ممحاة"]],
+        ["Existing Google vault? Open Password settings and tap Sync now to load it.", ["Un coffre existe déjà sur Google ? Ouvrez les paramètres des mots de passe et synchronisez pour le charger.", "¿Ya tienes una bóveda en Google? Abre Ajustes de contraseñas y pulsa Sincronizar ahora para cargarla.", "Hai già una cassaforte su Google? Apri Impostazioni password e tocca Sincronizza ora per caricarla.", "هل لديك خزنة على Google؟ افتح إعدادات كلمات المرور واضغط على مزامنة الآن لتحميلها."]],
+        ["Export JSON", ["Exporter en JSON", "Exportar JSON", "Esporta JSON", "تصدير JSON"]],
+        ["Export PDF", ["Exporter en PDF", "Exportar PDF", "Esporta PDF", "تصدير PDF"]],
+        ["Export encrypted backup", ["Exporter une sauvegarde chiffrée", "Exportar copia cifrada", "Esporta backup cifrato", "تصدير نسخة احتياطية مشفّرة"]],
+        ["Export everything", ["Tout exporter", "Exportar todo", "Esporta tutto", "تصدير الكل"]],
+        ["Export text", ["Exporter le texte", "Exportar texto", "Esporta testo", "تصدير النص"]],
+        ["Exported from", ["Exporté depuis", "Exportado desde", "Esportato da", "مصدر التصدير"]],
+        ["Face unlock", ["Reconnaissance faciale", "Reconocimiento facial", "Riconoscimento facciale", "فتح القفل بالوجه"]],
+        ["Face unlock availability — tap for details", ["Disponibilité du déverrouillage facial — voir les détails", "Disponibilidad del desbloqueo facial — toca para ver los detalles", "Disponibilità dello sblocco facciale — tocca per i dettagli", "توفر فتح القفل بالوجه — اضغط للتفاصيل"]],
+        ["Favorite", ["Ajouter aux favoris", "Favorito", "Aggiungi ai preferiti", "إضافة إلى المفضلة"]],
+        ["Favorites", ["Favoris", "Favoritos", "Preferiti", "المفضلة"]],
+        ["Fingerprint", ["Empreinte digitale", "Huella digital", "Impronta digitale", "بصمة الإصبع"]],
+        ["Folder", ["Dossier", "Carpeta", "Cartella", "مجلد"]],
+        ["Folder color", ["Couleur du dossier", "Color de la carpeta", "Colore della cartella", "لون المجلد"]],
+        ["Folder icon", ["Icône du dossier", "Icono de la carpeta", "Icona della cartella", "أيقونة المجلد"]],
+        ["Folder icons", ["Icônes de dossier", "Iconos de carpeta", "Icone delle cartelle", "أيقونات المجلدات"]],
+        ["Folder name", ["Nom du dossier", "Nombre de la carpeta", "Nome della cartella", "اسم المجلد"]],
+        ["Folders", ["Dossiers", "Carpetas", "Cartelle", "المجلدات"]],
+        ["Forgot password", ["Mot de passe oublié", "Olvidé la contraseña", "Password dimenticata", "نسيت كلمة المرور"]],
+        ["Generate", ["Générer", "Generar", "Genera", "إنشاء"]],
+        ["Google account & sync", ["Compte Google et synchronisation", "Cuenta de Google y sincronización", "Account Google e sincronizzazione", "حساب Google والمزامنة"]],
+        ["Google account sync", ["Synchro du compte Google", "Sincronización con la cuenta de Google", "Sincronizzazione account Google", "مزامنة حساب Google"]],
+        ["Google sync", ["Synchronisation Google", "Sincronización con Google", "Sincronizzazione Google", "مزامنة Google"]],
+        ["Grid", ["Quadrillé", "Cuadriculado", "A quadretti", "شبكة"]],
+        ["Hide ALL imported bookmarks", ["Masquer tous les favoris importés", "Ocultar todos los marcadores importados", "Nascondi tutti i segnalibri importati", "إخفاء كل الإشارات المرجعية المستوردة"]],
+        ["Hide password", ["Masquer le mot de passe", "Ocultar contraseña", "Nascondi password", "إخفاء كلمة المرور"]],
+        ["Highlight", ["Surligner", "Resaltar", "Evidenzia", "تمييز"]],
+        ["Highlighter", ["Surligneur", "Resaltador", "Evidenziatore", "قلم تمييز"]],
+        ["Import", ["Importer", "Importar", "Importa", "استيراد"]],
+        ["Import PDF", ["Importer un PDF", "Importar PDF", "Importa PDF", "استيراد PDF"]],
+        ["Import passwords", ["Importer des mots de passe", "Importar contraseñas", "Importa password", "استيراد كلمات المرور"]],
+        ["Import passwords CSV", ["Importer les mots de passe (CSV)", "Importar contraseñas (CSV)", "Importa password (CSV)", "استيراد كلمات المرور من CSV"]],
+        ["Import text", ["Importer du texte", "Importar texto", "Importa testo", "استيراد نص"]],
+        ["Ink color", ["Couleur de l’encre", "Color de tinta", "Colore dell’inchiostro", "لون الحبر"]],
+        ["Italic", ["Italique", "Cursiva", "Corsivo", "خط مائل"]],
+        ["Keep your vault password and an encrypted backup. You need the vault password on a new device.", ["Conservez le mot de passe du coffre et une sauvegarde chiffrée. Le mot de passe est nécessaire sur un nouvel appareil.", "Guarda la contraseña de la bóveda y una copia cifrada. Necesitarás la contraseña en un dispositivo nuevo.", "Conserva la password della cassaforte e un backup cifrato. La password serve su un nuovo dispositivo.", "احتفظ بكلمة مرور الخزنة ونسخة احتياطية مشفّرة. ستحتاج إلى كلمة المرور على جهاز جديد."]],
+        ["Language & appearance", ["Langue et apparence", "Idioma y apariencia", "Lingua e aspetto", "اللغة والمظهر"]],
+        ["Large", ["Grand", "Grande", "Grande", "كبير"]],
+        ["Last sync:", ["Dernière synchronisation :", "Última sincronización:", "Ultima sincronizzazione:", "آخر مزامنة:"]],
+        ["Last synced", ["Dernière synchronisation :", "Última sincronización:", "Ultima sincronizzazione:", "آخر مزامنة:"]],
+        ["Life", ["Vie quotidienne", "Vida cotidiana", "Vita quotidiana", "الحياة اليومية"]],
+        ["Light mode", ["Mode clair", "Modo claro", "Modalità chiara", "الوضع الفاتح"]],
+        ["Lined", ["Ligné", "Con líneas", "A righe", "مسطّر"]],
+        ["Link Google vault", ["Associer le coffre Google", "Vincular bóveda de Google", "Collega la cassaforte Google", "ربط خزنة Google"]],
+        ["Lists & folders", ["Listes et dossiers", "Listas y carpetas", "Elenchi e cartelle", "القوائم والمجلدات"]],
+        ["Lock note", ["Verrouiller la note", "Bloquear nota", "Blocca nota", "قفل الملاحظة"]],
+        ["Lock vault", ["Verrouiller le coffre", "Bloquear bóveda", "Blocca cassaforte", "قفل الخزنة"]],
+        ["Locked note", ["Note verrouillée", "Nota bloqueada", "Nota bloccata", "ملاحظة مقفلة"]],
+        ["Manage folders", ["Gérer les dossiers", "Gestionar carpetas", "Gestisci cartelle", "إدارة المجلدات"]],
+        ["Manage password folders", ["Gérer les dossiers de mots de passe", "Gestionar carpetas de contraseñas", "Gestisci cartelle password", "إدارة مجلدات كلمات المرور"]],
+        ["Manage update notifications", ["Gérer les notifications de mise à jour", "Gestionar avisos de actualización", "Gestisci notifiche degli aggiornamenti", "إدارة إشعارات التحديثات"]],
+        ["Manual sync only. Tap Sync now to upload or download notes.", ["Synchronisation manuelle. Appuyez sur Synchroniser pour envoyer ou récupérer les notes.", "Sincronización manual. Pulsa Sincronizar para enviar o descargar las notas.", "Sincronizzazione manuale. Tocca Sincronizza per inviare o scaricare le note.", "المزامنة يدوية. اضغط على مزامنة لإرسال الملاحظات أو تنزيلها."]],
+        ["Manual sync only. Unlock the vault, then tap Sync now to sync passwords, folders and bookmark deletion protection.", ["Synchronisation manuelle. Déverrouillez le coffre, puis synchronisez les mots de passe, les dossiers et la protection des favoris contre la suppression.", "Sincronización manual. Desbloquea la bóveda y sincroniza las contraseñas, carpetas y protección contra el borrado de marcadores.", "Sincronizzazione manuale. Sblocca la cassaforte e sincronizza password, cartelle e protezione dei segnalibri dall’eliminazione.", "المزامنة يدوية. افتح الخزنة ثم اضغط على مزامنة الآن لمزامنة كلمات المرور والمجلدات وحماية الإشارات المرجعية من الحذف."]],
+        ["Manual sync · changes wait until you tap Sync now.", ["Synchronisation manuelle · Appuyez sur Synchroniser pour envoyer les modifications.", "Sincronización manual · Pulsa Sincronizar ahora para enviar los cambios.", "Sincronizzazione manuale · Tocca Sincronizza ora per inviare le modifiche.", "مزامنة يدوية · اضغط على مزامنة الآن لإرسال التغييرات."]],
+        ["Mark up PDF", ["Annoter le PDF", "Anotar el PDF", "Annota PDF", "إضافة تعليقات إلى PDF"]],
+        ["Matching website, username, and password entries will be skipped. Different saved passwords are kept.", ["Les entrées dont le site, l’identifiant et le mot de passe sont identiques sont ignorées. Les mots de passe différents sont conservés.", "Se omiten las entradas con el mismo sitio, usuario y contraseña. Se conservan las contraseñas diferentes.", "Le voci con sito, nome utente e password identici vengono saltate. Le password diverse restano salvate.", "يُتجاوز الإدخال إذا تطابق الموقع واسم المستخدم وكلمة المرور. تُحفظ كلمات المرور المختلفة."]],
+        ["Medium", ["Moyen", "Mediano", "Medio", "متوسط"]],
+        ["Modified", ["Modifié", "Modificado", "Modificato", "آخر تعديل"]],
+        ["Move to Deleted", ["Déplacer vers les éléments supprimés", "Mover a Eliminadas", "Sposta in Eliminate", "نقل إلى المحذوفات"]],
+        ["My folders", ["Mes dossiers", "Mis carpetas", "Le mie cartelle", "مجلداتي"]],
+        ["Name A–Z", ["Nom A–Z", "Nombre A–Z", "Nome A–Z", "الاسم أبجديًا"]],
+        ["Never synced on this device", ["Jamais synchronisé sur cet appareil", "Nunca sincronizado en este dispositivo", "Mai sincronizzato su questo dispositivo", "لم تتم المزامنة على هذا الجهاز"]],
+        ["New Tab", ["Nouvel onglet", "Nueva pestaña", "Nuova scheda", "علامة تبويب جديدة"]],
+        ["New folder", ["Nouveau dossier", "Nueva carpeta", "Nuova cartella", "مجلد جديد"]],
+        ["New note", ["Nouvelle note", "Nueva nota", "Nuova nota", "ملاحظة جديدة"]],
+        ["New note folder", ["Nouveau dossier de notes", "Nueva carpeta de notas", "Nuova cartella delle note", "مجلد ملاحظات جديد"]],
+        ["New password", ["Nouveau mot de passe", "Nueva contraseña", "Nuova password", "كلمة مرور جديدة"]],
+        ["New password folder", ["Nouveau dossier de mots de passe", "Nueva carpeta de contraseñas", "Nuova cartella password", "مجلد كلمات مرور جديد"]],
+        ["Newest first", ["Plus récentes d’abord", "Más recientes primero", "Più recenti prima", "الأحدث أولًا"]],
+        ["No cloud vault yet. Create a vault to begin.", ["Aucun coffre en ligne. Créez un coffre pour commencer.", "Aún no hay una bóveda en la nube. Crea una para empezar.", "Nessuna cassaforte nel cloud. Creane una per iniziare.", "لا توجد خزنة سحابية بعد. أنشئ خزنة للبدء."]],
+        ["No folder", ["Sans dossier", "Sin carpeta", "Nessuna cartella", "بلا مجلد"]],
+        ["No new local changes", ["Aucune nouvelle modification locale", "Sin cambios locales nuevos", "Nessuna nuova modifica locale", "لا تغييرات محلية جديدة"]],
+        ["No notes here", ["Aucune note ici", "No hay notas aquí", "Nessuna nota qui", "لا توجد ملاحظات هنا"]],
+        ["No passwords here.", ["Aucun mot de passe ici.", "No hay contraseñas aquí.", "Nessuna password qui.", "لا توجد كلمات مرور هنا."]],
+        ["No readable notes to export.", ["Aucune note lisible à exporter.", "No hay notas legibles para exportar.", "Nessuna nota leggibile da esportare.", "لا توجد ملاحظات قابلة للقراءة لتصديرها."]],
+        ["No saved passkey references. Your phone or browser manages actual passkeys.", ["Aucune référence de clé d’accès enregistrée. Votre téléphone ou navigateur gère les clés.", "No hay referencias de claves guardadas. El teléfono o navegador gestiona las claves.", "Nessun riferimento a passkey salvato. Le passkey sono gestite dal telefono o dal browser.", "لا توجد مراجع لمفاتيح المرور. يدير الهاتف أو المتصفح المفاتيح نفسها."]],
+        ["No successful sync recorded", ["Aucune synchronisation réussie", "No consta una sincronización correcta", "Nessuna sincronizzazione riuscita", "لم تُسجّل مزامنة ناجحة"]],
+        ["Note", ["Note", "Nota", "Nota", "ملاحظة"]],
+        ["Note color", ["Couleur de la note", "Color de la nota", "Colore della nota", "لون الملاحظة"]],
+        ["Note folders", ["Dossiers de notes", "Carpetas de notas", "Cartelle delle note", "مجلدات الملاحظات"]],
+        ["Note lists", ["Listes de notes", "Listas de notas", "Elenchi delle note", "قوائم الملاحظات"]],
+        ["Note lists and folders", ["Listes et dossiers de notes", "Listas y carpetas de notas", "Elenchi e cartelle delle note", "قوائم ومجلدات الملاحظات"]],
+        ["Note options", ["Options de la note", "Opciones de la nota", "Opzioni nota", "خيارات الملاحظة"]],
+        ["Note options · Folder, color & reminder", ["Options de la note · Dossier, couleur et rappel", "Opciones de la nota · Carpeta, color y recordatorio", "Opzioni nota · Cartella, colore e promemoria", "خيارات الملاحظة · المجلد واللون والتذكير"]],
+        ["Note text", ["Texte de la note", "Texto de la nota", "Testo della nota", "نص الملاحظة"]],
+        ["Note text tools", ["Outils de mise en forme", "Herramientas de formato", "Strumenti di formattazione", "أدوات تنسيق النص"]],
+        ["Note tools", ["Outils de la note", "Herramientas de notas", "Strumenti nota", "أدوات الملاحظة"]],
+        ["Notes", ["Notes", "Notas", "Note", "الملاحظات"]],
+        ["Notes and folders cleared.", ["Notes et dossiers effacés.", "Notas y carpetas borradas.", "Note e cartelle cancellate.", "تم مسح الملاحظات والمجلدات."]],
+        ["Notes is already empty.", ["Il n’y a déjà plus de notes.", "No hay notas.", "Non ci sono già più note.", "لا توجد ملاحظات."]],
+        ["Notes settings", ["Paramètres des notes", "Ajustes de notas", "Impostazioni note", "إعدادات الملاحظات"]],
+        ["Notes sync failed.", ["La synchronisation des notes a échoué.", "La sincronización de notas ha fallado.", "Sincronizzazione delle note non riuscita.", "تعذرت مزامنة الملاحظات."]],
+        ["Notes synced", ["Notes synchronisées", "Notas sincronizadas", "Note sincronizzate", "تمت مزامنة الملاحظات"]],
+        ["Offline · encrypted changes saved on this device.", ["Hors ligne · Modifications chiffrées enregistrées sur cet appareil.", "Sin conexión · Cambios cifrados guardados en este dispositivo.", "Offline · Modifiche cifrate salvate su questo dispositivo.", "بلا اتصال · حُفظت التغييرات المشفّرة على هذا الجهاز."]],
+        ["Oldest first", ["Plus anciennes d’abord", "Más antiguas primero", "Meno recenti prima", "الأقدم أولًا"]],
+        ["Open email draft", ["Ouvrir le brouillon d’e-mail", "Abrir borrador de correo", "Apri bozza email", "فتح مسودة البريد"]],
+        ["Open encrypted vault file", ["Ouvrir un fichier de coffre chiffré", "Abrir archivo de bóveda cifrado", "Apri file cifrato della cassaforte", "فتح ملف خزنة مشفّر"]],
+        ["Organize into category folders automatically", ["Classer automatiquement par catégorie", "Organizar automáticamente por categoría", "Organizza automaticamente per categoria", "تنظيم تلقائي حسب الفئة"]],
+        ["Organize unfiled passwords automatically", ["Classer automatiquement les mots de passe hors dossier", "Organizar automáticamente las contraseñas sin carpeta", "Organizza automaticamente le password senza cartella", "تنظيم كلمات المرور غير المصنفة تلقائيًا"]],
+        ["Other", ["Autre", "Otro", "Altro", "أخرى"]],
+        ["PDF text imported into a note.", ["Texte du PDF importé dans une note.", "Texto del PDF importado a una nota.", "Testo del PDF importato in una nota.", "تم استيراد نص PDF إلى ملاحظة."]],
+        ["Paper", ["Papier", "Papel", "Carta", "الورق"]],
+        ["Passkeys", ["Clés d’accès", "Claves de acceso", "Passkey", "مفاتيح المرور"]],
+        ["Passkeys stay in your device or browser password manager. CSV imports bring in password records.", ["Les clés d’accès restent dans le gestionnaire de l’appareil ou du navigateur. Le CSV importe les mots de passe.", "Las claves de acceso permanecen en el gestor del dispositivo o navegador. El CSV importa contraseñas.", "Le passkey restano nel gestore del dispositivo o del browser. Il CSV importa le password.", "تبقى مفاتيح المرور في مدير كلمات المرور على الجهاز أو المتصفح. يستورد CSV كلمات المرور."]],
+        ["Password", ["Mot de passe", "Contraseña", "Password", "كلمة المرور"]],
+        ["Password categories", ["Catégories de mots de passe", "Categorías de contraseñas", "Categorie password", "فئات كلمات المرور"]],
+        ["Password changed on another device. Try again.", ["Le mot de passe a changé sur un autre appareil. Réessayez.", "La contraseña cambió en otro dispositivo. Inténtalo de nuevo.", "La password è stata cambiata su un altro dispositivo. Riprova.", "تغيّرت كلمة المرور على جهاز آخر. حاول مجددًا."]],
+        ["Password folders", ["Dossiers de mots de passe", "Carpetas de contraseñas", "Cartelle password", "مجلدات كلمات المرور"]],
+        ["Password protection needs an HTTPS page or the installed app.", ["La protection par mot de passe nécessite une page HTTPS ou l’application installée.", "La protección con contraseña requiere una página HTTPS o la aplicación instalada.", "La protezione con password richiede una pagina HTTPS o l’app installata.", "تتطلب الحماية بكلمة مرور صفحة HTTPS أو التطبيق المثبّت."]],
+        ["Password reused in this vault", ["Mot de passe réutilisé dans ce coffre", "Contraseña reutilizada en esta bóveda", "Password riutilizzata in questa cassaforte", "كلمة مرور مستخدمة أكثر من مرة في الخزنة"]],
+        ["Password settings", ["Paramètres des mots de passe", "Ajustes de contraseñas", "Impostazioni password", "إعدادات كلمات المرور"]],
+        ["Passwords", ["Mots de passe", "Contraseñas", "Password", "كلمات المرور"]],
+        ["Passwords is locked", ["Le coffre est verrouillé", "La bóveda está bloqueada", "La cassaforte è bloccata", "خزنة كلمات المرور مقفلة"]],
+        ["Paste the Base32 secret supplied by the website.", ["Collez la clé secrète Base32 fournie par le site.", "Pega la clave secreta Base32 proporcionada por el sitio.", "Incolla la chiave segreta Base32 fornita dal sito.", "ألصق المفتاح السري Base32 الذي قدّمه الموقع."]],
+        ["Pen", ["Stylo", "Bolígrafo", "Penna", "قلم"]],
+        ["Pencil", ["Crayon", "Lápiz", "Matita", "قلم رصاص"]],
+        ["Personal", ["Personnel", "Personal", "Personale", "شخصي"]],
+        ["Personal password folders", ["Dossiers personnels de mots de passe", "Carpetas personales de contraseñas", "Cartelle password personali", "مجلدات كلمات المرور الشخصية"]],
+        ["Pin", ["Épingler", "Fijar", "Fissa", "تثبيت"]],
+        ["Pinned bookmarks always on top", ["Favoris épinglés toujours en haut", "Marcadores fijados siempre arriba", "Segnalibri fissati sempre in alto", "عرض الإشارات المرجعية المثبّتة أولًا"]],
+        ["Plain", ["Uni", "Liso", "Bianco", "سادة"]],
+        ["Print", ["Imprimer", "Imprimir", "Stampa", "طباعة"]],
+        ["Reading PDF…", ["Lecture du PDF…", "Leyendo PDF…", "Lettura del PDF…", "جارٍ قراءة PDF…"]],
+        ["Recently modified", ["Modifiés récemment", "Modificadas recientemente", "Modificate di recente", "المعدّلة مؤخرًا"]],
+        ["Recover", ["Récupérer", "Recuperar", "Recupera", "استرجاع"]],
+        ["Recover admin password", ["Récupérer le mot de passe administrateur", "Recuperar contraseña de administrador", "Recupera password amministratore", "استرداد كلمة مرور المسؤول"]],
+        ["Recover selected", ["Restaurer la sélection", "Recuperar selección", "Ripristina selezione", "استعادة المحدد"]],
+        ["Recovery code", ["Code de récupération", "Código de recuperación", "Codice di recupero", "رمز الاسترداد"]],
+        ["Rectangle", ["Rectangle", "Rectángulo", "Rettangolo", "مستطيل"]],
+        ["Reminder", ["Rappel", "Recordatorio", "Promemoria", "تذكير"]],
+        ["Reminder schedule saved on this Android device.", ["Rappels enregistrés sur cet appareil Android.", "Recordatorios guardados en este dispositivo Android.", "Promemoria salvati su questo dispositivo Android.", "تم حفظ التذكيرات على جهاز Android هذا."]],
+        ["Reminder set for", ["Rappel prévu pour", "Recordatorio programado para", "Promemoria impostato per", "التذكير في"]],
+        ["Reminders", ["Rappels", "Recordatorios", "Promemoria", "التذكيرات"]],
+        ["Reminders & calendar", ["Rappels et calendrier", "Recordatorios y calendario", "Promemoria e calendario", "التذكيرات والتقويم"]],
+        ["Reminders ring on Android. Calendar opens your calendar app to review and save an event. Browser pages cannot ring reliably after closing.", ["Les rappels sonnent sur Android. Le calendrier s’ouvre pour vérifier et enregistrer l’événement. Un navigateur fermé ne peut pas toujours déclencher la sonnerie.", "Los recordatorios suenan en Android. El calendario se abre para revisar y guardar el evento. El navegador no puede garantizar el sonido tras cerrarse.", "I promemoria suonano su Android. Il calendario si apre per controllare e salvare l’evento. Il browser non può garantire la suoneria dopo la chiusura.", "ترن التذكيرات على Android. يفتح تطبيق التقويم لمراجعة الحدث وحفظه. قد لا ترن التذكيرات بعد إغلاق المتصفح."]],
+        ["Remove reminder", ["Supprimer le rappel", "Quitar recordatorio", "Rimuovi promemoria", "إزالة التذكير"]],
+        ["Reset password", ["Réinitialiser le mot de passe", "Restablecer contraseña", "Reimposta password", "إعادة تعيين كلمة المرور"]],
+        ["Restore", ["Restaurer", "Restaurar", "Ripristina", "استعادة"]],
+        ["Return to WebMark", ["Revenir à WebMark", "Volver a WebMark", "Torna a WebMark", "العودة إلى WebMark"]],
+        ["Save", ["Enregistrer", "Guardar", "Salva", "حفظ"]],
+        ["Save event in calendar", ["Enregistrer l’événement dans le calendrier", "Guardar evento en el calendario", "Salva evento nel calendario", "حفظ الحدث في التقويم"]],
+        ["Save folder", ["Enregistrer le dossier", "Guardar carpeta", "Salva cartella", "حفظ المجلد"]],
+        ["Save password", ["Enregistrer le mot de passe", "Guardar contraseña", "Salva password", "حفظ كلمة المرور"]],
+        ["Save this recovery code:", ["Conservez ce code de récupération :", "Guarda este código de recuperación:", "Conserva questo codice di recupero:", "احفظ رمز الاسترداد هذا:"]],
+        ["Saved", ["Enregistré", "Guardado", "Salvato", "تم الحفظ"]],
+        ["Saved on this device ·", ["Enregistré sur cet appareil ·", "Guardado en este dispositivo ·", "Salvato su questo dispositivo ·", "محفوظ على هذا الجهاز ·"]],
+        ["Search all passwords", ["Rechercher dans tous les mots de passe", "Buscar en todas las contraseñas", "Cerca in tutte le password", "البحث في كل كلمات المرور"]],
+        ["Search icons", ["Rechercher des icônes", "Buscar iconos", "Cerca icone", "البحث عن أيقونات"]],
+        ["Search icons…", ["Rechercher des icônes…", "Buscar iconos…", "Cerca icone…", "البحث عن أيقونات…"]],
+        ["Search notes", ["Rechercher des notes", "Buscar notas", "Cerca note", "البحث في الملاحظات"]],
+        ["Search passwords", ["Rechercher des mots de passe", "Buscar contraseñas", "Cerca password", "البحث في كلمات المرور"]],
+        ["Search this list", ["Rechercher dans cette liste", "Buscar en esta lista", "Cerca in questo elenco", "البحث في هذه القائمة"]],
+        ["Secure face unlock", ["Déverrouillage facial sécurisé", "Desbloqueo facial seguro", "Sblocco facciale sicuro", "فتح آمن بالوجه"]],
+        ["Security", ["Sécurité", "Seguridad", "Sicurezza", "الأمان"]],
+        ["Security flags show short or reused passwords found in this vault.", ["Les alertes signalent les mots de passe courts ou réutilisés dans ce coffre.", "Las alertas indican contraseñas cortas o reutilizadas en esta bóveda.", "Gli avvisi indicano le password corte o riutilizzate nella cassaforte.", "تُشير التنبيهات إلى كلمات المرور القصيرة أو المستخدمة أكثر من مرة في الخزنة."]],
+        ["Select", ["Sélectionner", "Seleccionar", "Seleziona", "تحديد"]],
+        ["Select all", ["Tout sélectionner", "Seleccionar todo", "Seleziona tutto", "تحديد الكل"]],
+        ["Select note", ["Sélectionner la note", "Seleccionar nota", "Seleziona nota", "تحديد الملاحظة"]],
+        ["Set admin password", ["Définir le mot de passe administrateur", "Establecer contraseña de administrador", "Imposta password amministratore", "تعيين كلمة مرور المسؤول"]],
+        ["Set the reminder in each note’s options. Choose a phone ringtone; it repeats until Stop or Snooze. Alarms use the phone’s alarm volume and system settings.", ["Réglez le rappel dans les options de la note. Choisissez une sonnerie qui se répète jusqu’à l’arrêt ou au report. Le volume et les paramètres du téléphone s’appliquent.", "Configura el recordatorio en las opciones de cada nota. Elige un tono que se repita hasta detenerlo o posponerlo. Se aplican el volumen y los ajustes del teléfono.", "Imposta il promemoria nelle opzioni della nota. La suoneria scelta si ripete fino all’interruzione o al rinvio. Si applicano volume e impostazioni del telefono.", "اضبط التذكير من خيارات الملاحظة. تستمر النغمة حتى الإيقاف أو التأجيل. يتبع المنبّه مستوى الصوت وإعدادات الهاتف."]],
+        ["Settings", ["Paramètres", "Ajustes", "Impostazioni", "الإعدادات"]],
+        ["Settings and tools", ["Paramètres et outils", "Ajustes y herramientas", "Impostazioni e strumenti", "الإعدادات والأدوات"]],
+        ["Share", ["Partager", "Compartir", "Condividi", "مشاركة"]],
+        ["Share PDF", ["Partager en PDF", "Compartir PDF", "Condividi PDF", "مشاركة PDF"]],
+        ["Share all as encrypted file", ["Tout partager dans un fichier chiffré", "Compartir todo en un archivo cifrado", "Condividi tutto in un file cifrato", "مشاركة الكل في ملف مشفّر"]],
+        ["Share all notes", ["Partager toutes les notes", "Compartir todas las notas", "Condividi tutte le note", "مشاركة كل الملاحظات"]],
+        ["Share and export", ["Partage et exportation", "Compartir y exportar", "Condivisione ed esportazione", "المشاركة والتصدير"]],
+        ["Share login", ["Partager les identifiants", "Compartir credenciales", "Condividi credenziali", "مشاركة بيانات الدخول"]],
+        ["Short or reused password", ["Mot de passe court ou réutilisé", "Contraseña corta o reutilizada", "Password corta o riutilizzata", "كلمة مرور قصيرة أو مكررة"]],
+        ["Short password", ["Mot de passe court", "Contraseña corta", "Password corta", "كلمة مرور قصيرة"]],
+        ["Show \"Imported\" badge on links", ["Afficher le badge « Importé » sur les liens", "Mostrar la etiqueta «Importado» en los enlaces", "Mostra il badge «Importato» sui link", "عرض شارة «مستورد» على الروابط"]],
+        ["Show or hide password", ["Afficher ou masquer le mot de passe", "Mostrar u ocultar contraseña", "Mostra o nascondi password", "إظهار أو إخفاء كلمة المرور"]],
+        ["Show/Hide by browser source", ["Afficher ou masquer par navigateur", "Mostrar u ocultar por navegador", "Mostra o nascondi per browser", "إظهار أو إخفاء حسب المتصفح"]],
+        ["Sign in to Google in WebMark Settings.", ["Connectez-vous à Google dans les paramètres WebMark.", "Inicia sesión en Google en los ajustes de WebMark.", "Accedi a Google dalle impostazioni di WebMark.", "سجّل الدخول إلى Google من إعدادات WebMark."]],
+        ["Sign in to Google to sync.", ["Connectez-vous à Google pour synchroniser.", "Inicia sesión en Google para sincronizar.", "Accedi a Google per sincronizzare.", "سجّل الدخول إلى Google للمزامنة."]],
+        ["Sign in with Google from WebMark Settings first.", ["Connectez-vous à Google dans les paramètres WebMark.", "Inicia sesión con Google en los ajustes de WebMark.", "Accedi con Google dalle impostazioni di WebMark.", "سجّل الدخول إلى Google من إعدادات WebMark أولًا."]],
+        ["Small", ["Petit", "Pequeño", "Piccolo", "صغير"]],
+        ["Social media", ["Réseaux sociaux", "Redes sociales", "Social network", "وسائل التواصل الاجتماعي"]],
+        ["Sort notes", ["Trier les notes", "Ordenar notas", "Ordina note", "ترتيب الملاحظات"]],
+        ["Sort passwords", ["Trier les mots de passe", "Ordenar contraseñas", "Ordina password", "ترتيب كلمات المرور"]],
+        ["Start writing…", ["Commencez à écrire…", "Empieza a escribir…", "Inizia a scrivere…", "ابدأ الكتابة…"]],
+        ["Stop ringing", ["Arrêter la sonnerie", "Detener el sonido", "Interrompi suoneria", "إيقاف الرنين"]],
+        ["Sync", ["Synchroniser", "Sincronizar", "Sincronizza", "مزامنة"]],
+        ["Sync all now", ["Tout synchroniser", "Sincronizar todo ahora", "Sincronizza tutto ora", "مزامنة الكل الآن"]],
+        ["Sync incomplete. Review {section} settings.", ["Synchronisation incomplète. Vérifiez les paramètres de la section « {section} ».", "Sincronización incompleta. Revisa los ajustes de «{section}».", "Sincronizzazione incompleta. Controlla le impostazioni di «{section}».", "المزامنة غير مكتملة. راجع إعدادات «{section}»."]],
+        ["Sync notes here or in the Sync center.", ["Synchronisez les notes ici ou dans le centre de synchronisation.", "Sincroniza las notas aquí o en el centro de sincronización.", "Sincronizza le note qui o nel centro di sincronizzazione.", "زامن الملاحظات هنا أو في مركز المزامنة."]],
+        ["Sync notes now", ["Synchroniser les notes", "Sincronizar notas ahora", "Sincronizza note ora", "مزامنة الملاحظات الآن"]],
+        ["Sync now", ["Synchroniser", "Sincronizar ahora", "Sincronizza ora", "مزامنة الآن"]],
+        ["Syncing encrypted passwords…", ["Synchronisation des mots de passe chiffrés…", "Sincronizando contraseñas cifradas…", "Sincronizzazione delle password cifrate…", "جارٍ مزامنة كلمات المرور المشفّرة…"]],
+        ["Syncing encrypted vault…", ["Synchronisation du coffre chiffré…", "Sincronizando la bóveda cifrada…", "Sincronizzazione della cassaforte cifrata…", "جارٍ مزامنة الخزنة المشفّرة…"]],
+        ["Syncing notes…", ["Synchronisation des notes…", "Sincronizando notas…", "Sincronizzazione delle note…", "جارٍ مزامنة الملاحظات…"]],
+        ["System UI", ["Police système", "Fuente del sistema", "Carattere di sistema", "خط النظام"]],
+        ["Tape", ["Ruban", "Cinta", "Nastro", "شريط"]],
+        ["Text, sharing, and printing include active and archived notes you can read. JSON also includes locked notes and Trash.", ["Le texte, le partage et l’impression incluent les notes actives et archivées lisibles. Le JSON inclut aussi les notes verrouillées et la corbeille.", "El texto, compartir e imprimir incluyen las notas activas y archivadas que puedes leer. JSON también incluye las notas bloqueadas y la papelera.", "Testo, condivisione e stampa includono le note attive e archiviate leggibili. Il JSON include anche le note bloccate e il cestino.", "يشمل النص والمشاركة والطباعة الملاحظات النشطة والمؤرشفة التي يمكنك قراءتها. ويشمل JSON أيضًا الملاحظات المقفلة وسلة المهملات."]],
+        ["The vault could not be read. Open an encrypted backup to recover it.", ["Impossible de lire le coffre. Ouvrez une sauvegarde chiffrée pour le récupérer.", "No se pudo leer la bóveda. Abre una copia cifrada para recuperarla.", "Impossibile leggere la cassaforte. Apri un backup cifrato per ripristinarla.", "تعذرت قراءة الخزنة. افتح نسخة احتياطية مشفّرة لاستعادتها."]],
+        ["There are no entries to export.", ["Aucune entrée à exporter.", "No hay entradas para exportar.", "Nessuna voce da esportare.", "لا توجد عناصر للتصدير."]],
+        ["These notes are linked to a different Google account.", ["Ces notes sont liées à un autre compte Google.", "Estas notas están vinculadas a otra cuenta de Google.", "Queste note sono collegate a un altro account Google.", "هذه الملاحظات مرتبطة بحساب Google آخر."]],
+        ["Title", ["Titre", "Título", "Titolo", "العنوان"]],
+        ["Title A–Z", ["Titre A–Z", "Título A–Z", "Titolo A–Z", "العنوان أبجديًا"]],
+        ["Toggle to show or hide imports from each browser", ["Affichez ou masquez les imports de chaque navigateur", "Muestra u oculta las importaciones de cada navegador", "Mostra o nascondi le importazioni di ogni browser", "إظهار أو إخفاء الإشارات المستوردة من كل متصفح"]],
+        ["Top 10", ["Top 10", "10 principales", "Primi 10", "أفضل ١٠"]],
+        ["Top 10 is full. Remove a note from Top 10 first.", ["Le Top 10 est plein. Retirez d’abord une note du Top 10.", "La lista de las 10 principales está llena. Quita una nota primero.", "La lista delle prime 10 è piena. Rimuovi prima una nota dall’elenco.", "قائمة أفضل ١٠ ممتلئة. أزل منها ملاحظة أولًا."]],
+        ["Total Bookmarks", ["Nombre total de favoris web", "Total de marcadores", "Totale segnalibri", "إجمالي الإشارات المرجعية"]],
+        ["Trash", ["Corbeille", "Papelera", "Cestino", "سلة المهملات"]],
+        ["Type", ["Type", "Tipo", "Tipo", "النوع"]],
+        ["Unarchive", ["Désarchiver", "Desarchivar", "Rimuovi dall’archivio", "إلغاء الأرشفة"]],
+        ["Underline", ["Souligné", "Subrayado", "Sottolineato", "تسطير"]],
+        ["Undo", ["Annuler la dernière action", "Deshacer", "Annulla ultima azione", "تراجع"]],
+        ["Undo ink", ["Annuler le tracé", "Deshacer trazo", "Annulla tratto", "التراجع عن الرسم"]],
+        ["Unlock", ["Déverrouiller", "Desbloquear", "Sblocca", "فتح القفل"]],
+        ["Unlock note", ["Déverrouiller la note", "Desbloquear nota", "Sblocca nota", "فتح الملاحظة"]],
+        ["Unlock the PDF before importing.", ["Déverrouillez le PDF avant de l’importer.", "Desbloquea el PDF antes de importarlo.", "Sblocca il PDF prima di importarlo.", "افتح قفل PDF قبل استيراده."]],
+        ["Unlock the vault to sync encrypted passwords.", ["Déverrouillez le coffre pour synchroniser les mots de passe chiffrés.", "Desbloquea la bóveda para sincronizar las contraseñas cifradas.", "Sblocca la cassaforte per sincronizzare le password cifrate.", "افتح الخزنة لمزامنة كلمات المرور المشفّرة."]],
+        ["Unlock to sync", ["Déverrouiller pour synchroniser", "Desbloquear para sincronizar", "Sblocca per sincronizzare", "فتح القفل للمزامنة"]],
+        ["Unlock with your vault password once to link this device.", ["Utilisez une fois le mot de passe du coffre pour associer cet appareil.", "Desbloquea una vez con la contraseña de la bóveda para vincular el dispositivo.", "Usa una volta la password della cassaforte per collegare questo dispositivo.", "استخدم كلمة مرور الخزنة مرة واحدة لربط هذا الجهاز."]],
+        ["Unlock your vault to continue Google sync.", ["Déverrouillez le coffre pour continuer la synchronisation Google.", "Desbloquea la bóveda para continuar la sincronización con Google.", "Sblocca la cassaforte per continuare la sincronizzazione Google.", "افتح الخزنة لمتابعة مزامنة Google."]],
+        ["Unlock your vault to sync.", ["Déverrouillez le coffre pour synchroniser.", "Desbloquea la bóveda para sincronizar.", "Sblocca la cassaforte per sincronizzare.", "افتح الخزنة للمزامنة."]],
+        ["Unlocking…", ["Déverrouillage…", "Desbloqueando…", "Sblocco…", "جارٍ فتح القفل…"]],
+        ["Untitled note", ["Note sans titre", "Nota sin título", "Nota senza titolo", "ملاحظة بلا عنوان"]],
+        ["Use at least 4 characters and enter the same password twice.", ["Saisissez au moins 4 caractères et répétez le même mot de passe.", "Usa al menos 4 caracteres y escribe la misma contraseña dos veces.", "Usa almeno 4 caratteri e inserisci due volte la stessa password.", "استخدم ٤ أحرف على الأقل وأدخل كلمة المرور نفسها مرتين."]],
+        ["Use dark mode in {workspace}", ["Activer le mode sombre dans {workspace}", "Activar modo oscuro en {workspace}", "Usa la modalità scura in {workspace}", "تفعيل الوضع الداكن في {workspace}"]],
+        ["Use enrolled face recognition, fingerprint, or device PIN in the Android app or a compatible HTTPS browser with encrypted passkey support. Enable it separately on each device. Your vault password remains available.", ["Utilisez la reconnaissance faciale, l’empreinte ou le PIN enregistré dans l’application Android ou un navigateur HTTPS compatible. Activez cette option sur chaque appareil. Le mot de passe du coffre reste disponible.", "Usa el rostro, la huella o el PIN registrado en Android o en un navegador HTTPS compatible. Actívalo en cada dispositivo. Puedes seguir usando la contraseña de la bóveda.", "Usa il volto, l’impronta o il PIN registrati su Android o in un browser HTTPS compatibile. Attiva l’opzione su ogni dispositivo. Puoi continuare a usare la password della cassaforte.", "استخدم الوجه أو البصمة أو رمز الجهاز المسجّل في تطبيق Android أو متصفح HTTPS متوافق. فعّل الخيار على كل جهاز. يمكنك متابعة استخدام كلمة مرور الخزنة."]],
+        ["Use light mode in {workspace}", ["Activer le mode clair dans {workspace}", "Activar modo claro en {workspace}", "Usa la modalità chiara in {workspace}", "تفعيل الوضع الفاتح في {workspace}"]],
+        ["Use suggested folder", ["Utiliser le dossier proposé", "Usar carpeta sugerida", "Usa la cartella suggerita", "استخدام المجلد المقترح"]],
+        ["Username / email", ["Identifiant / e-mail", "Usuario o correo", "Nome utente o email", "اسم المستخدم أو البريد"]],
+        ["Vault", ["Coffre", "Bóveda", "Cassaforte", "الخزنة"]],
+        ["Vault changed in another tab. Unlock to reload.", ["Le coffre a changé dans un autre onglet. Déverrouillez-le pour le recharger.", "La bóveda cambió en otra pestaña. Desbloquéala para recargar.", "La cassaforte è stata modificata in un’altra scheda. Sbloccala per ricaricare.", "تغيّرت الخزنة في علامة تبويب أخرى. افتحها لإعادة التحميل."]],
+        ["Vault password", ["Mot de passe du coffre", "Contraseña de la bóveda", "Password della cassaforte", "كلمة مرور الخزنة"]],
+        ["Vault password changed. Save a new encrypted backup.", ["Mot de passe du coffre modifié. Enregistrez une nouvelle sauvegarde chiffrée.", "Contraseña de la bóveda cambiada. Guarda una nueva copia cifrada.", "Password della cassaforte cambiata. Salva un nuovo backup cifrato.", "تغيّرت كلمة مرور الخزنة. احفظ نسخة احتياطية مشفّرة جديدة."]],
+        ["View settings", ["Options d’affichage", "Ajustes de vista", "Impostazioni vista", "إعدادات العرض"]],
+        ["WebMark apps", ["Applications WebMark", "Aplicaciones de WebMark", "App WebMark", "تطبيقات WebMark"]],
+        ["WebMark menu", ["Menu WebMark", "Menú de WebMark", "Menu WebMark", "قائمة WebMark"]],
+        ["Website / app", ["Site / application", "Sitio o aplicación", "Sito o app", "الموقع أو التطبيق"]],
+        ["Website / app / network name", ["Nom du site, de l’application ou du réseau", "Nombre del sitio, aplicación o red", "Nome del sito, app o rete", "اسم الموقع أو التطبيق أو الشبكة"]],
+        ["Website links, one per line (optional)", ["Liens web, un par ligne (facultatif)", "Enlaces web, uno por línea (opcional)", "Link dei siti, uno per riga (facoltativo)", "روابط المواقع، رابط في كل سطر (اختياري)"]],
+        ["Website or app password", ["Mot de passe de site ou d’application", "Contraseña de sitio o aplicación", "Password del sito o dell’app", "كلمة مرور موقع أو تطبيق"]],
+        ["Wi-Fi", ["Wi-Fi", "Wi-Fi", "Wi-Fi", "واي فاي"]],
+        ["Wi-Fi password", ["Mot de passe Wi-Fi", "Contraseña Wi-Fi", "Password Wi-Fi", "كلمة مرور Wi-Fi"]],
+        ["Work", ["Travail", "Trabajo", "Lavoro", "العمل"]],
+        ["Write a note…", ["Écrire une note…", "Escribe una nota…", "Scrivi una nota…", "اكتب ملاحظة…"]],
+        ["{count} items", ["{count} éléments", "{count} elementos", "{count} elementi", "عدد العناصر: {count}"]],
+        ["↶ Ink", ["↶ Tracé", "↶ Trazo", "↶ Tratto", "↶ الرسم"]],
+        ["🎨 LANGUAGE & APPEARANCE", ["🎨 LANGUE ET APPARENCE", "🎨 IDIOMA Y APARIENCIA", "🎨 LINGUA E ASPETTO", "🎨 اللغة والمظهر"]],
+        ["🔗 LINKS", ["🔗 LIENS", "🔗 ENLACES", "🔗 LINK", "🔗 الروابط"]],
+    ]);
+    const locales = ['fr', 'es', 'it', 'ar'];
+    const language = () => document.documentElement.lang || 'en';
+    const normalize = value => value.trim().replace(/\s+/g, ' ');
+    const existing = typeof TRANSLATIONS === 'undefined' ? {} : TRANSLATIONS;
+    const existingKeys = new Map(Object.entries(existing.en || {}).map(([key, label]) => [label, key]));
+    const translate = (source, values = {}) => {
+        const label = normalize(source);
+        const lang = language();
+        const index = locales.indexOf(lang);
+        const exact = messages.get(label)?.[index] || existing[lang]?.[existingKeys.get(label)];
+        const ellipsis = label.endsWith('…') && messages.get(label.slice(0,-1))?.[index];
+        const result = exact || (ellipsis ? ellipsis + '…' : label);
+        return source.replace(source.trim(), () => result.replace(/\{(\w+)\}/g,(token,key)=>values[key] ?? token));
+    };
+    const bindings = [];
+    const bound = new WeakMap();
+    const refreshers = [];
+    const attributes = ['aria-label', 'title', 'placeholder', 'data-placeholder'];
+    const excluded = '[data-t],[data-tk],[data-cloud-text],[contenteditable],script,style';
+    function bind(node, attribute, source) {
+        const label = normalize(source);
+        if(!messages.has(label) && !existingKeys.has(label) && !messages.has(label.replace(/…$/, '')))return;
+        if(!bound.has(node))bound.set(node,new Set());
+        if(bound.get(node).has(attribute))return;
+        bound.get(node).add(attribute);
+        bindings.push({node, attribute, source, previous:source});
+    }
+    function capture(root) {
+        if(!root)return;
+        const walker = document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+        for(let node=walker.nextNode();node;node=walker.nextNode()){
+            if(!node.parentElement.closest(excluded))bind(node,null,node.data);
+        }
+        for(const node of [root,...root.querySelectorAll(attributes.map(a=>'['+a+']').join(','))]){
+            for(const attribute of attributes){
+                if(node.hasAttribute(attribute))bind(node,attribute,node.getAttribute(attribute));
+            }
+        }
+        paint();
+    }
+    function paint() {
+        for(const binding of bindings){
+            const {node,attribute,source,previous}=binding;
+            const current=attribute?node.getAttribute(attribute):node.data;
+            if(current!==previous)continue;
+            const next=translate(source);
+            if(next===current)continue;
+            if(attribute)node.setAttribute(attribute,next);else node.data=next;
+            binding.previous=next;
+        }
+    }
+    function refresh() {
+        paint();
+        for(const update of refreshers)update();
+    }
+    window.WebMarkInterfaceLocale = {text:translate, language, capture, onChange:update=>refreshers.push(update)};
+    const chrome = 'dialog[id^="wm-pw-"],#wm-passwords,#wm-app-menu,#wm-notes-app,dialog[id^="wm-note-"],#page-settings,#settingsModal,#langModal';
+    document.querySelectorAll(chrome).forEach(capture);
+    new MutationObserver(refresh).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+})();
+</script>
+<script>
 const WebMarkNoteVault = (() => {
     const bytes = value => new TextEncoder().encode(value);
     const random = size => crypto.getRandomValues(new Uint8Array(size));
@@ -9282,7 +9701,8 @@ const WebMarkNotesExport = (() => {
 
 (() => {
     const key = 'wm_notes_v1';
-    const $ = id => document.getElementById(id);
+    const tr=(text,values)=>globalThis.WebMarkInterfaceLocale?.text(text,values)??text;
+    const $= id => document.getElementById(id);
     const menu = $('wm-app-menu');
     const app = $('wm-notes-app');
     const editor = $('wm-note-editor');
@@ -9350,11 +9770,11 @@ const WebMarkNotesExport = (() => {
         const user=cloud?.info().user;
         const status=$('wm-note-settings-status');
         if (!user || !cloud.syncNotes) {
-            if(manual) status.textContent='Sign in with Google from WebMark Settings first.';
+            if(manual) status.textContent=tr('Sign in with Google from WebMark Settings first.');
             return;
         }
         if (library.owner && library.owner!==user.uid) {
-            if(manual) status.textContent='These notes are linked to a different Google account.';
+            if(manual) status.textContent=tr('These notes are linked to a different Google account.');
             return;
         }
         if (!manual && (!library.owner || library.autoSync===false || navigator.onLine===false)) return;
@@ -9362,7 +9782,7 @@ const WebMarkNotesExport = (() => {
         if (!library.owner && !confirm('Sync these notes with '+user.email+'?')) return;
         const revision=globalThis.WebMarkSyncCenter?.revision('notes');
         syncing=true;
-        status.textContent='Syncing notes…';
+        status.textContent=tr('Syncing notes…');
         try {
             if(manual) clearTimeout(syncTimer);
             const merged=await cloud.syncNotes(user.uid,remote=>mergeNotes(library,remote),manual,automatic);
@@ -9373,14 +9793,14 @@ const WebMarkNotesExport = (() => {
             // Keep the local account binding out of the cloud document.
             Object.assign(library,latest,{owner:user.uid,lastSyncAt:Date.now()});
             const saved=await persistNotes(status,false);
-            if(saved){status.textContent='Notes synced';globalThis.WebMarkSyncCenter?.complete('notes',user.uid,revision);}
+            if(saved){status.textContent=tr('Notes synced');globalThis.WebMarkSyncCenter?.complete('notes',user.uid,revision);}
             renderCards();
             updateSyncSettings();
             if(manager.open) renderFolders();
             if(changed) scheduleSync();
             return saved;
         } catch(error) {
-            status.textContent='Notes sync failed. '+error.message;
+            status.textContent=tr('Notes sync failed.')+' '+error.message;
         } finally { syncing=false; }
     }
 
@@ -9392,12 +9812,12 @@ const WebMarkNotesExport = (() => {
             await wmStorage.flush?.();
         });
         return saveQueue.then(()=>{
-            status.textContent='Saved';
+            status.textContent=tr('Saved');
             globalThis.WebMarkNoteStudio?.reschedule();
             if(sync){scheduleSync();globalThis.WebMarkSyncCenter?.pending('notes');}
             return true;
         },()=>{
-            status.textContent='Could not save. Keep WebMark open and try again.';
+            status.textContent=tr('Could not save. Keep WebMark open and try again.');
             return false;
         });
     }
@@ -9488,7 +9908,7 @@ const WebMarkNotesExport = (() => {
         if(note.reminderAt&&!note.deletedAt){
             const reminder=withIcon(element('small',dateLabel(note.reminderAt,true)),'fa-solid fa-clock');
             reminder.className='wm-note-reminder-badge';
-            reminder.setAttribute('aria-label','Reminder '+dateLabel(note.reminderAt,true));
+            reminder.setAttribute('aria-label',tr('Reminder')+' '+dateLabel(note.reminderAt,true));
             card.append(reminder);
         }
         const actions=element('div');
@@ -9496,23 +9916,23 @@ const WebMarkNotesExport = (() => {
         const add=(label,action,icon,color,pressed)=>actions.append(iconButton(label,action,note.id,icon,color,pressed));
         if (selecting) {
             const picked=selected.has(note.id);
-            add(picked?'Deselect note':'Select note','select-note',picked?'square-check':'square','#15803d',picked);
+            add(picked?tr('Deselect note'):tr('Select note'),'select-note',picked?'square-check':'square','#15803d',picked);
         } else if (note.deletedAt) {
-            add('Restore','restore','rotate-left','#15803d');
-            add('Delete permanently','purge','trash','#dc2626');
+            add(tr('Restore'),'restore','rotate-left','#15803d');
+            add(tr('Delete permanently'),'purge','trash','#dc2626');
         } else {
-            if (note.locked) add('Unlock note','lock','lock','#7c3aed');
+            if (note.locked) add(tr('Unlock note'),'lock','lock','#7c3aed');
             else {
-                add('Edit','edit','pen','#2563eb');
-                add('Copy','copy','copy','#475569');
-                add('Share','share','share-nodes','#2563eb');
-                if(activeVault()) add('Lock note','lock','lock-open','#7c3aed');
+                add(tr('Edit'),'edit','pen','#2563eb');
+                add(tr('Copy'),'copy','copy','#475569');
+                add(tr('Share'),'share','share-nodes','#2563eb');
+                if(activeVault()) add(tr('Lock note'),'lock','lock-open','#7c3aed');
             }
-            add('Favorite','favorite','heart',tint.favorites,!!note.favorite);
-            add('Pin','pinned','thumbtack','#2563eb',!!note.pinned);
-            add('Top 10','top','star',tint.top,!!note.top);
-            add(note.archived?'Unarchive':'Archive','archived','box-archive',tint.archive,!!note.archived);
-            add('Delete','trash','trash',tint.trash);
+            add(tr('Favorite'),'favorite','heart',tint.favorites,!!note.favorite);
+            add(tr('Pin'),'pinned','thumbtack','#2563eb',!!note.pinned);
+            add(tr('Top 10'),'top','star',tint.top,!!note.top);
+            add(note.archived?tr('Unarchive'):tr('Archive'),'archived','box-archive',tint.archive,!!note.archived);
+            add(tr('Delete'),'trash','trash',tint.trash);
         }
         card.append(actions);
         return card;
@@ -9527,10 +9947,10 @@ const WebMarkNotesExport = (() => {
             return node;
         };
         $('wm-note-views').replaceChildren(...Object.entries(labels).map(([id,label])=>
-            viewButton(label,id,icons[id],tint[id])));
+            viewButton(tr(label),id,icons[id],tint[id])));
         $('wm-note-folders').replaceChildren(...library.folders.map(folder=>
             viewButton(folder.name,folder.id,folderIcon(folder.icon),validColor(folder.color))));
-        $('wm-note-view').textContent=labels[view] || library.folders.find(folder=>folder.id===view)?.name || labels.all;
+        $('wm-note-view').textContent=labels[view] ? tr(labels[view]) : library.folders.find(folder=>folder.id===view)?.name || tr(labels.all);
     }
     function renderCards() {
         renderNavigation();
@@ -9538,14 +9958,14 @@ const WebMarkNotesExport = (() => {
         const visibleIds=new Set(visible.map(note=>note.id));
         for(const id of selected) if(!visibleIds.has(id)) selected.delete(id);
         const cards=visible.map(noteCard);
-        $('wm-note-select').textContent=selecting?'Cancel selection':'Select';
+        $('wm-note-select').textContent=selecting?tr('Cancel selection'):tr('Select');
         $('wm-note-select-all').hidden=!selecting;
         $('wm-note-select-all').disabled=!visible.length;
         const remove=$('wm-note-delete-selected');
         remove.hidden=!selecting;
         remove.disabled=!selected.size;
-        remove.textContent=selected.size?'Delete selected ('+selected.size+')':'Delete selected';
-        $('wm-note-list').replaceChildren(...(cards.length?cards:[element('p','No notes here')]));
+        remove.textContent=tr('Delete selected')+(selected.size?' ('+selected.size+')':'');
+        $('wm-note-list').replaceChildren(...(cards.length?cards:[element('p',tr('No notes here'))]));
     }
     function renderFolders() {
         $('wm-note-manage-folders').replaceChildren(...library.folders.map(folder=>{
@@ -9560,18 +9980,18 @@ const WebMarkNotesExport = (() => {
     function updateSyncSettings() {
         $('wm-note-auto-sync').checked=false;$('wm-note-auto-sync').disabled=true;
         $('wm-note-last-sync').textContent=library.lastSyncAt
-            ? 'Last synced '+dateLabel(library.lastSyncAt,true) : 'Never synced on this device';
+            ? tr('Last synced')+' '+dateLabel(library.lastSyncAt,true) : 'Never synced on this device';
     }
     function renderSettings() {
         updateSyncSettings();
         const vaults=library.vaults;
         $('wm-note-lock-settings').replaceChildren(...(vaults.length
-            ? vaults.map((vault,index)=>button(vaults.length>1?'Reset password '+(index+1):'Forgot password','reset-password',vault.id))
-            : [button('Set admin password','set-password')]));
+            ? vaults.map((vault,index)=>button(vaults.length>1?'Reset password '+(index+1):tr('Forgot password'),'reset-password',vault.id))
+            : [button(tr('Set admin password'),'set-password')]));
         if (recoveryCode) {
-            $('wm-note-recovery').textContent='Save this recovery code: '+recoveryCode+' ';
-            $('wm-note-recovery').append(button('Copy recovery code','copy-recovery'));
-            if(globalThis.WebMarkCloud?.info().user?.email) $('wm-note-recovery').append(button('Open email draft','email-recovery'));
+            $('wm-note-recovery').textContent=tr('Save this recovery code:')+' '+recoveryCode+' ';
+            $('wm-note-recovery').append(button(tr('Copy recovery code'),'copy-recovery'));
+            if(globalThis.WebMarkCloud?.info().user?.email) $('wm-note-recovery').append(button(tr('Open email draft'),'email-recovery'));
         } else $('wm-note-recovery').textContent='';
     }
     function palette(id,action,active) {
@@ -9591,7 +10011,7 @@ const WebMarkNotesExport = (() => {
         const current=folderIcon($('wm-note-folder-icon').value);
         const group=iconGroups[iconGroup];
         $('wm-note-icon-categories').replaceChildren(...Object.keys(iconGroups).map(name=>
-            button(name,'folder-icon-group',name,name===iconGroup)));
+            button(tr(name),'folder-icon-group',name,name===iconGroup)));
         const matches=folderIcons.filter(icon=>(!group||group.test(icon))&&icon.split(' fa-').at(-1).includes(query));
         $('wm-note-icon-options').replaceChildren(...matches.map(icon=>
             iconButton(icon.split(' fa-').at(-1),'folder-icon',icon,icon,folderColor,current===icon)));
@@ -9638,7 +10058,7 @@ const WebMarkNotesExport = (() => {
         $('wm-note-title').value=draft.title;
         $('wm-note-body').value=draft.body;
         folderOptions(draft.folderId);
-        $('wm-note-editor-heading').textContent=note?'Edit note':'New note';
+        $('wm-note-editor-heading').textContent=note?tr('Edit note'):tr('New note');
         $('wm-note-editor-message').textContent='';
         editor.showModal();
         globalThis.WebMarkNoteStudio?.open(note);
@@ -9646,7 +10066,7 @@ const WebMarkNotesExport = (() => {
     }
     function folderOptions(value) {
         const select=$('wm-note-folder');
-        select.replaceChildren(new Option('No folder',''),...library.folders.map(folder=>new Option(folder.name,folder.id)));
+        select.replaceChildren(new Option(tr('No folder'),''),...library.folders.map(folder=>new Option(folder.name,folder.id)));
         select.value=value;
     }
     function editContent() {
@@ -9671,7 +10091,7 @@ const WebMarkNotesExport = (() => {
     }
     function openFolder(folder) {
         editingFolder=folder?.id || null;
-        $('wm-note-folder-heading').textContent=folder?'Edit folder':'New folder';
+        $('wm-note-folder-heading').textContent=folder?tr('Edit folder'):tr('New folder');
         $('wm-note-folder-name').value=folder?.name || '';
         $('wm-note-folder-icon').value=folderIcon(folder?.icon);
         $('wm-note-icon-search').value='';
@@ -9690,7 +10110,7 @@ const WebMarkNotesExport = (() => {
         const icon=folderIcon($('wm-note-folder-icon').value);
         if(!name) return;
         if(library.folders.some(folder=>folder.id!==editingFolder && folder.name.toLowerCase()===name.toLowerCase())){
-            status.textContent='A note folder already has this name.';
+            status.textContent=tr('A note folder already has this name.');
             return;
         }
         let folder=library.folders.find(item=>item.id===editingFolder);
@@ -9733,11 +10153,11 @@ const WebMarkNotesExport = (() => {
         const value=$('wm-note-password-value').value;
         const status=$('wm-note-password-status');
         if(pending.creating && (value.length<4 || value!==$('wm-note-password-confirm').value)){
-            status.textContent='Use at least 4 characters and enter the same password twice.';
+            status.textContent=tr('Use at least 4 characters and enter the same password twice.');
             return;
         }
         pending.busy=true;
-        status.textContent='Checking…';
+        status.textContent=tr('Checking…');
         try {
             const result=await pending.operation(value);
             if(passwordPrompt!==pending || !passwordDialog.open) return;
@@ -9745,18 +10165,18 @@ const WebMarkNotesExport = (() => {
             passwordDialog.close();
             pending.resolve(result);
         } catch {
-            if(passwordPrompt===pending) status.textContent='Could not verify that password or recovery code.';
+            if(passwordPrompt===pending) status.textContent=tr('Could not verify that password or recovery code.');
         } finally {pending.busy=false;}
     }
     async function managePassword(action,id) {
         const status=$('wm-note-settings-status');
         if(!globalThis.crypto?.subtle) {
-            status.textContent='Password protection needs an HTTPS page or the installed app.';
+            status.textContent=tr('Password protection needs an HTTPS page or the installed app.');
             return;
         }
         if(action==='set-password'){
             if(activeVault()) return;
-            const created=await askPassword('Set admin password','New password',
+            const created=await askPassword(tr('Set admin password'),tr('New password'),
                 value=>WebMarkNoteVault.create(value),true);
             if(!created) return;
             library.vaults.push(created.vault);
@@ -9765,13 +10185,13 @@ const WebMarkNotesExport = (() => {
         } else {
             const vault=library.vaults.find(item=>item.id===id);
             if(!vault) return;
-            const code=await askPassword('Recover admin password','Recovery code',value=>value.trim()||null);
+            const code=await askPassword(tr('Recover admin password'),tr('Recovery code'),value=>value.trim()||null);
             if(!code) return;
-            const reset=await askPassword('Choose a new password','New password',
+            const reset=await askPassword('Choose a new password',tr('New password'),
                 value=>WebMarkNoteVault.reset(vault,code,value),true);
             if(!reset) return;
             if(library.vaults.find(item=>item.id===id)!==vault) {
-                status.textContent='Password changed on another device. Try again.';
+                status.textContent=tr('Password changed on another device. Try again.');
                 return;
             }
             Object.assign(vault,reset,{updatedAt:stamp(vault)});
@@ -9786,7 +10206,7 @@ const WebMarkNotesExport = (() => {
         const vault=note.locked?library.vaults.find(item=>item.id===note.vaultId):activeVault();
         if(!vault) return;
         const unlocking=!!note.locked;
-        const result=await askPassword(unlocking?'Unlock note':'Lock note','Admin password',
+        const result=await askPassword(unlocking?tr('Unlock note'):tr('Lock note'),tr('Admin password'),
             value=>unlocking?WebMarkNoteVault.unlock(vault,value,note):WebMarkNoteVault.lock(vault,value,note));
         if(!result || library.notes.find(item=>item.id===id)!==note) return;
         if(unlocking) {
@@ -9811,7 +10231,7 @@ const WebMarkNotesExport = (() => {
         for(const id of vaultIds) {
             const vault=library.vaults.find(item=>item.id===id);
             if(!vault) return false;
-            const allowed=await askPassword('Confirm deletion','Admin password',async value=>{
+            const allowed=await askPassword('Confirm deletion',tr('Admin password'),async value=>{
                 await WebMarkNoteVault.verify(vault,value);
                 return true;
             });
@@ -9851,7 +10271,7 @@ const WebMarkNotesExport = (() => {
         if(!note.locked){displayNote(note,note);return;}
         const vault=library.vaults.find(item=>item.id===note.vaultId);
         if(!vault) return;
-        const content=await askPassword('Read locked note','Admin password',
+        const content=await askPassword('Read locked note',tr('Admin password'),
             value=>WebMarkNoteVault.unlock(vault,value,note));
         if(content && library.notes.includes(note)) displayNote(note,content);
     }
@@ -9862,10 +10282,10 @@ const WebMarkNotesExport = (() => {
             else if(share && navigator.share) await navigator.share({title,text});
             else {
                 await wmCopy(text);
-                status.textContent=share?'Copied. Paste wherever you want to share.':'Copied.';
+                status.textContent=share?tr('Copied. Paste wherever you want to share.'):tr('Copied.');
             }
         } catch(error){
-            if(error.name!=='AbortError') status.textContent=share?'Could not share. Try exporting a file.':'Could not copy.';
+            if(error.name!=='AbortError') status.textContent=share?tr('Could not share. Try exporting a file.'):tr('Could not copy.');
         }
     }
     async function exportNotes(action) {
@@ -9878,18 +10298,18 @@ const WebMarkNotesExport = (() => {
             }
             const notes=library.notes.filter(note=>!note.deletedAt&&!note.locked);
             const rows=notes.map(note=>({title:nameOf(note),date:dateLabel(noteDate(note),true),body:note.body||''}));
-            if(!rows.length){status.textContent='No readable notes to export.';return;}
+            if(!rows.length){status.textContent=tr('No readable notes to export.');return;}
             if(action==='pdf-notes'){WebMarkNotesExport.pdf(rows);return;}
             if(action==='print-notes'){WebMarkNotesExport.print(rows);return;}
             const text=rows.map(row=>[row.title,row.date,row.body].join('\n')).join('\n\n———\n\n');
             if(action==='export-text') wmDownload('WebMark-Notes.txt',text,'text/plain;charset=utf-8');
             else await shareOrCopy('WebMark Notes',text,action==='share-all',status);
-        } catch(error){status.textContent=error.message||'Could not export notes.';}
+        } catch(error){status.textContent=error.message||tr('Could not export notes.');}
     }
     async function clearNotes() {
         const notes=library.notes.slice(),folders=library.folders.slice();
         const status=$('wm-note-settings-status');
-        if(!notes.length&&!folders.length){status.textContent='Notes is already empty.';return;}
+        if(!notes.length&&!folders.length){status.textContent=tr('Notes is already empty.');return;}
         if(!confirm('Permanently delete all '+notes.length+' notes and '+folders.length+
             ' folders, including Trash? This will sync to your other devices.')) return;
         if(!await authorizeDeletion(notes)) return;
@@ -9900,7 +10320,7 @@ const WebMarkNotesExport = (() => {
         library.notes=library.notes.filter(note=>!current.includes(note));
         library.folders=library.folders.filter(folder=>!currentFolders.includes(folder));
         selected.clear();selecting=false;view='all';
-        if(await persistNotes(status)) status.textContent='Notes and folders cleared.';
+        if(await persistNotes(status)) status.textContent=tr('Notes and folders cleared.');
         renderCards();
     }
 
@@ -9918,7 +10338,7 @@ const WebMarkNotesExport = (() => {
             if(!draft)return;
             const note=library.notes.find(item=>item.id===editingId);
             if(note && (!originalNote||note.updatedAt!==originalNote.updatedAt)){
-                if(!confirm(originalNote?'Discard changes to this note?':'Discard this new note?'))return;
+                if(!confirm(originalNote?tr('Discard changes to this note?'):tr('Discard this new note?')))return;
                 const activeDraft=draft;
                 draft=null;
                 if(originalNote){
@@ -9980,7 +10400,7 @@ const WebMarkNotesExport = (() => {
         if(action==='view'){if(view!==id)viewHistory.push(view);view=id;selecting=false;selected.clear();renderCards();return;}
         if(action==='add-folder' || action==='edit-folder'){openFolder(library.folders.find(folder=>folder.id===id));return;}
         if(action==='delete-folder'){
-            if(!confirm('Delete this note folder? Its notes will stay in All notes.')) return;
+            if(!confirm(tr('Delete this note folder? Its notes will stay in All notes.'))) return;
             const folder=library.folders.find(item=>item.id===editingFolder);
             if(!folder) return;
             library.removedFolders.push({id:folder.id,updatedAt:stamp(folder)});
@@ -10004,7 +10424,7 @@ const WebMarkNotesExport = (() => {
             return;
         }
         if(action==='top' && !note.top && library.notes.filter(item=>item.top&&!item.deletedAt&&!item.archived).length>=10){
-            $('wm-note-message').textContent='Top 10 is full. Remove a note from Top 10 first.';
+            $('wm-note-message').textContent=tr('Top 10 is full. Remove a note from Top 10 first.');
             return;
         }
         if(action==='archived' && note.archived && note.top && library.notes.filter(item=>item.top&&!item.deletedAt&&!item.archived).length>=10) note.top=false;
@@ -10023,6 +10443,16 @@ const WebMarkNotesExport = (() => {
     globalThis.WebMarkNotesData=()=>library;
     globalThis.WebMarkNotesImportText=async(title,body)=>{await openNotes();openNote();$('wm-note-title').value=String(title).slice(0,180);$('wm-note-body').value=String(body).slice(0,100000);globalThis.WebMarkNoteStudio?.open({title,body});await editContent();};
     globalThis.WebMarkOpenNotes=openNotes;
+    globalThis.WebMarkInterfaceLocale?.onChange(()=>{
+        if(!library)return;
+        if(app.open)renderCards();
+        if(settings.open)renderSettings();
+        if(editor.open){
+            $('wm-note-editor-heading').textContent=tr(originalNote?tr('Edit note'):tr('New note'));
+            folderOptions($('wm-note-folder').value);
+        }
+        if(folderEditor.open)renderFolderIcons();
+    });
     document.addEventListener('click',handleNoteAction);
     for(const id of ['wm-note-title','wm-note-body','wm-note-folder']){
         $(id).addEventListener(id==='wm-note-folder'?'change':'input',editContent);
@@ -10416,6 +10846,7 @@ const WebMarkPasswordSyncCore=(()=>{
 (() => {
     'use strict';
     const C=WebMarkPasswordsCore,storageKey='wm_password_vault_v1';
+    const tr=(text,values)=>globalThis.WebMarkInterfaceLocale?.text(text,values)??text;
     const $=id=>document.getElementById(id);
     const app=$('wm-passwords'),detail=$('wm-pw-detail'),editor=$('wm-pw-editor'),settings=$('wm-pw-settings');
     const preview=$('wm-pw-import-preview'),promptDialog=$('wm-pw-prompt');
@@ -10456,9 +10887,9 @@ const WebMarkPasswordSyncCore=(()=>{
     function updateEditorType(){
         const type=$('wm-pw-type').value;
         $('wm-pw-sites-row').hidden=type==='pin';
-        $('wm-pw-editor-secret-label').textContent=type==='pin'?'Code / PIN':type==='code'?'Authenticator Base32 secret':'Password';
+        $('wm-pw-editor-secret-label').textContent=type==='pin'?tr('Code / PIN'):type==='code'?tr('Authenticator Base32 secret'):tr('Password');
         $('wm-pw-secret').inputMode=type==='pin'?'numeric':'text';
-        $('wm-pw-secret').placeholder=type==='pin'?'Device, app, card or phone code':'';
+        $('wm-pw-secret').placeholder=type==='pin'?tr('Device, app, card or phone code'):'';
     }
     function icon(name) {
         const node=element('i');node.className='fa-solid fa-'+name;node.setAttribute('aria-hidden','true');return node;
@@ -10469,7 +10900,11 @@ const WebMarkPasswordSyncCore=(()=>{
         if(id)node.dataset.pwId=id;
         return node;
     }
-    function message(text,target='wm-pw-status') {$(target).textContent=text;}
+    const messagesByTarget=new Map();
+    function message(text,target='wm-pw-status') {
+        messagesByTarget.set(target,text);
+        $(target).textContent=tr(text);
+    }
     const date=value=>new Intl.DateTimeFormat(document.documentElement.lang||undefined,
         {dateStyle:'medium',timeStyle:'short'}).format(value);
     const current=()=>vault?.items.find(item=>item.id===currentId);
@@ -10525,8 +10960,8 @@ const WebMarkPasswordSyncCore=(()=>{
         const user=globalThis.WebMarkCloud?.info().user;
         $('wm-pw-auto-sync').checked=autoSync();
         const last=wmStorage.getItem('wm_password_last_sync_v1');
-        $('wm-pw-sync-status').textContent=(user?user.email+' · ':'Sign in to Google in WebMark Settings. ')+syncStatus+
-            (last?' · Last sync: '+new Date(Number(last)).toLocaleString():'');
+        $('wm-pw-sync-status').textContent=(user?user.email+' · ':tr('Sign in to Google in WebMark Settings.')+' ')+tr(syncStatus)+
+            (last?' · '+tr('Last sync:')+' '+new Date(Number(last)).toLocaleString(document.documentElement.lang):'');
     }
     function scheduleVaultSync(){clearTimeout(syncTimer);syncStatus='Manual sync · changes wait until you tap Sync now.';updateSyncStatus();}
     async function syncVault(manual=false,automatic=false){
@@ -10560,7 +10995,7 @@ const WebMarkPasswordSyncCore=(()=>{
                 let source=remote,cloudKey=key;
                 if(remote.id!==local.id){
                     if(automatic)throw Error('Another vault is linked to Google. Use Sync now to merge with its vault password.');
-                    const password=await ask('Link Google vault','Enter the vault password used on your other device',true);
+                    const password=await ask(tr('Link Google vault'),tr('Enter the vault password used on your other device'),true);
                     if(!password)throw Error('Vault linking cancelled.');
                     const opened=await C.unlock(remote,password);adoptedKey?.fill(0);adoptedKey=opened.raw;cloudKey=adoptedKey;remoteData=opened.data;
                 }else{remoteData=await C.read(remote,key);source=syncCore.wrapping(local,remote);}
@@ -10591,7 +11026,7 @@ const WebMarkPasswordSyncCore=(()=>{
                 if(adoptedKey)await offerDeviceUnlock();
                 return true;
             }
-        }catch(error){syncStatus=error.quota?error.message:'Saved on this device · '+error.message;}
+        }catch(error){syncStatus=error.quota?error.message:tr('Saved on this device ·')+' '+error.message;}
         finally{key?.fill(0);adoptedKey?.fill(0);syncBusy=false;updateSyncStatus();}
     }
 
@@ -10610,8 +11045,8 @@ const WebMarkPasswordSyncCore=(()=>{
         return text?C.validate(JSON.parse(text)):null;
     }
     function showLocked() {
-        $('wm-pw-lock-title').textContent=packet?'Passwords is locked':'Create your password vault';
-        $('wm-pw-unlock').textContent=packet?'Unlock':'Create vault';
+        $('wm-pw-lock-title').textContent=packet?tr('Passwords is locked'):tr('Create your password vault');
+        $('wm-pw-unlock').textContent=packet?tr('Unlock'):tr('Create vault');
         $('wm-pw-confirm-row').hidden=!!packet;
         $('wm-pw-master-confirm').required=!packet;
         $('wm-pw-master').autocomplete=packet?'current-password':'new-password';
@@ -10621,8 +11056,8 @@ const WebMarkPasswordSyncCore=(()=>{
         $('wm-pw-settings-button').hidden=false;$('wm-pw-lock-button').hidden=false;
         $('wm-pw-face-button').hidden=false;
         $('wm-pw-face-button').setAttribute('aria-disabled',String(!faceAvailable()));
-        $('wm-pw-face-button').title=faceAvailable()?'Secure face unlock':'Face unlock availability — tap for details';
-        $('wm-pw-device-label').textContent='Device unlock';
+        $('wm-pw-face-button').title=faceAvailable()?tr('Secure face unlock'):tr('Face unlock availability — tap for details');
+        $('wm-pw-device-label').textContent=tr('Device unlock');
         $('wm-pw-unlock-form').hidden=!!packet;
     }
     async function openApp() {
@@ -10696,7 +11131,7 @@ const WebMarkPasswordSyncCore=(()=>{
             message('');render();touch();scheduleVaultSync();
             if(!await resumeRequestedSync())await offerDeviceUnlock();
         } catch(error){
-            if(version===epoch)message(error.message.startsWith('Use at least')?error.message:'Could not unlock. Check your vault password or backup.');
+            if(version===epoch)message(error.message.startsWith('Use at least')?error.message:tr('Could not unlock. Check your vault password or backup.'));
         } finally{busy=false;}
     }
     async function persist() {
@@ -10740,11 +11175,11 @@ const WebMarkPasswordSyncCore=(()=>{
     }
     const folderIcons=typeof FA_ICONS!=='undefined'?[...new Set(FA_ICONS)]:['folder','users','globe','briefcase','house','heart','lock','wallet','credit-card','mobile-screen','gamepad','plane','book','star'].map(name=>'fa-solid fa-'+name);
     function folderGlyph(value){const node=element('i');node.className=/^fa-(solid|regular|brands) fa-[a-z0-9-]+$/.test(value||'')?value:'fa-solid fa-folder';node.setAttribute('aria-hidden','true');return node;}
-    function folderOptions(value){$('wm-pw-folder').replaceChildren(new Option('No folder',''),...vault.folders.map(folder=>new Option(folder.name,folder.id)));$('wm-pw-folder').value=vault.folders.some(folder=>folder.id===value)?value:'';}
+    function folderOptions(value){$('wm-pw-folder').replaceChildren(new Option(tr('No folder'),''),...vault.folders.map(folder=>new Option(folder.name,folder.id)));$('wm-pw-folder').value=vault.folders.some(folder=>folder.id===value)?value:'';}
     function renderFolders(){
         $('wm-pw-manage-folders').replaceChildren(...vault.folders.map(folder=>{
             const row=element('div');row.className='wm-pw-toolbar wm-pw-folder-row';row.style.setProperty('--folder-color',folderColor(folder));
-            row.append(folderGlyph(folder.icon),element('strong',folder.name),button('Edit','edit-folder',folder.id),button('Delete','delete-folder',folder.id));return row;
+            row.append(folderGlyph(folder.icon),element('strong',folder.name),button(tr('Edit'),'edit-folder',folder.id),button(tr('Delete'),'delete-folder',folder.id));return row;
         }));
     }
     function renderFolderIcons(){
@@ -10755,7 +11190,7 @@ const WebMarkPasswordSyncCore=(()=>{
     }
     function openFolder(folder){
         folderEditingId=folder?.id||null;folderDraftIcon=folder?.icon||'fa-solid fa-folder';
-        $('wm-pw-folder-heading').textContent=folder?'Edit folder':'New folder';$('wm-pw-folder-name').value=folder?.name||'';
+        $('wm-pw-folder-heading').textContent=folder?tr('Edit folder'):tr('New folder');$('wm-pw-folder-name').value=folder?.name||'';
         $('wm-pw-folder-color').value=folder?.color||'#7957dc';$('wm-pw-folder-icon-search').value='';$('wm-pw-folder-status').textContent='';
         $('wm-pw-folder-colors').replaceChildren(...folderPalette.map(color=>{const node=button('','folder-color',color);node.style.background=color;node.setAttribute('aria-label',color);return node;}));
         renderFolderIcons();folderEditor.showModal();
@@ -10807,7 +11242,7 @@ const WebMarkPasswordSyncCore=(()=>{
             node.style.setProperty('--pw-tint',color);
             node.setAttribute('aria-pressed',String(key===list));
             node.append(icon(glyph),element('b',String(vault.items.filter(item=>matches(item,key,flags)).length)),
-                element('span',label));return node;
+                element('span',tr(label)));return node;
         }));
         $('wm-pw-folders').replaceChildren(...vault.folders.map(folder=>{
             const node=button(folder.name,'view',folder.id);
@@ -10818,14 +11253,15 @@ const WebMarkPasswordSyncCore=(()=>{
         $('wm-pw-select').hidden=page!=='list';$('wm-pw-count').hidden=page!=='list';
         $('wm-pw-settings-button').hidden=page==='list';$('wm-pw-lock-button').hidden=page==='list';
         $('wm-pw-selection-bar').hidden=!selecting;
-        $('wm-pw-title').textContent=page==='home'?'Passwords':categories.find(c=>c[0]===list)?.[1]||vault.folders.find(folder=>folder.id===list)?.name||'Passwords';
-        $('wm-pw-back').setAttribute('aria-label',page==='list'?'Back to password categories':'Return to WebMark');
+        const category=categories.find(row=>row[0]===list)?.[1];
+        $('wm-pw-title').textContent=page==='home'?tr('Passwords'):(category&&tr(category))||vault.folders.find(folder=>folder.id===list)?.name||tr('Passwords');
+        $('wm-pw-back').setAttribute('aria-label',page==='list'?tr('Back to password categories'):tr('Return to WebMark'));
         const rows=page==='list'?itemsForView():[],visible=new Set(rows.map(item=>item.id));
         for(const id of selected)if(!visible.has(id))selected.delete(id);
-        $('wm-pw-list-title').textContent=categories.find(row=>row[0]===list)?.[1]||
+        $('wm-pw-list-title').textContent=(category&&tr(category))||
             vault.folders.find(folder=>folder.id===list)?.name||'All';
-        $('wm-pw-count').textContent=rows.length+' items';
-        $('wm-pw-select').textContent=selecting?'Cancel':'Select';
+        $('wm-pw-count').textContent=tr('{count} items',{count:new Intl.NumberFormat(document.documentElement.lang).format(rows.length)});
+        $('wm-pw-select').textContent=selecting?tr('Cancel'):tr('Select');
         $('wm-pw-select-all').hidden=!selecting;
         $('wm-pw-delete-selected').hidden=!selecting;
         $('wm-pw-delete-selected').disabled=!selected.size;
@@ -10836,7 +11272,7 @@ const WebMarkPasswordSyncCore=(()=>{
             text.append(element('strong',item.title),element('small',item.username||item.source||item.type));
             node.append(siteIcon(item),text);
             const issue=flags.get(item.id);
-            if(issue?.short||issue?.reused){const warning=icon('circle-exclamation');warning.className+=' wm-pw-warning';warning.title='Short or reused password';node.append(warning);}
+            if(issue?.short||issue?.reused){const warning=icon('circle-exclamation');warning.className+=' wm-pw-warning';warning.title=tr('Short or reused password');node.append(warning);}
             node.append(icon(selecting?(selected.has(item.id)?'square-check':'square'):'chevron-right'));
             return node;
         }));
@@ -10848,10 +11284,10 @@ const WebMarkPasswordSyncCore=(()=>{
         $('wm-pw-detail-title').textContent=item.title;
         $('wm-pw-detail-icon').replaceChildren(siteIcon(item));
         const folder=vault.folders.find(folder=>folder.id===item.folderId);
-        $('wm-pw-detail-folder').textContent=folder?.name||'Personal';
+        $('wm-pw-detail-folder').textContent=folder?.name||tr('Personal');
         $('wm-pw-detail-folder').style.setProperty('--folder-color',folderColor(folder));
         $('wm-pw-detail-user').textContent=item.username||'—';
-        $('wm-pw-secret-label').textContent=item.type==='code'?'Authenticator code':item.type==='pin'?'Code / PIN':'Password';
+        $('wm-pw-secret-label').textContent=item.type==='code'?tr('Authenticator code'):item.type==='pin'?tr('Code / PIN'):tr('Password');
         $('wm-pw-detail-password').textContent='••••••••';
         $('wm-pw-detail-date').textContent=date(item.updatedAt);
         $('wm-pw-detail-notes').textContent=item.notes||'';
@@ -10861,10 +11297,10 @@ const WebMarkPasswordSyncCore=(()=>{
             const link=element('a',new URL(url).hostname);link.href=url;link.target='_blank';link.rel='noopener noreferrer';return link;
         }));
         const issue=C.security(vault.items).get(item.id);
-        $('wm-pw-detail-security').textContent=[issue?.short?'Short password':null,issue?.reused?'Password reused in this vault':null].filter(Boolean).join(' · ');
+        $('wm-pw-detail-security').textContent=[issue?.short?tr('Short password'):null,issue?.reused?tr('Password reused in this vault'):null].filter(Boolean).join(' · ');
         $('wm-pw-detail-actions').replaceChildren(...(item.deletedAt
-            ?[button('Recover','restore-item'),button('Delete permanently','purge')]
-            :[button('Move to Deleted','delete')]));
+            ?[button(tr('Recover'),'restore-item'),button(tr('Delete permanently'),'purge')]
+            :[button(tr('Move to Deleted'),'delete')]));
         if(!detail.open)detail.showModal();
     }
     async function reveal() {
@@ -10905,14 +11341,14 @@ const WebMarkPasswordSyncCore=(()=>{
 
     function edit(item) {
         currentId=item?.id||null;resetForm();
-        $('wm-pw-editor-title').textContent=item?'Edit password':'New password';
+        $('wm-pw-editor-title').textContent=item?tr('Edit password'):tr('New password');
         $('wm-pw-name').value=item?.title||'';
         $('wm-pw-user').value=item?.username||'';
         $('wm-pw-secret').value=item?.password||'';
         $('wm-pw-type').value=item?.type||(list==='code'?'pin':list==='wifi'?'wifi':'password');
         $('wm-pw-sites').value=(item?.websites||[]).join('\n');
         $('wm-pw-notes').value=item?.notes||'';
-        $('wm-pw-folder').replaceChildren(new Option('No folder',''),...vault.folders.map(folder=>new Option(folder.name,folder.id)));
+        $('wm-pw-folder').replaceChildren(new Option(tr('No folder'),''),...vault.folders.map(folder=>new Option(folder.name,folder.id)));
         $('wm-pw-folder').value=item?.folderId||(vault.folders.some(folder=>folder.id===list)?list:'');
         updateEditorType();updateFolderSuggestion();
         $('wm-pw-editor-status').textContent='';
@@ -10959,8 +11395,8 @@ const WebMarkPasswordSyncCore=(()=>{
         const menu=$('wm-pw-share-options');menu.replaceChildren(element('h2','Share '+item.title),element('p','The selected app receives this password.'));
         const email=element('a','Gmail / email');email.className='wm-pw-button';email.href='mailto:?subject='+encodeURIComponent(item.title)+'&body='+encodeURIComponent(text);
         email.addEventListener('click',()=>menu.close(),{once:true});
-        const copy=button('Copy login','');copy.addEventListener('click',async()=>{await wmCopy(text);menu.close();},{once:true});
-        const close=button('Cancel','');close.addEventListener('click',()=>menu.close(),{once:true});menu.append(email,copy,close);menu.showModal();
+        const copy=button(tr('Copy login'),'');copy.addEventListener('click',async()=>{await wmCopy(text);menu.close();},{once:true});
+        const close=button(tr('Cancel'),'');close.addEventListener('click',()=>menu.close(),{once:true});menu.append(email,copy,close);menu.showModal();
         menu.addEventListener('close',()=>menu.replaceChildren(),{once:true});
     }
     async function shareEncrypted(items) {
@@ -11144,7 +11580,7 @@ const WebMarkPasswordSyncCore=(()=>{
                 if(version!==epoch)return;
                 if(globalThis.WebMarkAndroid?.copyPasswordField)WebMarkAndroid.copyPasswordField(text);
                 else await wmCopy(text);
-                message('Copied.','wm-pw-detail-status');return;
+                message(tr('Copied.'),'wm-pw-detail-status');return;
             }
             if(action==='edit-reveal'){$('wm-pw-secret').type=$('wm-pw-secret').type==='password'?'text':'password';return;}
             if(action==='generate'){
@@ -11157,7 +11593,7 @@ const WebMarkPasswordSyncCore=(()=>{
             if(action==='confirm-import'){await confirmImport();return;}
             if(action==='change-password'){
                 const version=epoch;
-                const old=await ask('Confirm vault password','Current vault password',true);
+                const old=await ask(tr('Confirm vault password'),'Current vault password',true);
                 if(!old||version!==epoch)return;
                 const verified=await C.unlock(packet,old);verified.raw.fill(0);
                 const nextPassword=await ask('New vault password','At least 4 characters',true);
@@ -11206,6 +11642,16 @@ const WebMarkPasswordSyncCore=(()=>{
             if(action==='share-all'){await shareEncrypted(vault.items.filter(item=>!item.deletedAt));return;}
         }catch(error){if(error.name!=='AbortError')message(error.message,settings.open?'wm-pw-settings-status':editor.open?'wm-pw-editor-status':'wm-pw-status');}
     }
+    globalThis.WebMarkInterfaceLocale?.onChange(()=>{
+        updateSyncStatus();
+        if(!app.open)return;
+        if(vault)render();else showLocked();
+        const status=$('wm-pw-status');
+        const messageKey=messagesByTarget.get('wm-pw-status');
+        if(messageKey&&status.textContent)status.textContent=tr(messageKey);
+        if(editor.open)updateEditorType();
+        if(folderManager.open&&vault)renderFolders();
+    });
     document.addEventListener('click',event=>handle(event));
     $('wm-pw-unlock-form').addEventListener('submit',unlock);
     $('wm-pw-form').addEventListener('submit',saveItem);
@@ -11247,7 +11693,7 @@ const WebMarkPasswordSyncCore=(()=>{
         if(event.key===storageKey&&vault){lock();message('Vault changed in another tab. Unlock to reload.');}
     });
     window.WebMarkPasswords={
-        lock,back:navigateBack,sync:syncVault,syncStatus:()=>syncStatus,unlocked:()=>!!vault,open:openApp,openForSync,
+        lock,back:navigateBack,sync:syncVault,syncStatus:()=>tr(syncStatus),unlocked:()=>!!vault,open:openApp,openForSync,
         nativeResult(request,value,error){
             const pending=nativeTask;
             if(!pending||pending.request!==request)return;
@@ -11421,6 +11867,7 @@ const WebMarkPasswordSyncCore=(()=>{
 <script>
 /* Notes workspace tools. Plain text stays portable; formatted text and ink are optional. */
 (()=>{'use strict';
+ const tr=(text,values)=>globalThis.WebMarkInterfaceLocale?.text(text,values)??text;
  const $=id=>document.getElementById(id),native=()=>window.WebMarkAndroid;
  let rich,canvas,ink=[],stroke=null,tool='pen',color='#4f6fff',paper='plain',undo=[],ready=false,active=null;
  const allowed=new Set(['B','STRONG','I','EM','U','S','P','DIV','BR','UL','OL','LI','H2','H3','BLOCKQUOTE','MARK','SPAN','FONT']);
@@ -11446,19 +11893,19 @@ const WebMarkPasswordSyncCore=(()=>{
  function changed(){if(!ready)return;$('wm-note-body').value=rich.innerText.slice(0,100000);$('wm-note-body').dispatchEvent(new Event('input',{bubbles:true}));}
  function noteExtras(){return {rich:rich?sanitize(rich.innerHTML):'',ink:cleanInk(ink),paper,reminderAt:Date.parse($('wm-studio-date')?.value||'')||null};}
  function open(note){ready=false;active=note;ink=cleanInk(note?.ink);undo=[];paper=['plain','lined','grid'].includes(note?.paper)?note.paper:'plain';rich.innerHTML=note?.rich?sanitize(note.rich):'';if(!note?.rich)rich.textContent=note?.body||'';
-  $('wm-studio-paper').value=paper;rich.dataset.paper=paper;$('wm-studio-date').value=note?.reminderAt?localDate(note.reminderAt):'';canvas.hidden=!ink.length;paint();ready=true;updateReminderLabel();updateAlarmButton();const calendarButton=$('wm-studio-calendar');calendarButton.textContent='Add to calendar';calendarButton.classList.remove('wm-note-confirmed');}
+  $('wm-studio-paper').value=paper;rich.dataset.paper=paper;$('wm-studio-date').value=note?.reminderAt?localDate(note.reminderAt):'';canvas.hidden=!ink.length;paint();ready=true;updateReminderLabel();updateAlarmButton();const calendarButton=$('wm-studio-calendar');calendarButton.textContent=tr('Add to calendar');calendarButton.classList.remove('wm-note-confirmed');}
  function localDate(at){const d=new Date(at);return new Date(at-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
- function updateReminderLabel(){const el=$('wm-studio-reminder-status');if(el)el.textContent=$('wm-studio-date').value?'Reminder set for '+new Date($('wm-studio-date').value).toLocaleString(): 'Choose a date and time. Android reminders ring until Stop or Snooze.';}
+ function updateReminderLabel(){const el=$('wm-studio-reminder-status');if(el)el.textContent=$('wm-studio-date').value?tr('Reminder set for')+' '+new Date($('wm-studio-date').value).toLocaleString(document.documentElement.lang): tr('Choose a date and time. Android reminders ring until Stop or Snooze.');}
  function updateAlarmButton(){
   const button=$('wm-studio-permission');if(!button)return;
   const enabled=!!native()?.remindersEnabled?.();
-  button.textContent=enabled?'Alarms enabled':native()?.reminderPermissions?'Enable alarms':'Alarms on Android';
+  button.textContent=enabled?tr('Alarms enabled'):native()?.reminderPermissions?tr('Enable alarms'):tr('Alarms on Android');
   button.classList.toggle('wm-note-confirmed',enabled);
   button.disabled=enabled||!native()?.reminderPermissions;
   $('wm-studio-ring').disabled=!native()?.chooseReminderRingtone;
  }
  function reschedule(){updateAlarmButton();const library=window.WebMarkNotesData?.();if(!library)return 'not-loaded';const rows=library.notes||[];if(native()?.noteReminders){const status=native().noteReminders(JSON.stringify(rows.filter(n=>!n.deletedAt&&!n.archived&&Number.isFinite(n.reminderAt)&&n.reminderAt>0).map(n=>({id:n.id,at:n.reminderAt}))));
-  const el=$('wm-studio-alarm-status');if(el)el.textContent=status==='permission'?'Allow Alarms & reminders, then return here.':status==='notifications'?'Allow notifications so you can Stop or Snooze.':status==='ok'?'Reminder schedule saved on this Android device.':'Could not schedule reminders. Check permissions and try again.';
+  const el=$('wm-studio-alarm-status');if(el)el.textContent=status==='permission'?tr('Allow Alarms & reminders, then return here.'):status==='notifications'?tr('Allow notifications so you can Stop or Snooze.'):status==='ok'?tr('Reminder schedule saved on this Android device.'):tr('Could not schedule reminders. Check permissions and try again.');
   return status;}
   return 'browser';
  }
@@ -11540,7 +11987,7 @@ const WebMarkPasswordSyncCore=(()=>{
   $('wm-studio-permission').onclick=()=>{if(native()?.reminderPermissions)native().reminderPermissions();else alert('Install the Android APK for background ringing reminders.');};
   $('wm-studio-calendar').onclick=()=>{
    calendar();
-   const button=$('wm-studio-calendar');button.textContent='Save event in calendar';button.classList.add('wm-note-confirmed');
+   const button=$('wm-studio-calendar');button.textContent=tr('Save event in calendar');button.classList.add('wm-note-confirmed');
   };
   $('wm-studio-share').onclick=async()=>{const text=$('wm-note-title').value+'\n\n'+$('wm-note-body').value;if(native()?.shareText)native().shareText(text);else if(navigator.share)await navigator.share({title:$('wm-note-title').value,text});else await wmCopy(text);};
   function editorNote(){
@@ -11557,7 +12004,7 @@ const WebMarkPasswordSyncCore=(()=>{
    finally{button.disabled=false;}
   };
 
-  const hero=document.createElement('div');hero.className='wm-studio-hero';const emblem=document.createElement('i');emblem.className='fa-solid fa-pen-nib';const heading=document.createElement('h2');heading.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});hero.append(emblem,heading);const homeActions=document.createElement('div');homeActions.className='wm-studio-home-actions';homeActions.innerHTML='<button type="button" class="wm-notes-button" id="wm-studio-import"><i class="fa-solid fa-file-import"></i> Import text</button><input type="file" accept=".txt,.md,text/plain,text/markdown" id="wm-studio-import-file" hidden>';const pdf=document.createElement('button');pdf.type='button';pdf.className='wm-notes-button';
+  const hero=document.createElement('div');hero.className='wm-studio-hero';const emblem=document.createElement('i');emblem.className='fa-solid fa-pen-nib';const heading=document.createElement('h2');heading.textContent=new Date().toLocaleDateString(document.documentElement.lang,{weekday:'long',day:'numeric',month:'long'});hero.append(emblem,heading);const homeActions=document.createElement('div');homeActions.className='wm-studio-home-actions';homeActions.innerHTML='<button type="button" class="wm-notes-button" id="wm-studio-import"><i class="fa-solid fa-file-import"></i> Import text</button><input type="file" accept=".txt,.md,text/plain,text/markdown" id="wm-studio-import-file" hidden>';const pdf=document.createElement('button');pdf.type='button';pdf.className='wm-notes-button';
   pdf.innerHTML='<i class="fa-solid fa-file-pdf" aria-hidden="true"></i> '+(native()?.openPdfMarkup?'Mark up PDF':'Import PDF');
   if(native()?.openPdfMarkup)pdf.onclick=()=>native().openPdfMarkup();
   else{
@@ -11566,7 +12013,7 @@ const WebMarkPasswordSyncCore=(()=>{
    pdf.onclick=()=>picker.click();
    picker.onchange=async()=>{
     const file=picker.files?.[0];picker.value='';if(!file)return;
-    pdf.disabled=true;status.textContent='Reading PDF…';
+    pdf.disabled=true;status.textContent=tr('Reading PDF…');
     let loading;
     try{
      if(file.size>25*1024*1024)throw Error('Choose a PDF smaller than 25 MB.');
@@ -11584,8 +12031,8 @@ const WebMarkPasswordSyncCore=(()=>{
      }
      if(!text.trim())throw Error('No selectable text found. Scanned PDFs need OCR first.');
      await window.WebMarkNotesImportText(file.name.replace(/\.pdf$/i,''),text.trim());
-     status.textContent='PDF text imported into a note.';
-    }catch(error){status.textContent=error.name==='PasswordException'?'Unlock the PDF before importing.':error.message||'Could not import PDF.';}
+     status.textContent=tr('PDF text imported into a note.');
+    }catch(error){status.textContent=error.name==='PasswordException'?tr('Unlock the PDF before importing.'):error.message||tr('Could not import PDF.');}
     finally{await loading?.destroy().catch(()=>{});pdf.disabled=false;}
    };
    hero.append(picker);homeActions.append(status);
@@ -11593,6 +12040,13 @@ const WebMarkPasswordSyncCore=(()=>{
   homeActions.prepend(pdf);
   hero.append(homeActions);$('wm-note-view').before(hero);$('wm-studio-import').onclick=()=>$('wm-studio-import-file').click();$('wm-studio-import-file').onchange=async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;if(file.size>100000){alert('Choose a text file smaller than 100 KB.');return;}await window.WebMarkNotesImportText?.(file.name.replace(/\.[^.]+$/,''),await file.text());};
   const settings=$('wm-note-settings').querySelector('.wm-notes-fields')||$('wm-note-settings').querySelector('div');if(settings){const row=document.createElement('section');row.className='wm-note-settings-group';row.innerHTML='<h3>Reminders & calendar</h3><p>Set the reminder in each note’s options. Choose a phone ringtone; it repeats until Stop or Snooze. Alarms use the phone’s alarm volume and system settings.</p><button type="button" class="wm-notes-button" id="wm-studio-stop">Stop ringing</button>';settings.append(row);$('wm-studio-stop').onclick=()=>native()?.stopNoteAlarm?.();}
+  const locale=globalThis.WebMarkInterfaceLocale;
+  for(const id of ['wm-studio-lists','wm-notes-app','wm-note-editor','wm-note-settings'])locale?.capture($(id));
+  updateAlarmButton();
+  locale?.onChange(()=>{
+   heading.textContent=new Date().toLocaleDateString(document.documentElement.lang,{weekday:'long',day:'numeric',month:'long'});
+   updateReminderLabel();updateAlarmButton();
+  });
   window.addEventListener('focus',reschedule);document.addEventListener('visibilitychange',()=>{if(!document.hidden)reschedule();});
  }
  window.WebMarkNoteStudio={open,extras:noteExtras,reschedule,reader,sanitize,cleanInk,closeLists};setup();
@@ -11604,6 +12058,7 @@ const WebMarkPasswordSyncCore=(()=>{
 <script>
 (() => {
     const names = {bookmarks:'Bookmarks', notes:'Notes', passwords:'Passwords'};
+    const tr=(text,values)=>globalThis.WebMarkInterfaceLocale?.text(text,values)??text;
     const key = 'wm_sync_center_v1';
     const dayKey = date => [date.getFullYear(), date.getMonth()+1, date.getDate()].join('-');
     let working = false;
@@ -11642,25 +12097,28 @@ const WebMarkPasswordSyncCore=(()=>{
         const cloud=globalThis.WebMarkCloud?.info();
         const list=Object.keys(names).filter(section=>waiting(section,data));
         for(const toolbar of document.querySelectorAll('.wm-settings-cloud-state')){
-            const next=list.length?'Changes to sync: '+list.map(section=>names[section]).join(', '):'';
+            const next=list.length?tr('Changes to sync:')+' '+list.map(section=>tr(names[section])).join(', '):'';
             if(toolbar.dataset.syncPending!==next)toolbar.dataset.syncPending=next;
         }
         document.querySelectorAll('.wm-google-account').forEach(button=>{
             const pending=list.length>0||cloud?.quotaUntil>0;
             button.classList.toggle('wm-sync-pending',!!cloud?.user&&pending);
             button.classList.toggle('wm-sync-ready',!!cloud?.user&&!pending);
-            if(list.length)button.title='Changes to sync: '+list.map(section=>names[section]).join(', ');
+            if(list.length)button.title=tr('Changes to sync:')+' '+list.map(section=>tr(names[section])).join(', ');
         });
         if(!dialog)return;
+        const main=dialog.querySelector('[data-cloud="sync"]');
+        if(main)main.textContent=tr('Sync all now');
         for(const section of Object.keys(names)){
+            dialog.querySelector('[data-sync-title="'+section+'"]').textContent=tr(names[section]);
             const last=data.accounts?.[uid()]?.[section]?.time;
             dialog.querySelector('[data-sync-state="'+section+'"]').textContent=
-                (waiting(section,data)?'Changes waiting to sync':'No new local changes')+
-                (errors[section]?' · '+errors[section]:'');
+                tr(waiting(section,data)?'Changes waiting to sync':'No new local changes')+
+                (errors[section]?' · '+tr(errors[section]):'');
             dialog.querySelector('[data-sync-run="'+section+'"]').textContent=
-                section==='passwords'&&globalThis.WebMarkPasswords?.unlocked()===false?'Unlock to sync':'Sync';
+                section==='passwords'&&globalThis.WebMarkPasswords?.unlocked()===false?tr('Unlock to sync'):tr('Sync');
             dialog.querySelector('[data-sync-time="'+section+'"]').textContent=
-                last?'Last synced '+new Date(last).toLocaleString():'No successful sync recorded';
+                last?tr('Last synced')+' '+new Date(last).toLocaleString(document.documentElement?.lang):tr('No successful sync recorded');
         }
         dialog.querySelectorAll('[data-sync-run]').forEach(button=>button.disabled=working||!uid()||cloud?.quotaUntil>Date.now());
     }
@@ -11687,7 +12145,7 @@ const WebMarkPasswordSyncCore=(()=>{
                     if(target==='passwords')ok=await globalThis.WebMarkPasswords?.sync(true,automatic);
                 }catch{}
                 errors[target]=ok?'':(target==='passwords'&&globalThis.WebMarkPasswords?.syncStatus?.())||
-                    'Sync incomplete. Review '+names[target]+' settings.';
+                    tr('Sync incomplete. Review {section} settings.',{section:tr(names[target])});
                 paint();
             }
             return true;
@@ -11709,15 +12167,16 @@ const WebMarkPasswordSyncCore=(()=>{
         await run('all',true);
     }
     function mount(el){
-        dialog=el;
         const main=el.querySelector('[data-cloud="sync"]');
-        if(!main||el.querySelector('.wm-sync-sections'))return;
+        if(!main)return;
+        dialog=el;
+        if(el.querySelector('.wm-sync-sections')){paint();return;}
         const panel=document.createElement('section');
         panel.setAttribute('aria-live','polite');
         panel.className='wm-sync-sections';
-        for(const [section,name] of Object.entries(names)){
+        for(const section of Object.keys(names)){
             const row=document.createElement('article');
-            row.innerHTML='<div><strong>'+name+'</strong><span data-sync-state="'+section+'"></span><small data-sync-time="'+section+'"></small></div><button type="button" data-sync-run="'+section+'">Sync</button>';
+            row.innerHTML='<div><strong data-sync-title="'+section+'"></strong><span data-sync-state="'+section+'"></span><small data-sync-time="'+section+'"></small></div><button type="button" data-sync-run="'+section+'">Sync</button>';
             row.lastElementChild.onclick=()=>run(section);
             panel.append(row);
         }
@@ -11727,12 +12186,13 @@ const WebMarkPasswordSyncCore=(()=>{
         label.firstElementChild.checked=read().midnight!==false;
         label.firstElementChild.onchange=()=>{change(data=>{data.midnight=label.firstElementChild.checked;});tick();};
         main.before(panel,label);
-        main.textContent='Sync all now';
+        globalThis.WebMarkInterfaceLocale?.capture(label);
         paint();
     }
     globalThis.WebMarkSyncCenter={pending,revision,complete,run,mount};
     const start=()=>{
         globalThis.WebMarkCloud?.subscribe(paint);
+        globalThis.WebMarkInterfaceLocale?.onChange(paint);
         setTimeout(tick,6000);
         addEventListener('online',tick);
         addEventListener('focus',tick);
@@ -11875,7 +12335,10 @@ dialog[data-workspace-theme="dark"] .wm-note-reminder-badge{color:#ffc180}
         function apply() {
             for (const surface of document.querySelectorAll(workspace.selector)) surface.dataset.workspaceTheme = mode;
             const dark = mode ? mode === 'dark' : !document.body.classList.contains('light-mode');
-            const label = (dark ? 'Use light mode in ' : 'Use dark mode in ') + workspace.label;
+            const locale = globalThis.WebMarkInterfaceLocale;
+            const key = dark ? 'Use light mode in {workspace}' : 'Use dark mode in {workspace}';
+            const label = locale ? locale.text(key,{workspace:locale.text(workspace.label)}) :
+                (dark ? 'Use light mode in ' : 'Use dark mode in ') + workspace.label;
             toggle.title = label;
             toggle.setAttribute('aria-label',label);
             toggle.innerHTML = dark ? '<i class="fa-solid fa-sun" aria-hidden="true"></i>' : '<i class="fa-solid fa-moon" aria-hidden="true"></i>';
@@ -11885,6 +12348,7 @@ dialog[data-workspace-theme="dark"] .wm-note-reminder-badge{color:#ffc180}
             try {localStorage.setItem(key,mode);} catch {}
             apply();
         };
+        globalThis.WebMarkInterfaceLocale?.onChange(apply);
         header.append(toggle);
         apply();
         new MutationObserver(()=>{if(!mode)apply();}).observe(document.body,{attributes:true,attributeFilter:['class']});

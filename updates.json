@@ -1,8 +1,8 @@
 {
-  "versionCode": 44,
-  "versionName": "1.30.2",
+  "versionCode": 45,
+  "versionName": "1.30.3",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
   "releasedAt": "2026-11-22",
-  "notes": "Password sync continues after you unlock the vault.",
-  "sha256": "e174cc8062e9eac9ca6ece92f2661d964c469d26219eb5198b50fe2cd48b1853"
+  "notes": "Use the WebMark language setting across Passwords, Notes and Sync Center.",
+  "sha256": "57c6a0434f257d652d7290e37a846f1dfb8d78e472df846c2291c261509b8442"
 }
