@@ -1,8 +1,8 @@
 {
-  "versionCode": 37,
-  "versionName": "1.29.1",
+  "versionCode": 38,
+  "versionName": "1.29.2",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
   "releasedAt": "2026-11-22",
-  "notes": "Moved the Notes and Passwords theme switches and made the sun icon yellow.",
-  "sha256": "6b4b1ff0df0e7fdcc60783279fb20a65c721d2bae54cbf3e4997c847cc0bb123"
+  "notes": "Added update notification controls and more frequent release checks.",
+  "sha256": "a03e35911e234ff0af5095ec55b6a54e0b20c8a65140cc8986eb8d54622de812"
 }
