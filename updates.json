@@ -1,8 +1,8 @@
 {
-  "versionCode": 39,
-  "versionName": "1.29.3",
+  "versionCode": 42,
+  "versionName": "1.30.0",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
   "releasedAt": "2026-11-22",
-  "notes": "One-time notification setup and a fresh update check when WebMark launches.",
-  "sha256": "365c8e5545a7f3513fb8ce1568311ecc216abdc2b7ea2a8b88b83710a7a9b590"
+  "notes": "Updated WebMark with icons cropped from the supplied reference screenshots.",
+  "sha256": "2a562df8fb9c0c346e17bc08b6beded702aee28fa47957781ac31789a1013267"
 }
