@@ -11273,7 +11273,9 @@ const WebMarkPasswordSyncCore=(()=>{
     if(!native?.checkAppUpdate||!native?.appVersion)return;
     let current;try{current=JSON.parse(native.appVersion());}catch{return;}
     let pending=null,release=null,dialog=null,shownVersion=0;
-    const checkedKey='wm_update_checked_v2_'+current.versionCode;
+    const setupKey='wm_update_notification_setup_v1';
+    let lastCheck=0,setupChosen=false;
+    try{setupChosen=localStorage.getItem(setupKey)==='1';}catch{}
     const words={
         en:['App updates','Check for updates','Checking…','Update available','Update now','Later','You have the latest version.','Updates have not been published yet.','Could not check. Check your connection and try again.','Continue to the download page to get the update. Android will check the APK before installation.'],
         it:['Aggiornamenti app','Controlla aggiornamenti','Controllo…','Aggiornamento disponibile','Aggiorna ora','Più tardi','Hai la versione più recente.','Gli aggiornamenti non sono ancora stati pubblicati.','Controllo non riuscito. Verifica la connessione e riprova.','Android scaricherà il file APK. Aprilo e conferma l’aggiornamento. I dati salvati restano nell’app.'],
@@ -11298,7 +11300,7 @@ const WebMarkPasswordSyncCore=(()=>{
     function check(manual=false){
         if(pending)return;
         if(navigator.onLine===false){if(manual)status(t(8));return;}
-        if(!manual){try{if(Date.now()-Number(localStorage.getItem(checkedKey)||0)<3600000)return;}catch{}}
+        if(!manual&&lastCheck&&Date.now()-lastCheck<3600000)return;
         const request=crypto.randomUUID();pending={request,manual};status(t(2));
         pending.timeout=setTimeout(()=>{if(pending?.request===request){const explicit=pending.manual;pending=null;if(explicit)status(t(8));}},20000);
         native.checkAppUpdate(request);
@@ -11306,7 +11308,7 @@ const WebMarkPasswordSyncCore=(()=>{
     function result(request,value,error){
         if(pending?.request!==request)return;const manual=pending.manual;clearTimeout(pending.timeout);pending=null;
         if(error||!value){status(t(error==='not_published'?7:8));return;}
-        try{localStorage.setItem(checkedKey,String(Date.now()));}catch{}
+        lastCheck=Date.now();
         if(!Number.isSafeInteger(value.versionCode)||value.versionCode<=current.versionCode){release=null;status(t(6));return;}
         release=value;status(t(3)+' · '+value.versionName);
         if(manual||shownVersion!==value.versionCode){shownVersion=value.versionCode;show();}
@@ -11315,7 +11317,8 @@ const WebMarkPasswordSyncCore=(()=>{
         if(!native.updateNotificationsEnabled)return;
         const enabled=native.updateNotificationsEnabled();
         document.querySelectorAll('.wm-update-permission').forEach(button=>{
-            button.textContent=enabled?'Manage update notifications':'Enable update notifications';
+            button.hidden=setupChosen||enabled;
+            button.style.display=button.hidden?'none':'flex';
         });
     }
     function resume(){refreshPermission();check(false);}
@@ -11326,8 +11329,17 @@ const WebMarkPasswordSyncCore=(()=>{
             box.append(node('h3',t(0)),node('p','WebMark '+current.versionName));const button=node('button',t(1));button.type='button';button.className='erow wm-setting-action wm-update-action';button.addEventListener('click',()=>check(true));
             const state=node('p',t(1));state.className='wm-update-status';state.style.cssText='font-size:12px;opacity:.8';box.append(button,state);
             if(native.enableUpdateNotifications){
-                const permission=node('button');permission.type='button';permission.className='erow wm-update-permission';
-                permission.addEventListener('click',()=>native.enableUpdateNotifications());
+                const permission=node('button','Set up update notifications');
+                permission.type='button';permission.className='wm-update-permission';
+                const bell=node('i');bell.className='fa-solid fa-bell';bell.setAttribute('aria-hidden','true');
+                permission.prepend(bell);
+                permission.style.cssText='display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 16px;border:0;border-radius:14px;background:linear-gradient(110deg,#4338a8,#155fb6);color:white;font:inherit;font-weight:700;cursor:pointer';
+                permission.addEventListener('click',()=>{
+                    native.enableUpdateNotifications();
+                    setupChosen=true;
+                    try{localStorage.setItem(setupKey,'1');}catch{}
+                    refreshPermission();
+                });
                 box.append(permission);
             }
             target.append(box);
