@@ -1,8 +1,8 @@
 {
-  "versionCode": 34,
-  "versionName": "1.27.0",
+  "versionCode": 37,
+  "versionName": "1.29.1",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
-  "releasedAt": "2026-11-21",
-  "notes": "Restored Notes from 1.25.1, added Google quota countdowns, and improved password organization.",
-  "sha256": "0613e4730bceb7e6753f93e9b5bbfe6825cb1e86a5ed453e7e133408da7b22eb"
+  "releasedAt": "2026-11-22",
+  "notes": "Moved the Notes and Passwords theme switches and made the sun icon yellow.",
+  "sha256": "6b4b1ff0df0e7fdcc60783279fb20a65c721d2bae54cbf3e4997c847cc0bb123"
 }
