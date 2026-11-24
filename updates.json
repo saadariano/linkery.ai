@@ -1,8 +1,8 @@
 {
-  "versionCode": 48,
-  "versionName": "1.30.6",
+  "versionCode": 50,
+  "versionName": "1.30.8",
   "apkUrl": "https://saadariano.github.io/linkery.ai/WebMark.apk",
   "releasedAt": "2026-11-24",
-  "notes": "Adds notes and encrypted vault transfers to the private sync server.",
-  "sha256": "67c793345a3b21d5dd8ecf0a02367dd9454d9a9ea500226699725c151fcf5079"
+  "notes": "Automatically syncs bookmark, note, and encrypted vault changes, with independent retry and manual sync.",
+  "sha256": "83764e2407d16a5e20dde4d67417f3ddec3b3c1a9169841d5031689f0e2c2bd5"
 }
