@@ -1418,7 +1418,7 @@ body.light-mode #nav-arc > i, body.light-mode #dnl-arc > i { color:#2563eb; }
 
 /* WebMark compatibility layer: local-only data, validated imports, portable actions. */
 const wmStorage = (() => {
- const managed = new Set(['ly_state_v4','ly_f','ly_l','ly_trash','wm_before_google_login','wm_cloud_records_v1','wm_google_session_v1','wm_notes_v1','wm_password_vault_v1','ly_deluser','ly_delpass','wm_bookmark_protection_v1']);
+ const managed = new Set(['wm_bookmark_cloud_checkpoint_v1','wm_bookmark_relay_key_v1','wm_password_relay_baseline_v1','wm_bookmark_relay_origin_v1','ly_state_v4','ly_f','ly_l','ly_trash','wm_before_google_login','wm_cloud_records_v1','wm_google_session_v1','wm_notes_v1','wm_password_vault_v1','ly_deluser','ly_delpass','wm_bookmark_protection_v1']);
  const values = new Map();
  const writes = new Map();
  const backupMessage = 'Changes were not saved. Export a JSON backup before closing.';
@@ -8397,7 +8397,7 @@ const enc=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').
 const storage=()=>typeof wmStorage!=='undefined'?wmStorage:localStorage;
 const read=(k,f)=>{try{return JSON.parse(storage().getItem(k))??f}catch{return f}};
 function emit(text){status=text;for(const fn of listeners)fn(info())}
-function info(){return {quotaUntil,status:session&&quotaFailures?quotaDescription():status,configured:!!config?.enabled,user:session?{uid:session.uid,email:session.email,name:session.name||'',photoURL:session.photoURL||''}:null,busy,ready:!!adapter}}
+function info(){return {quotaUntil,status:session&&quotaFailures&&!bookmarkOrigin()?quotaDescription():status,configured:!!config?.enabled,user:session?{uid:session.uid,email:session.email,name:session.name||'',photoURL:session.photoURL||''}:null,busy,ready:!!adapter,bookmarkRelay:!!bookmarkOrigin(),bookmarkSyncScope:bookmarkOrigin()?keyScope():null}}
 const pacificClock=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'});
 function pacificWallTime(time){
  const parts=Object.fromEntries(pacificClock.formatToParts(time).map(({type,value})=>[type,Number(value)]));
@@ -8448,34 +8448,228 @@ async function token(){if(!session)throw Error('Sign in first');if(session.expir
 function base(){return 'https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(config.projectId)+'/databases/(default)/documents'}
 async function headers(){return {'Authorization':'Bearer '+await token(),'Content-Type':'application/json'}}
 function persist(){storage().setItem(META_KEY,JSON.stringify({owner:session?.uid||null,device,records}))}
-function changed(){if(!adapter||applying)return;const before=records;records=C.pack(adapter.snapshot(),records,device);if(JSON.stringify(before)!==JSON.stringify(records))globalThis.WebMarkSyncCenter?.pending('bookmarks');adapter.persistKeys();persist();if(session)emit('Pending changes · tap Sync now to upload');}
-// A one-document change marker avoids rereading every bookmark on each poll.
-// Periodic full scans also discover updates made by older WebMark versions.
-async function remote(){
- const account=session.uid,path='/users/'+encodeURIComponent(account)+'/records';let head='';
- try{const doc=await request(base()+path+'/webmark-bookmark-index-v1',{headers:await headers()});head=doc.fields?.value?.stringValue||''}catch(e){if(e.status!==404)throw e}
- if(remoteCache?.account===account&&remoteCache.head===head&&Date.now()-remoteCache.at<600000)return remoteCache;
- const map={},versions={};let page='';
- do{const result=await request(base()+path+'?pageSize=200'+(page?'&pageToken='+encodeURIComponent(page):''),{headers:await headers()});
-  for(const doc of result.documents||[]){try{const r=JSON.parse(doc.fields.value.stringValue);if(C.valid(r,r.key)){map[r.key]=r;versions[r.key]=doc.updateTime}}catch{}}
-  page=result.nextPageToken||'';
- }while(page);
- return remoteCache={account,head,map,versions,at:Date.now()};
+function changed(){if(!adapter||applying)return;const before=records;records=C.pack(adapter.snapshot(),records,device);if(JSON.stringify(before)!==JSON.stringify(records))globalThis.WebMarkSyncCenter?.pending('bookmarks');adapter.persistKeys();persist();if(session){emit(bookmarkOrigin()?'Bookmark changes waiting to sync':'Pending changes · tap Sync now to upload');scheduleBookmarkSync();}}
+// The optional bookmark service uses the same account and merge rules.
+let bookmarkKey, keyRequest, bookmarkTimer, bookmarkRetryAt=0;
+const bookmarkKeyName='wm_bookmark_relay_key_v1';
+const bookmarkOrigin=()=>{
+ try{
+  const endpoint=new URL(config?.bookmarkSyncUrl);
+  return endpoint.protocol==='https:'&&endpoint.href===endpoint.origin+'/' ? endpoint.origin : '';
+ }catch{return '';}
+};
+const bookmarkBase=()=>bookmarkOrigin()?bookmarkOrigin()+'/v1':base();
+const keyScope=()=>JSON.stringify([bookmarkOrigin(),config?.projectId,session?.uid]);
+function savedBookmarkKey(){
+ const saved=read(bookmarkKeyName,null);
+ return saved?.scope===keyScope()?saved.key:null;
+}
+function askBookmarkPhrase(){
+ if(keyRequest)return keyRequest;
+ const dialog=document.createElement('dialog');
+ dialog.innerHTML='<form method="dialog"><h2>Connect bookmark sync</h2><p>Choose a sync passphrase of at least 16 characters. Enter the same passphrase on each device. Keep a copy somewhere safe.</p><label>Sync passphrase <input type="password" minlength="16" maxlength="256" required autocomplete="off"></label><p><button type="button">Cancel</button> <button value="ok">Connect</button></p></form>';
+ document.body.append(dialog);
+ keyRequest=new Promise(resolve=>{
+  dialog.querySelector('button[type=button]').onclick=()=>dialog.close();
+  dialog.addEventListener('close',()=>{
+   const input=dialog.querySelector('input');
+   const phrase=dialog.returnValue==='ok'?input.value:null;
+   input.value='';dialog.remove();keyRequest=null;resolve(phrase);
+  },{once:true});
+ });
+ dialog.showModal();return keyRequest;
+}
+async function unlockBookmarkSync(manual,account){
+ if(bookmarkKey?.scope===keyScope())return bookmarkKey;
+ const scope=keyScope();
+ let encoded=savedBookmarkKey();
+ if(!encoded){
+  if(!manual)return null;
+  const passphrase=await askBookmarkPhrase();
+  if(!passphrase||session?.uid!==account)return null;
+  const text=new TextEncoder();
+  const secret=await crypto.subtle.importKey('raw',text.encode(passphrase),'PBKDF2',false,['deriveBits']);
+  const bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',iterations:600000,
+   salt:text.encode('WebMark Bookmarks 1 '+config.projectId+' '+account)},secret,256);
+  encoded=enc(bits);
+ }
+ if(session?.uid!==account)return null;
+ const key=await crypto.subtle.importKey('raw',dec(encoded),'AES-GCM',false,['encrypt','decrypt']);
+ return bookmarkKey={scope,encoded,key};
+}
+async function sealBookmark(doc,key){
+ const iv=crypto.getRandomValues(new Uint8Array(12));
+ const text=new TextEncoder();
+ const bytes=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:text.encode(doc.name)},
+  key,text.encode(doc.fields.value.stringValue));
+ const buffer=new Uint8Array(bytes);
+ // Avoid spreading a large bookmark attachment into a single function call.
+ let binary='';
+ for(let i=0;i<buffer.length;i+=8192)binary+=String.fromCharCode(...buffer.subarray(i,i+8192));
+ doc.fields.value.stringValue='wm1.'+enc(iv)+'.'+btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+async function openBookmark(doc,key){
+ try{
+  const [format,iv,value]=doc.fields.value.stringValue.split('.');
+  if(format!=='wm1')throw Error();
+  const bytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:dec(iv),additionalData:new TextEncoder().encode(doc.name)},key,dec(value));
+  doc.fields.value.stringValue=new TextDecoder().decode(bytes);
+ }catch{
+  const failure=Error('Could not unlock bookmark sync. Tap Sync and enter the same passphrase used on your other devices.');
+  failure.bookmarkPassphrase=true;
+  throw failure;
+ }
+}
+async function bookmarkRequest(url,options,key){
+ if(!key)return request(url,options);
+ if(options?.body&&url.endsWith(':commit')){
+  const {writes}=JSON.parse(options.body);
+  for(const write of writes)await sealBookmark(write.update,key);
+  options={...options,body:JSON.stringify({writes})};
+ }
+ const result=await request(url,{...options,redirect:'error'});
+ const docs=Array.isArray(result)?result.filter(row=>row.found).map(row=>row.found):
+  result.documents||(result.fields?[result]:[]);
+ for(const doc of docs)await openBookmark(doc,key);
+ return result;
+}
+function scheduleBookmarkSync(delay=1200){
+ if(!bookmarkOrigin()||!session||(!savedBookmarkKey()&&!bookmarkKey))return;
+ clearTimeout(bookmarkTimer);
+ bookmarkTimer=setTimeout(async()=>{
+  if(document.hidden||!navigator.onLine||Date.now()<bookmarkRetryAt)return;
+  const account=session?.uid;
+  const ok=await sync(false);
+  if(ok&&account===session?.uid){
+   try{await globalThis.WebMarkNotesSync?.(true);}catch{}
+   if(account===session?.uid)try{await globalThis.WebMarkPasswords?.sync(true,true);}catch{}
+  }
+ },delay);
+}
+function bookmarkSummary(previous,merged,local){
+ const counts={added:0,edited:0,deleted:0};
+ for(const [id,record] of Object.entries(merged)){
+  const incoming=previous[id];
+  if(record.kind!=='link'||!incoming||record.ts!==incoming.ts||record.device!==incoming.device)continue;
+  const before=local[id];
+  if(record.deleted){if(before&&!before.deleted)counts.deleted++;}
+  else if(!before||before.deleted)counts.added++;
+  else if(JSON.stringify(before.data)!==JSON.stringify(record.data))counts.edited++;
+ }
+ const parts=Object.entries(counts).filter(([,count])=>count).map(([label,count])=>count+' '+label);
+ if(parts.length)window.showToast?.('Bookmark changes synced · '+parts.join(', '),'var(--primary)',3600);
+}
+
+// Keep a bounded list of changed bookmark IDs inside the existing Firestore
+// marker. The marker and its bookmarks are committed atomically.
+const CHECKPOINT_KEY='wm_bookmark_cloud_checkpoint_v1';
+const MAX_CHANGE_BATCHES=128;
+function journal(value){
+ try{
+  const entries=JSON.parse(value);
+  if(Array.isArray(entries)&&entries.length>0&&entries.length<=MAX_CHANGE_BATCHES&&
+    entries.every(entry=>typeof entry.id==='string'&&Array.isArray(entry.keys)&&entry.keys.length<=25&&
+      entry.keys.every(key=>typeof key==='string'&&/^[a-zA-Z0-9-]{8,80}$/.test(key))))return entries;
+ }catch{}
+ return [];
+}
+async function bookmarkMarker(path,key){
+ try{
+  const doc=await bookmarkRequest(bookmarkBase()+path+'/webmark-bookmark-index-v1',{headers:await headers()},key);
+  return {value:doc.fields?.value?.stringValue||'',version:doc.updateTime};
+ }catch(error){
+  if(error.status!==404)throw error;
+  return {value:'',version:null};
+ }
+}
+function addRemoteRecord(doc,map,versions){
+ try{
+  const key=doc.name.split('/').at(-1);
+  const record=JSON.parse(doc.fields.value.stringValue);
+  if(C.valid(record,key)){map[key]=record;versions[key]=doc.updateTime;}
+ }catch{}
+}
+async function remote(account,key){
+ const path='/users/'+encodeURIComponent(account)+'/records';
+ const marker=await bookmarkMarker(path,key);
+ const saved=remoteCache||read(CHECKPOINT_KEY,null);
+ const previous=saved?.account===account&&saved.project===config.projectId&&saved.origin===(bookmarkOrigin()||undefined)?saved:null;
+ if(previous&&marker.version&&previous.marker.version===marker.version)return remoteCache=previous;
+ const entries=journal(marker.value),last=journal(previous?.marker?.value).at(-1);
+ const index=last?entries.findIndex(entry=>entry.id===last.id):-1;
+ const map=index>=0?{...previous.map}:Object.create(null);
+ const versions=index>=0?{...previous.versions}:Object.create(null);
+ if(index>=0){
+  const keys=[...new Set(entries.slice(index+1).flatMap(entry=>entry.keys))];
+  const prefix='projects/'+config.projectId+'/databases/(default)/documents'+path+'/';
+  for(let start=0;start<keys.length;start+=50){
+   if(session?.uid!==account)throw Error('The Google account changed during sync.');
+   const rows=await bookmarkRequest(bookmarkBase()+':batchGet',{method:'POST',headers:await headers(),
+       body:JSON.stringify({documents:keys.slice(start,start+50).map(id=>prefix+id)})},key);
+   if(!Array.isArray(rows)||rows.length!==Math.min(50,keys.length-start)||rows.some(row=>!row.found)){
+    throw Error('Could not verify the changed bookmarks. Try syncing again.');
+   }
+   for(const {found} of rows)addRemoteRecord(found,map,versions);
+  }
+ }else{
+  let page='';
+  do{
+   if(session?.uid!==account)throw Error('The Google account changed during sync.');
+   const result=await bookmarkRequest(bookmarkBase()+path+'?pageSize=200'+(page?'&pageToken='+encodeURIComponent(page):''),{headers:await headers()},key);
+   for(const doc of result.documents||[])addRemoteRecord(doc,map,versions);
+   page=result.nextPageToken||'';
+  }while(page);
+  if((await bookmarkMarker(path,key)).version!==marker.version)return null;
+ }
+ return remoteCache={account,project:config.projectId,origin:bookmarkOrigin()||undefined,marker,map,versions};
+}
+async function writeBookmarkBatch(account,cloud,batch,merged,key){
+ const keys=batch.map(write=>write.update.name.split('/').at(-1));
+ const entries=journal(cloud.marker.value);
+ entries.push({id:C.uid(),keys});
+ const value=JSON.stringify(entries.slice(-MAX_CHANGE_BATCHES));
+ const marker={update:{
+  name:'projects/'+config.projectId+'/databases/(default)/documents/users/'+account+'/records/webmark-bookmark-index-v1',
+  fields:{value:{stringValue:value}}
+ },currentDocument:cloud.marker.version?{updateTime:cloud.marker.version}:{exists:false}};
+ const result=await bookmarkRequest(bookmarkBase()+':commit',{method:'POST',headers:await headers(),
+     body:JSON.stringify({writes:[...batch,marker]})},key);
+ cloud.marker={value,version:result.writeResults?.at(-1)?.updateTime||result.commitTime};
+ keys.forEach((key,index)=>{
+  cloud.map[key]=merged[key];
+  cloud.versions[key]=result.writeResults?.[index]?.updateTime;
+ });
 }
 
 async function sync(manual=true){
 
  if(!session||!config?.enabled)return;if(busy)return;if(!navigator.onLine){emit('Offline · changes saved on this device');return}busy=true;emit('Syncing…');const account=session.uid;const revision=globalThis.WebMarkSyncCenter?.revision('bookmarks');
  if(globalThis.browser?.runtime?.getManifest?.().browser_specific_settings?.gecko?.data_collection_permissions){try{const p=await browser.permissions.getAll();if(!['authenticationInfo','bookmarksInfo','personallyIdentifyingInfo'].every(x=>p.data_collection?.includes(x))){busy=false;emit('Sync paused · optional data sharing permission is off');return}}catch{busy=false;emit('Sync paused · unable to check data sharing permission');return}}
+ let key;
  try{
+  if(bookmarkOrigin()){
+   key=(await unlockBookmarkSync(manual,account))?.key;
+   if(!key){emit('Tap Sync to connect encrypted bookmark sync.');return false;}
+  }
   for(let retry=0;retry<4;retry++){
-   const cloud=await remote();if(session?.uid!==account)return;
+   const cloud=await remote(account,key);if(session?.uid!==account)return;
+   if(!cloud){if(retry===3)throw Error('Bookmarks changed during sync. Try again.');continue;}
+   const local=records;
+   const previous=key?{...cloud.map}:null;
    const merged=C.recoverBookmarkDates(C.merge(cloud.map,records),adapter.snapshot());
    const writes=Object.values(merged).filter(r=>C.needsUpload(r,cloud.map[r.key])).map(r=>{
     const value=JSON.stringify(r);if(new TextEncoder().encode(value).length>700000)throw Error('A bookmark is too large to sync. Use a smaller uploaded image.');
     return {update:{name:'projects/'+config.projectId+'/databases/(default)/documents/users/'+account+'/records/'+r.key,fields:{value:{stringValue:value}}},currentDocument:cloud.versions[r.key]?{updateTime:cloud.versions[r.key]}:{exists:false}};
    });let conflict=false;
-   for(let i=0;i<writes.length;i+=25){if(session?.uid!==account)return;try{const batch=writes.slice(i,i+25),head=C.uid(),marker={update:{name:'projects/'+config.projectId+'/databases/(default)/documents/users/'+account+'/records/webmark-bookmark-index-v1',fields:{value:{stringValue:head}}}},result=await request(base()+':commit',{method:'POST',headers:await headers(),body:JSON.stringify({writes:[...batch,marker]})});cloud.head=head;for(let j=0;j<batch.length;j++){const key=batch[j].update.name.split('/').pop();cloud.map[key]=merged[key];cloud.versions[key]=result.writeResults?.[j]?.updateTime}}catch(e){if([409,412,400].includes(e.status)&&/ABORTED|FAILED_PRECONDITION|ALREADY_EXISTS|precondition|exists/i.test(e.message)){conflict=true;break}throw e}}
+   const writeCount=writes.length||(!journal(cloud.marker.value).length?1:0);
+   for(let i=0;i<writeCount;i+=25){
+    if(session?.uid!==account)return;
+    try{await writeBookmarkBatch(account,cloud,writes.slice(i,i+25),merged,key);}
+    catch(e){
+     if([409,412,400].includes(e.status)&&/ABORTED|FAILED_PRECONDITION|ALREADY_EXISTS|precondition|exists/i.test(e.message)){conflict=true;break}
+     throw e;
+    }
+   }
    if(conflict){remoteCache=null;if(retry===3)throw Error('Sync conflict. Your changes are safe; try Sync now again.');continue}
    if(session?.uid!==account)return;
    const current=adapter.snapshot();
@@ -8483,14 +8677,35 @@ async function sync(manual=true){
    const materialized=C.unpack(records,current);
    const changedView=JSON.stringify({f:current.f||[],l:current.l||[]})!==JSON.stringify(materialized);
    applying=true;try{if(changedView)adapter.apply(materialized);adapter.persistKeys();persist()}finally{applying=false}
-   clearQuota();
+   if(key&&bookmarkKey?.key===key){
+    if(!savedBookmarkKey())storage().setItem(bookmarkKeyName,JSON.stringify({scope:bookmarkKey.scope,key:bookmarkKey.encoded}));
+    bookmarkRetryAt=0;
+   }else clearQuota();
+   if(cloud.marker.version&&storage().durable)storage().setItem(CHECKPOINT_KEY,JSON.stringify(cloud));
    await storage().flush?.();
    globalThis.WebMarkSyncCenter?.complete('bookmarks',account,revision);
+   if(key&&changedView)bookmarkSummary(previous,records,local);
    emit('Synced · '+new Date().toLocaleString());return true;
   }
- }catch(e){remoteCache=null;if(e.quota)emit(e.message);else if(e.status===401||e.status===403)emit('Sync needs attention: sign in again or check project permissions');else emit('Saved locally · '+(e.name==='AbortError'?'connection timed out':e.message))}finally{busy=false;for(const fn of listeners)fn(info())}
+ }catch(e){remoteCache=null;
+ if(key){
+  bookmarkRetryAt=Date.now()+30000;
+  if(e.bookmarkPassphrase&&bookmarkKey?.key===key){bookmarkKey=null;storage().removeItem(bookmarkKeyName);}
+ }
+ if(e.quota)emit(e.message);else if(e.status===401||e.status===403)emit('Sync needs attention: sign in again or check project permissions');else emit('Saved locally · '+(e.name==='AbortError'?'connection timed out':e.message))}finally{busy=false;for(const fn of listeners)fn(info())}
 }
-async function loadConfig(){if(globalThis.location?.protocol==='file:'){config={enabled:false};return}try{config=await request('./cloud-config.json')}catch{config={enabled:false}}if(!config.enabled)return;for(const key of ['apiKey','projectId','authDomain','authPageUrl'])if(!config[key]){config.enabled=false;return}const url=new URL(config.authPageUrl);if(url.protocol!=='https:'||url.hostname!==config.authDomain){config.enabled=false;return}}
+async function loadConfig(){if(globalThis.location?.protocol==='file:'){config={enabled:false};return}try{config=await request('./cloud-config.json')}catch{config={enabled:false}}if(!config.enabled)return;for(const key of ['apiKey','projectId','authDomain','authPageUrl'])if(!config[key]){config.enabled=false;return}const url=new URL(config.authPageUrl);if(url.protocol!=='https:'||url.hostname!==config.authDomain){config.enabled=false;return}
+ if(!config.enabled||!config.bookmarkSyncConfigUrl||!globalThis.WebMarkAndroid)return;
+ const key='wm_bookmark_relay_origin_v1';
+ try{
+  const published=await request(config.bookmarkSyncConfigUrl,{redirect:'error',cache:'no-store'});
+  if(published.projectId===config.projectId){
+   config.bookmarkSyncUrl=published.bookmarkSyncUrl;
+   if(bookmarkOrigin())storage().setItem(key,bookmarkOrigin());
+  }
+ }catch{}
+ if(!bookmarkOrigin())config.bookmarkSyncUrl=storage().getItem(key);
+}
 function language(){try{return ['en','ar','it','fr','es'].includes(storage().getItem('ly_lang'))?storage().getItem('ly_lang'):['en','ar','it','fr','es'].includes(document.documentElement.lang)?document.documentElement.lang:'en'}catch{return 'en'}}
 function popup(url){if(window.WebMarkAndroid?.openSignIn){window.WebMarkAndroid.openSignIn(url);return}if(window.WebMarkAndroid){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.click();return}const api=globalThis.browser||globalThis.chrome;if(api?.tabs){api.tabs.create({url});return}window.open(url,'_blank','noopener,noreferrer')}
 async function signIn(){
@@ -8543,16 +8758,19 @@ async function nativeResult(id,idToken,error){
   if(await acceptAccount({user_id:result.localId,id_token:result.idToken,refresh_token:result.refreshToken,expires_in:result.expiresIn},user,current))emit('Connected · tap Sync now');
  }catch(e){if(pending===current){pending=null;emit('Sign-in could not finish: '+e.message)}}
 }
-function signOut(){remoteCache=null;window.WebMarkAndroid?.clearGoogle?.();pending=null;session=null;storage().removeItem(AUTH_KEY);emit('Signed out · bookmarks remain on this device')}
+function signOut(){bookmarkKey=null;clearTimeout(bookmarkTimer);storage().removeItem(bookmarkKeyName);remoteCache=null;storage().removeItem(CHECKPOINT_KEY);window.WebMarkAndroid?.clearGoogle?.();pending=null;session=null;storage().removeItem(AUTH_KEY);emit('Signed out · bookmarks remain on this device')}
 function profilePhoto(value){try{const url=new URL(value);return url.protocol==='https:'&&(/(^|\.)googleusercontent\.com$/i.test(url.hostname))?url.href:''}catch{return ''}}
 async function refreshProfile(){const account=session?.uid;if(!account)return;try{const result=await request('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:await token()})});const user=result.users?.[0];if(session?.uid!==account||user?.localId!==account)return;session={...session,name:user.displayName||'',photoURL:profilePhoto(user.photoUrl)};storage().setItem(AUTH_KEY,JSON.stringify(session));emit(status)}catch{}}
-async function attach(a){if(typeof wmStorage!=='undefined')await wmStorage.ready;adapter=a;const pause=read('wm_cloud_quota_pause_v1',{});quotaUntil=Number(pause.until)||0;quotaFailures=Number(pause.failures)||0;const meta=read(META_KEY,{});device=meta.device||C.uid();records=meta.records||{};session=read(AUTH_KEY,null);if(session&&meta.owner!==session.uid){session=null;storage().removeItem(AUTH_KEY);records={}}await loadConfig();if(session&&config?.enabled){if(quotaFailures)notifyQuota();else emit('Manual sync · tap Sync now');refreshProfile()}else emit('Local only · Google sign-in '+(config?.enabled?'available':'not activated'));document.addEventListener('visibilitychange',()=>{if(!document.hidden&&pending)pollLogin()})}
+async function attach(a){if(typeof wmStorage!=='undefined')await wmStorage.ready;adapter=a;const pause=read('wm_cloud_quota_pause_v1',{});quotaUntil=Number(pause.until)||0;quotaFailures=Number(pause.failures)||0;const meta=read(META_KEY,{});device=meta.device||C.uid();records=meta.records||{};session=read(AUTH_KEY,null);if(session&&meta.owner!==session.uid){session=null;storage().removeItem(AUTH_KEY);records={}}await loadConfig();if(session&&config?.enabled){if(quotaFailures)notifyQuota();else emit('Manual sync · tap Sync now');refreshProfile()}else emit('Local only · Google sign-in '+(config?.enabled?'available':'not activated'));document.addEventListener('visibilitychange',()=>{if(!document.hidden&&pending)pollLogin()});if(bookmarkOrigin()){addEventListener('online',()=>scheduleBookmarkSync(0));addEventListener('focus',()=>scheduleBookmarkSync(0));document.addEventListener('visibilitychange',()=>scheduleBookmarkSync(0));setInterval(()=>scheduleBookmarkSync(0),20000);scheduleBookmarkSync(0);}}
 async function syncNotes(account,merge,manual,automatic=false) {
     if(!manual)return;
     const requireAccount=()=>{
         if(!config?.enabled || session?.uid!==account) throw Error('Sign in again to sync notes.');
     };
     requireAccount();
+    const origin=bookmarkOrigin();
+    const relayKey=origin?(await unlockBookmarkSync(false,account))?.key:null;
+    if(origin&&!relayKey)throw Error('Connect encrypted bookmark sync first.');
     if(globalThis.browser?.runtime?.getManifest?.().browser_specific_settings?.gecko?.data_collection_permissions){
         const data_collection=['authenticationInfo','bookmarksInfo','personallyIdentifyingInfo'];
         const allowed=manual
@@ -8574,7 +8792,7 @@ async function syncNotes(account,merge,manual,automatic=false) {
     for(let attempt=0;attempt<4;attempt++){
         let remote;
         try {
-            remote=await request(base()+path,{headers:await authorizedHeaders()});
+            remote=await bookmarkRequest(bookmarkBase()+path,{headers:await authorizedHeaders()},relayKey);
         } catch(error) {
             if(error.status!==404) throw error;
         }
@@ -8587,8 +8805,8 @@ async function syncNotes(account,merge,manual,automatic=false) {
         try {
             const write={update:{name:documentName,fields:{value:{stringValue:value}}},
                 currentDocument:remote?{updateTime:remote.updateTime}:{exists:false}};
-            await request(base()+':commit',{method:'POST',headers:await authorizedHeaders(),
-                body:JSON.stringify({writes:[write]})});
+            await bookmarkRequest(bookmarkBase()+':commit',{method:'POST',headers:await authorizedHeaders(),
+                body:JSON.stringify({writes:[write]})},relayKey);
             requireAccount();
             return merged;
         } catch(error) {
@@ -8603,6 +8821,9 @@ async function syncPasswordVault(account,merge,manual=false,automatic=false){
     if(!manual)return;
     const requireAccount=()=>{if(!config?.enabled||session?.uid!==account)throw Error('Sign in with the same Google account to sync passwords.');};
     requireAccount();
+    const origin=bookmarkOrigin();
+    const relayKey=origin?(await unlockBookmarkSync(false,account))?.key:null;
+    if(origin&&!relayKey)throw Error('Connect encrypted bookmark sync first.');
     if(globalThis.browser?.runtime?.getManifest?.().browser_specific_settings?.gecko?.data_collection_permissions){
         const data_collection=['authenticationInfo','bookmarksInfo','personallyIdentifyingInfo'];
         const allowed=manual?await browser.permissions.request({data_collection}):false;
@@ -8614,7 +8835,7 @@ async function syncPasswordVault(account,merge,manual=false,automatic=false){
     const authorized=async()=>{requireAccount();const value=await headers();requireAccount();return value;};
     for(let retry=0;retry<4;retry++){
         let document;
-        try{document=await request(base()+path,{headers:await authorized()});}
+        try{document=await bookmarkRequest(bookmarkBase()+path,{headers:await authorized()},relayKey);}
         catch(error){if(error.status!==404)throw error;}
         requireAccount();
         const remote=document?JSON.parse(document.fields.value.stringValue):null;
@@ -8624,9 +8845,9 @@ async function syncPasswordVault(account,merge,manual=false,automatic=false){
         if(document&&value===document.fields.value.stringValue)return next;
         if(new TextEncoder().encode(value).length>700000)throw Error('The encrypted vault is too large for this sync record. Your local vault is unchanged.');
         try{
-            await request(base()+':commit',{method:'POST',headers:await authorized(),body:JSON.stringify({writes:[{
+            await bookmarkRequest(bookmarkBase()+':commit',{method:'POST',headers:await authorized(),body:JSON.stringify({writes:[{
                 update:{name,fields:{value:{stringValue:value}}},currentDocument:document?{updateTime:document.updateTime}:{exists:false}
-            }]})});
+            }]})},relayKey);
             requireAccount();return next;
         }catch(error){if(![400,409,412].includes(error.status)||!/ABORTED|precondition|already exists|changed/i.test(error.message))throw error;}
     }
@@ -9778,8 +9999,8 @@ const WebMarkNotesExport = (() => {
             return;
         }
         if (!manual && (!library.owner || library.autoSync===false || navigator.onLine===false)) return;
-        if (!library.owner && automatic) return false;
-        if (!library.owner && !confirm('Sync these notes with '+user.email+'?')) return;
+        if (!library.owner && automatic && !cloud.info().bookmarkRelay) return false;
+        if (!library.owner && !automatic && !confirm('Sync these notes with '+user.email+'?')) return;
         const revision=globalThis.WebMarkSyncCenter?.revision('notes');
         syncing=true;
         status.textContent=tr('Syncing notes…');
@@ -9789,6 +10010,7 @@ const WebMarkNotesExport = (() => {
             await saveQueue;
             if (cloud.info().user?.uid!==user.uid) return;
             const latest=mergeNotes(library,merged);
+            const received=cloud.info().bookmarkRelay&&JSON.stringify(library.notes)!==JSON.stringify(latest.notes);
             const changed=JSON.stringify(latest)!==JSON.stringify(merged);
             // Keep the local account binding out of the cloud document.
             Object.assign(library,latest,{owner:user.uid,lastSyncAt:Date.now()});
@@ -9797,6 +10019,7 @@ const WebMarkNotesExport = (() => {
             renderCards();
             updateSyncSettings();
             if(manager.open) renderFolders();
+            if(received&&saved)window.showToast?.('Notes synced from another device.');
             if(changed) scheduleSync();
             return saved;
         } catch(error) {
@@ -10964,6 +11187,48 @@ const WebMarkPasswordSyncCore=(()=>{
             (last?' · '+tr('Last sync:')+' '+new Date(Number(last)).toLocaleString(document.documentElement.lang):'');
     }
     function scheduleVaultSync(){clearTimeout(syncTimer);syncStatus='Manual sync · changes wait until you tap Sync now.';updateSyncStatus();}
+    const vaultSyncBaseline='wm_password_relay_baseline_v1';
+    async function packetDigest(value){
+        if(!value)return null;
+        const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(value)));
+        return C.encode(new Uint8Array(bytes));
+    }
+    async function saveRelayBaseline(scope,local,remote){
+        const [localId,remoteId]=await Promise.all([packetDigest(local),packetDigest(remote)]);
+        wmStorage.setItem(vaultSyncBaseline,JSON.stringify({scope,localId,remoteId}));
+    }
+    async function syncLockedPacket(cloud,user,local,unchanged,revision,automatic){
+        const scope=cloud.info().bookmarkSyncScope;
+        let baseline;
+        try{baseline=JSON.parse(wmStorage.getItem(vaultSyncBaseline)||'null');}catch{}
+        const localId=await packetDigest(local);
+        const result=await cloud.syncPasswordVault(user.uid,async remote=>{
+            unchanged();
+            if(remote)C.validate(remote);
+            if(!remote)return local;
+            if(!local)return remote;
+            const remoteId=await packetDigest(remote);
+            if(localId===remoteId)return remote;
+            if(local.id===remote.id&&baseline?.scope===scope){
+                if(localId===baseline.localId)return remote;
+                if(remoteId===baseline.remoteId)return local;
+            }
+            throw Error('Both devices have encrypted vault changes. Unlock once to merge them.');
+        },true,automatic);
+        unchanged();
+        if(!result)return false;
+        const didReceive=!!local && await packetDigest(result)!==localId;
+        unchanged();
+        if(!local||didReceive){await writePacket(result,false);packet=result;showLocked();}
+        wmStorage.setItem(syncOwnerKey,JSON.stringify({uid:user.uid,email:user.email}));
+        await saveRelayBaseline(scope,packet,result);
+        wmStorage.setItem('wm_password_last_sync_v1',String(Date.now()));
+        await wmStorage.flush?.();
+        globalThis.WebMarkSyncCenter?.complete('passwords',user.uid,revision);
+        syncStatus='Encrypted passwords synced.';
+        if(didReceive)window.showToast?.('Password vault synced from another device.');
+        return true;
+    }
     async function syncVault(manual=false,automatic=false){
         if(!manual||syncBusy)return;
         if(!manual&&(!autoSync()||editor.open||folderEditor.open||promptDialog.open||nativeTask||deviceBusy))return;
@@ -10987,6 +11252,7 @@ const WebMarkPasswordSyncCore=(()=>{
             key=raw?.slice();
             let remoteData=null;
             const unchanged=()=>{guard();if(wmStorage.getItem(storageKey)!==serialized||syncCore.stable(vault)!==snapshotText||syncCore.stable(globalThis.WebMarkBookmarkProtection?.capture())!==protectionVersion)throw Error('Local changes are waiting to sync.');};
+            if(!snapshot&&cloud.info().bookmarkRelay)return await syncLockedPacket(cloud,user,local,unchanged,revision,automatic);
             const next=await cloud.syncPasswordVault(user.uid,async(remote)=>{
                 unchanged();
                 if(remote)C.validate(remote);
@@ -11021,6 +11287,7 @@ const WebMarkPasswordSyncCore=(()=>{
                 globalThis.WebMarkBookmarkProtection?.apply(result.bookmarkProtection);
                 wmStorage.setItem(syncOwnerKey,JSON.stringify({uid:user.uid,email:user.email}));
                 wmStorage.setItem('wm_password_last_sync_v1',String(Date.now()));
+                if(cloud.info().bookmarkRelay)await saveRelayBaseline(cloud.info().bookmarkSyncScope,packet,next);
                 await wmStorage.flush?.();syncStatus='Encrypted passwords, folders and bookmark protection synced.';
                 globalThis.WebMarkSyncCenter?.complete('passwords',user.uid,revision);
                 if(adoptedKey)await offerDeviceUnlock();
@@ -11512,7 +11779,7 @@ const WebMarkPasswordSyncCore=(()=>{
             if(action==='lock'){lock();return;}
             if(action==='sync-vault'){
                 const account=globalThis.WebMarkCloud?.info().user?.uid;
-                if(account&&!vault)await openForSync(account);
+                if(account&&!vault&&!globalThis.WebMarkCloud?.info().bookmarkRelay)await openForSync(account);
                 else await syncVault(true);
                 return;
             }
@@ -12107,6 +12374,8 @@ const WebMarkPasswordSyncCore=(()=>{
             if(list.length)button.title=tr('Changes to sync:')+' '+list.map(section=>tr(names[section])).join(', ');
         });
         if(!dialog)return;
+        const mode=dialog.querySelector('[data-sync-backend]');
+        if(mode)mode.textContent=cloud?.bookmarkRelay?'Encrypted sync server configured':'Firestore sync · private sync server not configured';
         const main=dialog.querySelector('[data-cloud="sync"]');
         if(main)main.textContent=tr('Sync all now');
         for(const section of Object.keys(names)){
@@ -12116,20 +12385,23 @@ const WebMarkPasswordSyncCore=(()=>{
                 tr(waiting(section,data)?'Changes waiting to sync':'No new local changes')+
                 (errors[section]?' · '+tr(errors[section]):'');
             dialog.querySelector('[data-sync-run="'+section+'"]').textContent=
-                section==='passwords'&&globalThis.WebMarkPasswords?.unlocked()===false?tr('Unlock to sync'):tr('Sync');
+                section==='passwords'&&!cloud?.bookmarkRelay&&globalThis.WebMarkPasswords?.unlocked()===false?tr('Unlock to sync'):tr('Sync');
             dialog.querySelector('[data-sync-time="'+section+'"]').textContent=
                 last?tr('Last synced')+' '+new Date(last).toLocaleString(document.documentElement?.lang):tr('No successful sync recorded');
         }
-        dialog.querySelectorAll('[data-sync-run]').forEach(button=>button.disabled=working||!uid()||cloud?.quotaUntil>Date.now());
+        dialog.querySelectorAll('[data-sync-run]').forEach(button=>button.disabled=working||!uid()||
+            (cloud?.quotaUntil>Date.now()&&!cloud.bookmarkRelay));
     }
     async function run(section='all',automatic=false){
-        if(working||!uid()||!navigator.onLine||WebMarkCloud.info().quotaUntil>Date.now())return false;
+        if(working||!uid()||!navigator.onLine)return false;
         working=true;paint();
         const account=uid();
         try{
             for(const target of section==='all'?Object.keys(names):[section]){
-                if(uid()!==account||WebMarkCloud.info().quotaUntil>Date.now())break;
-                if(target==='passwords'&&globalThis.WebMarkPasswords?.unlocked()===false){
+                if(uid()!==account)break;
+                const cloud=WebMarkCloud.info();
+                if(cloud.quotaUntil>Date.now()&&!cloud.bookmarkRelay)continue;
+                if(target==='passwords'&&!cloud.bookmarkRelay&&globalThis.WebMarkPasswords?.unlocked()===false){
                     errors[target]='Unlock to sync';
                     if(!automatic){
                         delete errors[target];
@@ -12185,7 +12457,9 @@ const WebMarkPasswordSyncCore=(()=>{
         label.innerHTML='<input type="checkbox"> Daily sync at midnight';
         label.firstElementChild.checked=read().midnight!==false;
         label.firstElementChild.onchange=()=>{change(data=>{data.midnight=label.firstElementChild.checked;});tick();};
-        main.before(panel,label);
+        const mode=document.createElement('p');
+        mode.dataset.syncBackend='';
+        main.before(mode,panel,label);
         globalThis.WebMarkInterfaceLocale?.capture(label);
         paint();
     }

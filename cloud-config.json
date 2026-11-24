@@ -1,7 +1,8 @@
-{"bookmarkSyncUrl": "https://webmark-sync.info-goodfoodx.workers.dev",
+{
   "enabled": true,
   "apiKey": "AIzaSyDfB6g70u-gbrDi4YaYGlopPCtuoCvyTr8",
   "projectId": "webmark-529a9",
   "authDomain": "webmark-529a9.firebaseapp.com",
-  "authPageUrl": "https://webmark-529a9.firebaseapp.com/webmark-auth.html"
+  "authPageUrl": "https://webmark-529a9.firebaseapp.com/webmark-auth.html",
+  "bookmarkSyncUrl": "https://webmark-sync.info-goodfoodx.workers.dev"
 }
