@@ -8432,8 +8432,9 @@ function quotaError(){const e=Error(quotaDescription());e.quota=true;return e}
 async function request(url,options={}){
  const firestore=url.startsWith('https://firestore.googleapis.com/');
  if(firestore&&Date.now()<quotaUntil)throw quotaError();
- const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
- try{const r=await fetch(url,{...options,signal:controller.signal});const d=await r.json().catch(()=>({}));
+ const relay=bookmarkOrigin() && url.startsWith(bookmarkOrigin()+'/');
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),relay?45000:15000);
+ try{const r=await fetch(url,{...options,signal:controller.signal});const d=await r.json().catch(error=>{if(r.ok||error.name==='AbortError')throw error;return {};});
   if(!r.ok){if(firestore&&(r.status===429||d.error?.status==='RESOURCE_EXHAUSTED'||/quota exceeded|quota.*exhausted/i.test(d.error?.message||''))){
    quotaFailures++;
    const hint=r.headers?.get('Retry-After'),now=Date.now();
@@ -8461,13 +8462,20 @@ const bookmarkOrigin=()=>{
 };
 const bookmarkBase=()=>bookmarkOrigin()?bookmarkOrigin()+'/v1':base();
 const keyScope=()=>JSON.stringify([bookmarkOrigin(),config?.projectId,session?.uid]);
-function savedBookmarkKey(){
+function savedBookmarkState(){
  const saved=read(bookmarkKeyName,null);
- return saved?.scope===keyScope()?saved.key:null;
+ return saved?.scope===keyScope()?saved:null;
+}
+function savedBookmarkKey(){return savedBookmarkState()?.key;}
+function verifyBookmarkKey(key){
+ if(bookmarkKey?.key!==key||bookmarkKey.scope!==keyScope())return;
+ if(savedBookmarkState()?.verified!==false)return;
+ storage().setItem(bookmarkKeyName,JSON.stringify({scope:bookmarkKey.scope,key:bookmarkKey.encoded,verified:true}));
 }
 function askBookmarkPhrase(){
  if(keyRequest)return keyRequest;
  const dialog=document.createElement('dialog');
+ dialog.style.cssText='box-sizing:border-box;width:min(26rem,calc(100% - 2rem));margin:auto;padding:1rem;border:1px solid #94a3b8;border-radius:1rem;background:Canvas;color:CanvasText;font:inherit;';
  dialog.innerHTML='<form method="dialog"><h2>Connect bookmark sync</h2><p>Choose a sync passphrase of at least 16 characters. Enter the same passphrase on each device. Keep a copy somewhere safe.</p><label>Sync passphrase <input type="password" minlength="16" maxlength="256" required autocomplete="off"></label><p><button type="button">Cancel</button> <button value="ok">Connect</button></p></form>';
  document.body.append(dialog);
  keyRequest=new Promise(resolve=>{
@@ -8484,6 +8492,7 @@ async function unlockBookmarkSync(manual,account){
  if(bookmarkKey?.scope===keyScope())return bookmarkKey;
  const scope=keyScope();
  let encoded=savedBookmarkKey();
+ const needsSetup=!encoded;
  if(!encoded){
   if(!manual)return null;
   const passphrase=await askBookmarkPhrase();
@@ -8496,7 +8505,14 @@ async function unlockBookmarkSync(manual,account){
  }
  if(session?.uid!==account)return null;
  const key=await crypto.subtle.importKey('raw',dec(encoded),'AES-GCM',false,['encrypt','decrypt']);
- return bookmarkKey={scope,encoded,key};
+ if(session?.uid!==account||scope!==keyScope())return null;
+ bookmarkKey={scope,encoded,key};
+ if(needsSetup){
+  storage().setItem(bookmarkKeyName,JSON.stringify({scope,key:encoded,verified:false}));
+  await storage().flush?.();
+  scheduleBookmarkSync();
+ }
+ return bookmarkKey;
 }
 async function sealBookmark(doc,key){
  const iv=crypto.getRandomValues(new Uint8Array(12));
@@ -8516,12 +8532,18 @@ async function openBookmark(doc,key){
   const bytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:dec(iv),additionalData:new TextEncoder().encode(doc.name)},key,dec(value));
   doc.fields.value.stringValue=new TextDecoder().decode(bytes);
  }catch{
+  if(bookmarkKey?.key===key&&savedBookmarkState()?.verified===false){
+   bookmarkKey=null;
+   storage().removeItem(bookmarkKeyName);
+   await storage().flush?.();
+  }
   const failure=Error(savedBookmarkKey()
    ? 'A bookmark sync record could not be decrypted with this device’s saved key.'
    : 'Could not unlock bookmark sync. Tap Sync and enter the same passphrase used on your other devices.');
   failure.bookmarkPassphrase=true;
   throw failure;
  }
+ verifyBookmarkKey(key);
 }
 async function bookmarkRequest(url,options,key){
  if(!key)return request(url,options);
@@ -8680,9 +8702,10 @@ async function syncBookmarks(manual){
     return {update:{name:'projects/'+config.projectId+'/databases/(default)/documents/users/'+account+'/records/'+r.key,fields:{value:{stringValue:value}}},currentDocument:cloud.versions[r.key]?{updateTime:cloud.versions[r.key]}:{exists:false}};
    });let conflict=false;
    const writeCount=writes.length||(!journal(cloud.marker.value).length?1:0);
-   for(let i=0;i<writeCount;i+=25){
+   const batchSize=key?5:25;
+   for(let i=0;i<writeCount;i+=batchSize){
     if(session?.uid!==account)return;
-    try{await writeBookmarkBatch(account,cloud,writes.slice(i,i+25),merged,key);}
+    try{await writeBookmarkBatch(account,cloud,writes.slice(i,i+batchSize),merged,key);}
     catch(e){
      if([409,412,400].includes(e.status)&&/ABORTED|FAILED_PRECONDITION|ALREADY_EXISTS|precondition|exists/i.test(e.message)){conflict=true;break}
      throw e;
@@ -8696,10 +8719,7 @@ async function syncBookmarks(manual){
    const changedView=JSON.stringify({f:current.f||[],l:current.l||[]})!==JSON.stringify(materialized);
    applying=true;try{if(changedView)adapter.apply(materialized);adapter.persistKeys();persist()}finally{applying=false}
    if(key&&bookmarkKey?.key===key){
-    if(!savedBookmarkKey()){
-     storage().setItem(bookmarkKeyName,JSON.stringify({scope:bookmarkKey.scope,key:bookmarkKey.encoded}));
-     scheduleBookmarkSync();
-    }
+    verifyBookmarkKey(key);
     bookmarkRetryAt=0;
    }else clearQuota();
    if(cloud.marker.version&&storage().durable)storage().setItem(CHECKPOINT_KEY,JSON.stringify(cloud));
@@ -10031,7 +10051,8 @@ const WebMarkNotesExport = (() => {
             await saveQueue;
             if (cloud.info().user?.uid!==user.uid) return;
             const latest=mergeNotes(library,merged);
-            const received=cloud.info().bookmarkRelay&&JSON.stringify(library.notes)!==JSON.stringify(latest.notes);
+            const received=cloud.info().bookmarkRelay&&(JSON.stringify(library.notes)!==JSON.stringify(latest.notes)||
+                JSON.stringify(library.folders)!==JSON.stringify(latest.folders));
             const changed=JSON.stringify(latest)!==JSON.stringify(merged);
             // Keep the local account binding out of the cloud document.
             Object.assign(library,latest,{owner:user.uid,lastSyncAt:Date.now()});
